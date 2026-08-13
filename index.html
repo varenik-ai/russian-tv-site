@@ -181,16 +181,6 @@
     .player-banner:empty { display:none; min-height:0; margin:0; }
     .player-status { font-size:13px; color:var(--muted); text-align:center; padding:6px 0; display:flex; align-items:center; justify-content:center; gap:6px; }
     .status-dot { width:7px; height:7px; background:var(--accent2); border-radius:50%; animation:pulse 1.2s infinite; }
-    .tg-overlay { position:absolute; inset:0; z-index:40; background:rgba(8,8,20,.88); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; animation:fadeIn .4s ease; }
-    .tg-overlay.show { display:flex; }
-    .tg-overlay-card { text-align:center; padding:32px 28px; max-width:320px; }
-    .tg-overlay-icon { font-size:52px; margin-bottom:14px; }
-    .tg-overlay-title { font-size:20px; font-weight:800; margin-bottom:8px; }
-    .tg-overlay-desc { font-size:13px; color:rgba(255,255,255,.6); margin-bottom:20px; line-height:1.6; }
-    .tg-overlay-btn { display:inline-flex; align-items:center; gap:8px; background:var(--tg-color); color:white; padding:12px 24px; border-radius:24px; font-size:15px; font-weight:700; text-decoration:none; transition:all .2s; }
-    .tg-overlay-btn:hover { background:#1a8dc5; transform:translateY(-1px); }
-    .tg-overlay-skip { display:block; font-size:12px; color:rgba(255,255,255,.35); cursor:pointer; margin-top:10px; transition:color .2s; }
-    .tg-overlay-skip:hover { color:rgba(255,255,255,.7); }
     .channel-info-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; }
     .ci-title { font-size:18px; font-weight:800; margin-bottom:4px; }
     .ci-desc { font-size:13px; color:var(--muted); }
@@ -256,8 +246,6 @@
       .right-sidebar { flex-direction:column; }
     }
     @media (max-width:900px) {
-      .tg-overlay { position:fixed; z-index:9999; }
-      .tg-overlay-card { padding:24px 20px; }
     }
     @media (max-width:400px) {
       .logo { font-size:17px; }
@@ -379,17 +367,6 @@
       <div class="unmute-banner" id="unmute-banner">
         <button id="unmute-btn">🔊 Включить звук</button>
       </div>
-      <div class="tg-overlay" id="tg-overlay">
-        <div class="tg-overlay-card">
-          <div class="tg-overlay-icon">✈️</div>
-          <div class="tg-overlay-title">Смотрите в Telegram</div>
-          <div class="tg-overlay-desc">Все 35 каналов в одном приложении — бесплатно. На iOS, Android и Desktop.</div>
-          <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-overlay-btn">✈️ Открыть в Telegram</a>
-          <span class="tg-overlay-skip" id="overlay-skip">✕ Продолжить просмотр</span>
-        </div>
-      </div>
-
-    </div>
     <div class="player-status" id="player-status">Выберите канал для просмотра</div>
     <div class="player-banner" id="banner-below"></div>
     <div class="channel-info-card" id="channel-info-card" style="display:none">
@@ -563,7 +540,7 @@ const CHANNEL_GROUPS = [
 ];
 
 // ── State ──────────────────────────────────────────────────
-let currentCh = null, hls = null, overlayTimer = null, userUnmuted = false, _overlayCount = 0;
+let currentCh = null, hls = null, userUnmuted = false, _overlayCount = 0;
 const video        = document.getElementById('video');
 const playerEmpty  = document.getElementById('player-empty');
 const liveBadge    = document.getElementById('live-badge');
@@ -574,8 +551,6 @@ const reloadBtn    = document.getElementById('reload-btn');
 const fsBtn        = document.getElementById('fullscreen-btn');
 const unmuteBtn    = document.getElementById('unmute-btn');
 const unmuteBanner = document.getElementById('unmute-banner');
-const tgOverlay    = document.getElementById('tg-overlay');
-const overlaySkip  = document.getElementById('overlay-skip');
 const statusEl     = document.getElementById('player-status');
 const infoCard     = document.getElementById('channel-info-card');
 const ciTitle      = document.getElementById('ci-title');
@@ -697,15 +672,6 @@ function openChannel(ch) {
   const activeItem = sidebar.querySelector('.ch-item.active');
   if (activeItem) activeItem.scrollIntoView({ behavior:'smooth', block:'nearest' });
   // Overlay: 1st show — 2min after stream start
-  clearTimeout(overlayTimer);
-  tgOverlay.classList.remove('show');
-  if (_overlayCount < 1) {
-    overlayTimer = setTimeout(function() {
-      tgOverlay.classList.add('show');
-      _overlayCount++;
-      video.pause();
-    }, 120000);
-  }
   addRecent(ch);
   loadStream(ch);
 }
@@ -786,11 +752,7 @@ fsBtn.addEventListener('click', function() {
     fsBtn.textContent = '✕ Выйти';
     // 2nd overlay: 2min after entering fullscreen
     if (_overlayCount < 2) {
-      clearTimeout(overlayTimer);
       overlayTimer = setTimeout(function() {
-        tgOverlay.classList.add('show');
-        _overlayCount++;
-        video.pause();
       }, 120000);
     }
   }
@@ -801,10 +763,6 @@ video.addEventListener('webkitbeginfullscreen', function() { fsBtn.textContent =
 video.addEventListener('webkitendfullscreen', function() { fsBtn.textContent = '⛶ Полный экран'; });
 
 // ── Overlay skip ───────────────────────────────────────────
-overlaySkip.addEventListener('click', function() {
-  tgOverlay.classList.remove('show');
-  clearTimeout(overlayTimer);
-  video.play().catch(function(){});
 });
 
 // ── Controls fade ──────────────────────────────────────────

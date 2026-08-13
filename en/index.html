@@ -141,14 +141,6 @@
     .player-wrap.cv .player-controls{opacity:1;pointer-events:all}
     .ctrl-btn{background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;transition:.2s;margin-left:6px}
     .ctrl-btn:hover{background:rgba(255,255,255,.15)}
-    .tg-overlay{position:absolute;inset:0;z-index:40;background:rgba(8,8,20,.88);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center}
-    .tg-overlay.show{display:flex}
-    .tg-overlay-card{text-align:center;padding:32px 28px;max-width:320px}
-    .tg-overlay-icon{font-size:52px;margin-bottom:14px}
-    .tg-overlay-title{font-size:20px;font-weight:800;margin-bottom:8px}
-    .tg-overlay-desc{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:20px;line-height:1.6}
-    .tg-overlay-btn{display:inline-flex;align-items:center;gap:8px;background:var(--tg-color);color:#fff;padding:12px 24px;border-radius:24px;font-size:15px;font-weight:700;text-decoration:none;transition:.2s}
-    .tg-overlay-skip{display:block;font-size:12px;color:rgba(255,255,255,.35);cursor:pointer;margin-top:10px}
     .lock-overlay.show{display:flex}
     .lock-overlay-card{text-align:center;padding:28px 24px;max-width:320px}
     .lock-overlay-title{font-size:20px;font-weight:900;margin-bottom:8px}
@@ -171,7 +163,6 @@
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
     @media(max-width:900px){.main-wrap{grid-template-columns:1fr;grid-template-rows:none;padding:10px;gap:12px}.player-col{grid-column:auto;grid-row:auto;order:1}.tg-col{grid-column:auto;grid-row:auto;order:2;position:static}.sidebar-wrapper{grid-column:auto;grid-row:auto;order:3}.right-sidebar{grid-column:auto;grid-row:auto;order:4;position:static}.cat-group{grid-template-columns:repeat(2,1fr)}.ch-name-s{font-size:17px}.live-indicator{display:none}.about-grid{grid-template-columns:repeat(3,1fr);gap:8px}.about-card{padding:12px 8px}.about-card .icon{font-size:22px;margin-bottom:4px}.about-card .num{font-size:18px}.about-card .lbl{font-size:10px}}
     @media(max-width:600px){header{padding:0 12px;height:52px}.logo{font-size:18px}.lang-switch{display:none}.tg-btn{padding:8px;border-radius:50%;width:36px;height:36px;justify-content:center}.tg-btn span{display:none}.live-count{display:none}}
-    @media(max-width:900px){.tg-overlay{position:fixed;z-index:9999}.tg-overlay-card{padding:24px 20px}}
     .live-count{font-size:12px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:6px}
     .live-dot-sm{width:6px;height:6px;background:var(--red);border-radius:50%;animation:pulse 1.2s infinite}
     .recent-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
@@ -276,16 +267,6 @@
         <button class="ctrl-btn" id="reload-btn" style="display:none">🔄 Reconnect</button>
         <button class="ctrl-btn" id="fullscreen-btn">⛶ Fullscreen</button>
       </div>
-      <div class="tg-overlay" id="tg-overlay">
-        <div class="tg-overlay-card">
-          <div class="tg-overlay-icon">✈️</div>
-          <div class="tg-overlay-title">Watch in Telegram</div>
-          <div class="tg-overlay-desc">All 35 channels in one app — free. iOS, Android & Desktop.</div>
-          <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-overlay-btn">✈️ Open in Telegram</a>
-          <span class="tg-overlay-skip" id="overlay-skip">✕ Continue watching</span>
-        </div>
-      </div>
-    </div>
     <div class="player-status" id="player-status">Select a channel to watch</div>
   </div>
 
@@ -455,13 +436,11 @@ const CHANNEL_GROUPS = [
   ]},
 ];
 
-let currentCh = null, hls = null, overlayTimer = null, _overlayCount = 0;
+let currentCh = null, hls = null;
 const video       = document.getElementById('video');
 const playerEmpty = document.getElementById('player-empty');
 const reloadBtn   = document.getElementById('reload-btn');
 const fsBtn       = document.getElementById('fullscreen-btn');
-const tgOverlay   = document.getElementById('tg-overlay');
-const overlaySkip = document.getElementById('overlay-skip');
 const statusEl    = document.getElementById('player-status');
 const searchInput = document.getElementById('search-input');
 const sidebar     = document.getElementById('channel-sidebar');
@@ -513,12 +492,7 @@ function openChannel(ch) {
     var y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 8;
     window.scrollTo({ top: y, behavior: 'smooth' });
   }, 80);
-  clearTimeout(overlayTimer);
-  tgOverlay.classList.remove('show');
-  if (_overlayCount < 1) {
-    overlayTimer = setTimeout(function() {
-      tgOverlay.classList.add('show'); _overlayCount++; video.pause();
-    }, 120000);
+  , 120000);
   }
   loadStream(ch);
 }
