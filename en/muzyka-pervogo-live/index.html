@@ -55,7 +55,7 @@
       "@type": "VideoObject",
       "name": "Muzyka Pervogo Live Stream",
       "description": "Music channel from Channel One — classical, pop and variety performances.",
-      "contentUrl": "https://russia-worker.dyaltd.workers.dev/stream?channel=muzykaPervogo",
+      "contentUrl": "https://oak-valley.varenik-tab.workers.dev/stream?channel=muzykaPervogo",
       "thumbnailUrl": "https://russian-tv.com/og-image.jpg",
       "uploadDate": "2024-01-01",
       "publication": {
@@ -116,7 +116,7 @@
     a{color:inherit;text-decoration:none}
     ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
     header{position:sticky;top:0;z-index:100;background:rgba(8,8,16,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 24px;height:60px}
-    .logo{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:900}
+    .logo{display:flex;align-items:center;gap:6px;font-size:30px;font-weight:900}
     .logo .r{color:var(--red)}.logo .w{color:#fff}.logo .b{color:var(--accent2)}
     .breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-left:4px}
     .breadcrumb a{color:var(--accent2)}.breadcrumb span{opacity:.5}
@@ -177,7 +177,8 @@
     .lock-desc{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:22px;line-height:1.6}
     .lock-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--tg-color);color:#fff;padding:14px 28px;border-radius:28px;font-size:15px;font-weight:800;text-decoration:none;transition:.2s;margin-bottom:12px}
     .lock-refresh{display:block;font-size:12px;color:rgba(255,255,255,.25);cursor:pointer;background:none;border:none;font-family:inherit}
-    .status-bar{font-size:13px;color:var(--muted);text-align:center;padding:6px 0}
+    .player-status{font-size:13px;color:var(--muted);text-align:center;padding:6px 0;display:flex;align-items:center;justify-content:center;gap:6px}
+    .status-dot{width:7px;height:7px;background:var(--accent2);border-radius:50%;animation:pulse 1.2s infinite}
     .desc-box,.faq-box,.sim-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
     .desc-box h2,.faq-box h2,.sim-box h2{font-size:14px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
     .desc-text{font-size:13px;color:var(--muted);line-height:1.7}
@@ -198,11 +199,19 @@
     .tg-card{background:linear-gradient(135deg,#0d1f3c,#0a2a3f);border:1px solid rgba(34,158,217,.25);border-radius:var(--radius);padding:18px;text-align:center}
     .tg-card-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--tg-color);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;transition:.2s;width:100%}
     .tg-feat{font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:6px;margin-bottom:4px}
-    footer{background:var(--bg2);border-top:1px solid var(--border);padding:22px 24px;text-align:center}
-    footer a{color:var(--accent2);margin:0 8px;font-size:12px}
+    footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 24px}
+    .footer-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+    .footer-logo{font-size:16px;font-weight:900}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-size:13px;color:var(--muted);transition:color .2s}
+    .footer-links a:hover{color:var(--text)}
+    .footer-copy{font-size:12px;color:var(--muted2)}
+    .footer-tg a{display:inline-flex;align-items:center;gap:7px;background:var(--tg-color);color:white;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;transition:all .2s}
+    .footer-tg a:hover{background:#1a8dc5}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
     @media(max-width:900px){.main-wrap{grid-template-columns:1fr;grid-template-rows:none;padding:10px}.sidebar-wrap{grid-column:auto;grid-row:auto;position:static;height:auto}.right-col{grid-column:auto;grid-row:auto;position:static}.cat-group{grid-template-columns:repeat(4,1fr)}.cat-group{grid-template-columns:repeat(2,1fr)}.ch-name-s{font-size:17px}.sim-grid{grid-template-columns:1fr 1fr 1fr}}
     @media(max-width:600px){header{padding:0 12px;height:52px}.breadcrumb{display:none}.lang-switch{display:none}}
+    @media(max-width:640px){.logo{font-size:20px}.logo-flag{font-size:24px}.tg-btn span{display:none}.tg-btn{border-radius:50%;width:36px;height:36px;justify-content:center;padding:0}.tg-mob-banner{display:flex}.footer-inner{flex-direction:column;text-align:center}.footer-links{flex-wrap:wrap;justify-content:center}}
     .pop-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
     .pop-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px}
     .pop-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:8px;border:1px solid var(--border);margin-bottom:5px;transition:all .15s;text-decoration:none;color:inherit}
@@ -214,7 +223,13 @@
     .diaspora-link{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;font-size:12px;color:var(--muted);transition:.15s;text-decoration:none}
     .diaspora-link:hover{background:var(--bg3);color:var(--text)}
     .logo-text{display:flex;align-items:center}
-    .logo-flag{font-size:42px}
+    .logo-flag{font-size:38px}
+    .tg-mob-banner{display:none;align-items:center;gap:12px;background:linear-gradient(135deg,#0d1f3c,#0a2a3f);border:1px solid rgba(34,158,217,.35);border-radius:10px;padding:13px 16px;text-decoration:none;color:#fff;transition:.2s}
+    .tg-mob-banner:hover{background:linear-gradient(135deg,#0d2540,#0c3050);border-color:rgba(34,158,217,.6)}
+    .tg-mob-banner-icon{width:40px;height:40px;background:#229ED9;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .tg-mob-banner-text{flex:1}
+    .tg-mob-banner-title{font-size:14px;font-weight:700;margin-bottom:2px}
+    .tg-mob-banner-sub{font-size:11px;color:rgba(255,255,255,.55)}
   </style>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TWVC9XDN');</script>
@@ -247,7 +262,7 @@
     
     <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-btn">
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg>
-      Telegram
+      <span>Watch in Telegram</span>
     </a>
     <div class="lang-switch">
       <a href="/muzyka-pervogo-live/">RU</a>
@@ -292,34 +307,25 @@
       </div>
       <div class="tg-overlay" id="tg-overlay">
         <div class="tg-overlay-card">
-          <div style="font-size:48px;margin-bottom:12px">✈️</div>
+          <div style="margin-bottom:12px"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="#229ED9"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg></div>
           <div class="tg-overlay-title">Watch in Telegram</div>
           <div class="tg-overlay-desc">All 35 Russian channels in one app — free. iOS, Android & Desktop.</div>
-          <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-overlay-btn">✈️ Open in Telegram</a>
+          <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-overlay-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg> Open in Telegram</a>
           <span class="tg-overlay-skip" id="overlay-skip">✕ Continue watching</span>
         </div>
       </div>
     </div>
-    <div class="status-bar" id="status-bar">Loading stream...</div>
-
-    <div class="tg-card tg-card-mob" style="background:linear-gradient(135deg,#0d1f3c,#0a2a3f);border:1px solid rgba(34,158,217,.25);border-radius:12px;padding:18px;text-align:center;margin-bottom:16px">
-      <div style="font-size:11px;font-weight:800;color:rgba(34,158,217,.7);letter-spacing:1px;margin-bottom:8px"><span style="display:inline-block;width:6px;height:6px;background:var(--red);border-radius:50%;margin-right:5px;animation:pulse 1.2s infinite"></span>LIVE · 24/7 broadcast</div>
-      <div style="font-size:24px;margin-bottom:8px">✈️</div>
-      <div style="font-size:14px;font-weight:800;margin-bottom:6px">Watch in Telegram</div>
-      <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;line-height:1.5">All 35 Russian channels in one app — free. iOS, Android & Desktop.</p>
-      <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--tg-color);color:#fff;padding:10px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;transition:.2s">✈️ Open @RussiaTV_Hub_Live</a>
-      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:8px">@RussiaTV_Hub_Live</div>
-    </div>
-
-    <div class="desc-box">
-      <h2>About Muzyka Pervogo</h2>
-      <div class="desc-text">Music channel from Channel One — classical, pop and variety performances.</div>
-    </div>
-
-    <div class="faq-box">
-      <h2>Frequently Asked Questions</h2>
-      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What does Muzyka Pervogo broadcast?<span class="faq-arrow">▾</span></div><div class="faq-a">Classical music performances, pop concerts and variety shows from Channel One's archive.</div></div><div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is Muzyka Pervogo free?<span class="faq-arrow">▾</span></div><div class="faq-a">Yes — free on russian-tv.com without VPN.</div></div><div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What music genres does it cover?<span class="faq-arrow">▾</span></div><div class="faq-a">Classical, symphonic, folk, pop and variety.</div></div><div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Who is Muzyka Pervogo aimed at?<span class="faq-arrow">▾</span></div><div class="faq-a">Adults who enjoy a wide range of Russian musical culture.</div></div>
-    </div>
+    <div class="player-status" id="status-bar">Loading stream...</div>
+    <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-mob-banner">
+      <div class="tg-mob-banner-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg>
+      </div>
+      <div class="tg-mob-banner-text">
+        <div class="tg-mob-banner-title">Watch in Telegram</div>
+        <div class="tg-mob-banner-sub">All 35 channels · @RussiaTV_Hub_Live</div>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,255,255,0.4)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg>
+    </a>
 
     <div class="sim-box">
       <h2>Similar Channels</h2>
@@ -329,7 +335,7 @@
 
   <aside class="right-col">
     <div class="tg-card">
-      <div style="font-size:36px;margin-bottom:10px">✈️</div>
+      <div style="margin-bottom:10px"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#229ED9"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg></div>
       <div style="font-size:15px;font-weight:800;margin-bottom:6px">Watch without ads in Telegram</div>
       <div style="font-size:12px;color:rgba(255,255,255,.55);margin-bottom:14px;line-height:1.5">35 Russian channels live in the messenger</div>
       <div style="margin-bottom:14px;text-align:left">
@@ -338,7 +344,7 @@
         <div class="tg-feat">✓ No VPN from anywhere</div>
         <div class="tg-feat">✓ HD quality 24/7</div>
       </div>
-      <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-card-btn">✈️ Open Russian TV</a>
+      <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-card-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg> Open Russian TV</a>
       <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:8px">@RussiaTV_Hub_Live</div>
     </div>
     <div class="diaspora-box" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
@@ -366,13 +372,26 @@
 </div>
 
 <footer>
-  <div>🇷🇺 <a href="/en/">Russian TV Online</a> · Free · No VPN · 35 channels · <a href="/muzyka-pervogo-live/">RU version</a></div>
-  <div style="margin-top:6px"><a href="https://t.me/RussiaTV_Hub_Live" target="_blank">Telegram</a><a href="/en/russian-tv-in-germany/">Germany</a><a href="/en/russian-tv-in-usa/">USA</a><a href="/en/russian-tv-in-uk/">UK</a></div>
-  <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--muted2)">The site does not store video content. All streams are provided by third parties and are publicly available on the Internet.</div>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">🇷🇺 <span style="color:#CC0000">Rus</span><span style="color:#ffffff">sian</span> <span style="color:#1a5fd9">TV</span></div>
+      <div class="footer-copy" style="margin-top:4px">© 2025 · Free Russian TV online</div>
+    </div>
+    <div class="footer-links">
+      <a href="/en/">All channels</a>
+      <a href="/en/#faq">FAQ</a>
+      <a href="#">Privacy</a>
+    </div>
+    <div class="footer-tg">
+      <a href="https://t.me/RussiaTV_Hub_Live" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg> Telegram without ads</a>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--muted2)">The site does not store video content. All streams are provided by third parties and are publicly available on the Internet.</div>
 </footer>
 
 <script>
-const PROXY  = 'https://russia-worker.dyaltd.workers.dev';
+const PROXIES = ['https://oak-valley.varenik-tab.workers.dev','https://birch-creek.varenik-tab.workers.dev'];
+let _proxyIdx = 0;
 const TG_URL = 'https://t.me/RussiaTV_Hub_Live';
 const CH_ID  = 'muzykaPervogo';
 
@@ -445,10 +464,10 @@ skip.addEventListener('click', function() {
 
 // ── Stream loading ────────────────────────────────────────
 let hls = null;
-function setStatus(msg) { statusEl.textContent = msg; }
+function setStatus(msg, isError) { statusEl.innerHTML = isError ? '⚠️ ' + msg : '<span class="status-dot"></span>' + msg; }
 function loadStream() {
   if (hls) { hls.destroy(); hls=null; } video.src='';
-  var url = PROXY+'/stream?channel='+CH_ID;
+  var url = PROXIES[_proxyIdx % PROXIES.length]+'/stream?channel='+CH_ID;
   setStatus('Connecting...');
   if (Hls.isSupported()) {
     hls = new Hls({liveSyncDurationCount:3,lowLatencyMode:true,enableWorker:true});
@@ -459,7 +478,7 @@ function loadStream() {
       video.play().catch(function(){ video.muted=true; video.play().catch(function(){}); });
       _scheduleOverlay(12000);
     });
-    hls.on(Hls.Events.ERROR, function(e,d) { if (d.fatal) { setStatus('Stream error — please reconnect'); reloadBtn.style.display=''; } });
+    hls.on(Hls.Events.ERROR, function(e,d) { if (d.fatal) { _proxyIdx++; if (_proxyIdx < PROXIES.length) { loadStream(); } else { setStatus('Stream error — please reconnect', true); } } });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = url;
     video.play().catch(function(){ video.muted=true; video.play().catch(function(){}); });
@@ -503,7 +522,6 @@ setTimeout(function() {
 }, 2000);
 </script>
 
-<script>(function(s){s.dataset.zone='11267962',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 <script>(function(s){s.dataset.zone='11264423',s.src='https://nap5k.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 <script>
