@@ -540,7 +540,7 @@ const CHANNEL_GROUPS = [
 ];
 
 // ── State ──────────────────────────────────────────────────
-let currentCh = null, hls = null, userUnmuted = false, _overlayCount = 0;
+let currentCh = null, hls = null, userUnmuted = false;
 const video        = document.getElementById('video');
 const playerEmpty  = document.getElementById('player-empty');
 const liveBadge    = document.getElementById('live-badge');
@@ -750,20 +750,12 @@ fsBtn.addEventListener('click', function() {
     else if (playerWrap.webkitRequestFullscreen) playerWrap.webkitRequestFullscreen();
     else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
     fsBtn.textContent = '✕ Выйти';
-    // 2nd overlay: 2min after entering fullscreen
-    if (_overlayCount < 2) {
-      overlayTimer = setTimeout(function() {
-      }, 120000);
-    }
   }
 });
 document.addEventListener('fullscreenchange', function() { if (!document.fullscreenElement) fsBtn.textContent = '⛶ Полный экран'; });
 document.addEventListener('webkitfullscreenchange', function() { if (!document.webkitFullscreenElement) fsBtn.textContent = '⛶ Полный экран'; });
 video.addEventListener('webkitbeginfullscreen', function() { fsBtn.textContent = '✕ Выйти'; });
 video.addEventListener('webkitendfullscreen', function() { fsBtn.textContent = '⛶ Полный экран'; });
-
-// ── Overlay skip ───────────────────────────────────────────
-});
 
 // ── Controls fade ──────────────────────────────────────────
 (function() {
