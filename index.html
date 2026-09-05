@@ -584,6 +584,7 @@ var PROXIES = [
 ];
 var _proxyIdx = 0;
 var _proxyRetries = 0;
+var _fullCycles = 0; // сколько полных кругов по всем прокси прошли без успеха подряд — источник (для части каналов это cinerama.uz) периодически обрывает сессию просмотра примерно через 10-12 минут независимо от прокси; вместо разовой сдачи навсегда продолжаем циклически переподключаться с растущей паузой между кругами.
 var _netErrorCount = 0; // счётчик подряд идущих фатальных сетевых ошибок без успешной загрузки фрагмента
 // Загружаем актуальный список прокси из proxy.json (обновляется без деплоя)
 fetch('/proxy.json')
@@ -894,7 +895,7 @@ function stopStream() {
 }
 async function loadStream(ch, isRetry) {
   stopStream();
-  if (!isRetry) _proxyRetries = 0; // сброс счётчика при ручном переключении канала
+  if (!isRetry) { _proxyRetries = 0; _fullCycles = 0; } // сброс счётчиков при ручном переключении канала
   _netErrorCount = 0; // сброс счётчика сетевых ошибок при (пере)загрузке потока
   var proxyUrl = _currentProxy();
   setStatus('Получаем поток...' + (_proxyRetries > 0 ? ' (прокси ' + (_proxyIdx % PROXIES.length + 1) + '/' + PROXIES.length + ')' : ''));
@@ -912,13 +913,18 @@ async function loadStream(ch, isRetry) {
   }
 
   function onFatalError() {
-    // Автоматически пробуем следующий прокси (если есть)
-    if (_proxyRetries < PROXIES.length - 1) {
-      _nextProxy();
-      setTimeout(function() { loadStream(ch, true); }, 800);
-    } else {
-      setStatus('Трансляция недоступна. Попробуйте позже.', true);
-    }
+    // Циклически пробуем следующий прокси. Раньше после исчерпания всех прокси
+    // (PROXIES.length попыток) трансляция останавливалась навсегда с сообщением
+    // «недоступна» — если источник (например, cinerama.uz) сам обрывает сессию
+    // просмотра примерно через 10-12 минут независимо от прокси, зритель терял канал
+    // без возможности восстановления без ручной перезагрузки страницы. Теперь после
+    // полного круга начинаем заново с первого прокси (он к тому времени уже мог
+    // «остыть»), с растущей паузой между кругами, чтобы не долбить источник впустую.
+    _nextProxy();
+    if (_proxyIdx % PROXIES.length === 0) _fullCycles++;
+    var delay = _fullCycles > 0 ? Math.min(5000 + (_fullCycles - 1) * 3000, 15000) : 800;
+    setStatus(_fullCycles > 0 ? 'Переподключение к трансляции...' : 'Получаем поток...', _fullCycles > 0);
+    setTimeout(function() { loadStream(ch, true); }, delay);
   }
 
   if (Hls.isSupported()) {
@@ -926,6 +932,7 @@ async function loadStream(ch, isRetry) {
     hls.loadSource(streamUrl);
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, async function() {
+      _fullCycles = 0; // успешное переподключение — сбрасываем нарастающую паузу
       setStatus('Прямая трансляция — ' + ch.name);
       liveBadge.style.display = 'flex';
       await tryPlay();

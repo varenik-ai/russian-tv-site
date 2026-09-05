@@ -511,6 +511,7 @@ var _retryTimer = null;
 var _maxRetries = 5;
 var _hlsStopped = false;
 var _stableTimer = null;
+var _fullCycles = 0; // полных кругов по всем прокси подряд без успеха
 
 // ── Сторож зависания: если видео не продвигается N сек (источник тихо
 // перестал отдавать новые сегменты, без fatal-ошибки HLS.js) — переподключаемся.
@@ -538,6 +539,7 @@ video.addEventListener('playing', function() {
   clearTimeout(_playTimeout);
   setStatus('▶ Трансляция запущена');
   _lastProgressTime = Date.now();
+  _fullCycles = 0; // успешное воспроизведение — сбрасываем нарастающую паузу
 });
 
 // ── Возврат из фона/разблокировка экрана: если во время простоя не было
@@ -555,19 +557,22 @@ document.addEventListener('visibilitychange', function() {
 function _scheduleReconnect() {
   if (_hlsStopped) return;
   if (_retryCount >= _maxRetries) {
-    // Исчерпаны попытки — пробуем следующий прокси
-    if (_proxyIdx < PROXIES.length - 1) {
-      _proxyIdx++;
-      _retryCount = 0;
-      setStatus('⏳ Резервный сервер... (' + (_proxyIdx+1) + '/' + PROXIES.length + ')');
-      clearTimeout(_retryTimer);
-      _retryTimer = setTimeout(createHls, 1500);
-      return;
-    }
-    _hlsStopped = true;
-    clearTimeout(_stableTimer);
-    if (hls) { try { hls.destroy(); } catch(e) {} hls = null; }
-    setStatus('❌ Ошибка трансляции — <span style="cursor:pointer;text-decoration:underline" onclick="location.reload()">обновите страницу</span>');
+    // Исчерпаны попытки на этом прокси — пробуем следующий, а после последнего
+    // снова с первого (он к тому времени уже мог «остыть»). Раньше здесь
+    // трансляция останавливалась навсегда — если источник (например,
+    // cinerama.uz) сам обрывает сессию просмотра примерно через 10-12 минут
+    // независимо от прокси, зритель терял канал без возможности восстановления
+    // без ручной перезагрузки страницы. Теперь продолжаем циклически
+    // переподключаться, с растущей паузой между полными кругами.
+    _proxyIdx++;
+    if (_proxyIdx % PROXIES.length === 0) _fullCycles++;
+    _retryCount = 0;
+    var cycleDelay = _fullCycles > 0 ? Math.min(5000 + (_fullCycles - 1) * 3000, 15000) : 1500;
+    setStatus(_fullCycles > 0
+      ? '⏳ Переподключение к трансляции...'
+      : '⏳ Резервный сервер... (' + ((_proxyIdx % PROXIES.length) + 1) + '/' + PROXIES.length + ')');
+    clearTimeout(_retryTimer);
+    _retryTimer = setTimeout(createHls, cycleDelay);
     return;
   }
   _retryCount++;

@@ -456,6 +456,9 @@
 var PROXIES = ['https://stream.russian-tv.com','https://oak-valley.dyaltd.workers.dev','https://birch-creek.dyaltd.workers.dev'];
 var _proxyIdx = 0;
 var _netErrorCount = 0; // counts consecutive fatal network errors without a successful fragment load
+var _fullCycles = 0; // full loops through all proxies without success in a row — the upstream
+// source (cinerama.uz for some channels) appears to cut the viewing session after ~10-12 min
+// regardless of proxy, so instead of giving up for good we loop back to proxy 0 with a growing pause.
 fetch('/proxy.json').then(function(r){return r.json();}).then(function(d){if(d&&d.urls&&d.urls.length)PROXIES=d.urls;}).catch(function(){});
 function _currentProxy(){return PROXIES[_proxyIdx%PROXIES.length];}
 var PROXY = 'https://oak-valley.varenik-tab.workers.dev'; // legacy compat
@@ -668,18 +671,28 @@ function setStatus(msg) { statusEl.textContent = msg; }
 function stopStream() { if (hls) { hls.destroy(); hls = null; } video.src = ''; }
 function loadStream(ch, isRetry) {
   stopStream(); setStatus('Connecting...');
-  if (!isRetry) _netErrorCount = 0;
+  if (!isRetry) { _netErrorCount = 0; _fullCycles = 0; }
   var url = _currentProxy() + '/stream?channel=' + ch.id;
   if (Hls.isSupported()) {
     hls = new Hls({liveSyncDurationCount:3, lowLatencyMode:true, enableWorker:true});
     hls.loadSource(url); hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, function() {
+      _fullCycles = 0; // successful reconnect — reset the growing backoff
       setStatus('Live — ' + ch.nameEn);
       video.muted = false;
       video.play().catch(function() { video.muted = true; video.play().catch(function(){}); });
     });
     // Successful fragment load proves the stream is alive — reset the error counter
     hls.on(Hls.Events.FRAG_LOADED, function() { _netErrorCount = 0; });
+    function _cycleProxy() {
+      // Loop through proxies forever instead of giving up after the last one — see
+      // _fullCycles comment above for why (upstream session cutoff, not a proxy fault).
+      _proxyIdx++;
+      if (_proxyIdx % PROXIES.length === 0) _fullCycles++;
+      var delay = _fullCycles > 0 ? Math.min(5000 + (_fullCycles - 1) * 3000, 15000) : 800;
+      setStatus(_fullCycles > 0 ? 'Reconnecting to stream...' : 'Connecting...');
+      setTimeout(function() { loadStream(ch, true); }, delay);
+    }
     hls.on(Hls.Events.ERROR, function(e, d) {
       if (!d.fatal) return;
       if (d.type === Hls.ErrorTypes.NETWORK_ERROR) {
@@ -687,13 +700,12 @@ function loadStream(ch, isRetry) {
         try { hls.startLoad(); } catch(e) {}
         setTimeout(function() {
           if (!hls || _netErrorCount < 3) return;
-          if (_proxyIdx < PROXIES.length - 1) { _proxyIdx++; loadStream(ch, true); }
-          else setStatus('Stream error — please try again');
+          _cycleProxy();
         }, 3000);
         return;
       }
       if (d.type === Hls.ErrorTypes.MEDIA_ERROR) { try { hls.recoverMediaError(); } catch(e) {} return; }
-      setStatus('Stream error — please try again');
+      _cycleProxy();
     });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = url;

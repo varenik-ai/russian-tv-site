@@ -560,6 +560,7 @@ var _retryTimer = null;
 var _maxRetries = 5;
 var _hlsStopped = false;
 var _stableTimer = null;
+var _fullCycles = 0; // full loops through all proxies in a row without success
 
 // ── Stall watchdog: if playback doesn't progress for N sec (source silently
 // stopped serving new segments without a fatal HLS.js error) — reconnect.
@@ -604,18 +605,21 @@ document.addEventListener('visibilitychange', function() {
 function _scheduleReconnect() {
   if (_hlsStopped) return;
   if (_retryCount >= _maxRetries) {
-    if (_proxyIdx < PROXIES.length - 1) {
-      _proxyIdx++;
-      _retryCount = 0;
-      setStatus('⏳ Switching to backup server... (' + (_proxyIdx+1) + '/' + PROXIES.length + ')');
-      clearTimeout(_retryTimer);
-      _retryTimer = setTimeout(createHls, 1500);
-      return;
-    }
-    _hlsStopped = true;
-    clearTimeout(_stableTimer);
-    if (hls) { try { hls.destroy(); } catch(e) {} hls = null; }
-    setStatus('❌ Stream error — <span style="cursor:pointer;text-decoration:underline" onclick="location.reload()">reload page</span>', true);
+    // Ran out of attempts on this proxy — try the next one, and after the last
+    // one loop back to the first (it may have "cooled down" by then). This used
+    // to stop the stream for good — if the upstream source (e.g. cinerama.uz)
+    // itself cuts the viewing session after ~10-12 min regardless of proxy, the
+    // viewer would lose the channel with no way to recover without a manual page
+    // reload. Now we keep cycling, with a growing pause between full loops.
+    _proxyIdx++;
+    if (_proxyIdx % PROXIES.length === 0) _fullCycles++;
+    _retryCount = 0;
+    var cycleDelay = _fullCycles > 0 ? Math.min(5000 + (_fullCycles - 1) * 3000, 15000) : 1500;
+    setStatus(_fullCycles > 0
+      ? '⏳ Reconnecting to stream...'
+      : '⏳ Switching to backup server... (' + ((_proxyIdx % PROXIES.length) + 1) + '/' + PROXIES.length + ')');
+    clearTimeout(_retryTimer);
+    _retryTimer = setTimeout(createHls, cycleDelay);
     return;
   }
   _retryCount++;
