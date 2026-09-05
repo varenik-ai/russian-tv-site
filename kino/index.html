@@ -106,6 +106,7 @@
   ]
 }</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -161,7 +162,7 @@
     .lang-switch { display:flex; align-items:center; gap:4px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:4px 6px; }
     .lang-switch a { padding:3px 8px; border-radius:14px; font-size:12px; font-weight:700; color:rgba(255,255,255,.6); transition:.15s; text-decoration:none; }
     .lang-switch a.active { background:#1a6de8; color:#fff; }
-  </style>
+  .lang-switch a{position:relative}.lang-switch a::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px}</style>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TWVC9XDN');</script>
 <!-- End Google Tag Manager -->
