@@ -656,9 +656,11 @@ function _scheduleReconnect() {
     if (_proxyIdx % PROXIES.length === 0) _fullCycles++;
     _retryCount = 0;
     var cycleDelay = _fullCycles > 0 ? Math.min(5000 + (_fullCycles - 1) * 3000, 15000) : 1500;
-    setStatus(_fullCycles > 0
-      ? '⏳ Переподключение к трансляции...'
-      : '⏳ Резервный сервер... (' + ((_proxyIdx % PROXIES.length) + 1) + '/' + PROXIES.length + ')');
+    setStatus(_fullCycles >= 2
+      ? '⏳ Источник вещания временно недоступен, продолжаем попытки автоматически...'
+      : (_fullCycles > 0
+        ? '⏳ Переподключение к трансляции...'
+        : '⏳ Резервный сервер... (' + ((_proxyIdx % PROXIES.length) + 1) + '/' + PROXIES.length + ')'));
     clearTimeout(_retryTimer);
     _retryTimer = setTimeout(createHls, cycleDelay);
     return;
