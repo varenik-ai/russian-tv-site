@@ -563,6 +563,7 @@ var _maxRetries = 5;
 var _hlsStopped = false;
 var _stableTimer = null;
 var _fullCycles = 0; // full loops through all proxies in a row without success
+var _sessionStart = Date.now(); // time of the last (re)connect — used for the preemptive reconnect below
 
 // ── Stall watchdog: if playback doesn't progress for N sec (source silently
 // stopped serving new segments without a fatal HLS.js error) — reconnect.
@@ -574,12 +575,17 @@ video.addEventListener('timeupdate', function() {
     _lastProgressTime = Date.now();
   }
 });
+var PREEMPTIVE_REFRESH_MS = 8 * 60 * 1000; // preemptive reconnect ahead of cinerama.uz's documented 10-15 min freeze
 setInterval(function() {
   if (_hlsStopped || !hls || video.paused || video.seeking) return;
   if (Date.now() - _lastProgressTime > 18000) {
     _lastProgressTime = Date.now();
     setStatus('⏳ Stall detected, reconnecting...');
     _scheduleReconnect();
+    return;
+  }
+  if (video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
+    createHls();
   }
 }, 5000);
 
@@ -635,6 +641,7 @@ function _scheduleReconnect() {
 
 function createHls() {
   if (_hlsStopped) return;
+  _sessionStart = Date.now(); // restart the preemptive-reconnect countdown on every (re)connect
   clearTimeout(_retryTimer);
   const url = _currentProxy() + '/stream?channel=' + CH_ID;
   if (hls) { try { hls.destroy(); } catch(e) {} hls = null; }

@@ -456,6 +456,7 @@
 var PROXIES = ['https://stream.russian-tv.com','https://oak-valley.dyaltd.workers.dev','https://birch-creek.dyaltd.workers.dev'];
 var _proxyIdx = 0;
 var _netErrorCount = 0; // counts consecutive fatal network errors without a successful fragment load
+var _sessionStart = Date.now(); // time of the last (re)connect — used for the preemptive reconnect below
 var _fullCycles = 0; // full loops through all proxies without success in a row — the upstream
 // source (cinerama.uz for some channels) appears to cut the viewing session after ~10-12 min
 // regardless of proxy, so instead of giving up for good we loop back to proxy 0 with a growing pause.
@@ -671,6 +672,7 @@ function setStatus(msg) { statusEl.textContent = msg; }
 function stopStream() { if (hls) { hls.destroy(); hls = null; } video.src = ''; }
 function loadStream(ch, isRetry) {
   stopStream(); setStatus('Connecting...');
+  _sessionStart = Date.now(); // restart the preemptive-reconnect countdown on every (re)connect
   if (!isRetry) { _netErrorCount = 0; _fullCycles = 0; }
   var url = _currentProxy() + '/stream?channel=' + ch.id;
   if (Hls.isSupported()) {
@@ -713,6 +715,48 @@ function loadStream(ch, isRetry) {
     setStatus('Live — ' + ch.nameEn);
   }
 }
+
+// ── Stall watchdog + preemptive reconnect ────────────────────
+// Channel pages already had this protection, but the homepage (where most
+// viewers actually watch, via the channel tiles) had none. If the source
+// (e.g. cinerama.uz) silently stopped sending new segments without a fatal
+// HLS.js error, playback could freeze forever with no way to recover short
+// of a manual reload — and reloading didn't help if the source hadn't
+// recovered yet either. Also: cinerama.uz appears to cut the viewing
+// session after roughly 10-15 minutes regardless of proxy — instead of
+// waiting for a visible freeze, we proactively reconnect ahead of that
+// window while playback is still healthy, so the gap is a brief rebuffer
+// instead of a hang.
+var _lastProgressTime = Date.now();
+var _lastVideoTime = 0;
+var PREEMPTIVE_REFRESH_MS = 8 * 60 * 1000;
+video.addEventListener('timeupdate', function() {
+  if (video.currentTime !== _lastVideoTime) {
+    _lastVideoTime = video.currentTime;
+    _lastProgressTime = Date.now();
+  }
+});
+setInterval(function() {
+  if (!hls || !currentCh || video.paused || video.seeking) return;
+  if (Date.now() - _lastProgressTime > 18000) {
+    _lastProgressTime = Date.now();
+    setStatus('Stall detected, reconnecting...');
+    loadStream(currentCh, true);
+    return;
+  }
+  if (video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
+    loadStream(currentCh, true);
+  }
+}, 5000);
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible' && hls && currentCh) {
+    if (Date.now() - _lastProgressTime > 15000) {
+      _lastProgressTime = Date.now();
+      setStatus('Recovering after pause...');
+      loadStream(currentCh, true);
+    }
+  }
+});
 
 reloadBtn.addEventListener('click', function() { if (currentCh) loadStream(currentCh); });
 fsBtn.addEventListener('click', function() {

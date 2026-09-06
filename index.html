@@ -592,6 +592,7 @@ var _proxyIdx = 0;
 var _proxyRetries = 0;
 var _fullCycles = 0; // сколько полных кругов по всем прокси прошли без успеха подряд — источник (для части каналов это cinerama.uz) периодически обрывает сессию просмотра примерно через 10-12 минут независимо от прокси; вместо разовой сдачи навсегда продолжаем циклически переподключаться с растущей паузой между кругами.
 var _netErrorCount = 0; // счётчик подряд идущих фатальных сетевых ошибок без успешной загрузки фрагмента
+var _sessionStart = Date.now(); // время последнего (пере)подключения — для профилактического реконнекта
 // Загружаем актуальный список прокси из proxy.json (обновляется без деплоя)
 fetch('/proxy.json')
   .then(function(r){ return r.json(); })
@@ -901,6 +902,7 @@ function stopStream() {
 }
 async function loadStream(ch, isRetry) {
   stopStream();
+  _sessionStart = Date.now(); // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
   if (!isRetry) { _proxyRetries = 0; _fullCycles = 0; } // сброс счётчиков при ручном переключении канала
   _netErrorCount = 0; // сброс счётчика сетевых ошибок при (пере)загрузке потока
   var proxyUrl = _currentProxy();
@@ -975,6 +977,48 @@ async function loadStream(ch, isRetry) {
     setStatus('Ваш браузер не поддерживает HLS потоки', true);
   }
 }
+
+// ── Сторож зависания + профилактический реконнект ───────────
+// На страницах отдельных каналов такая защита уже была, но на главной
+// странице (где реально смотрит большинство пользователей — через плитки
+// каналов) её не было вовсе. Если источник (например, cinerama.uz) молча
+// переставал отдавать новые сегменты без fatal-ошибки HLS.js, трансляция
+// зависала навсегда без возможности восстановления без ручной перезагрузки —
+// а перезагрузка не помогала, если источник ещё не отошёл сам.
+// Дополнительно: cinerama.uz обрывает сессию просмотра примерно через
+// 10-15 минут независимо от прокси — вместо ожидания видимого зависания
+// профилактически пересоздаём подключение заранее, пока поток ещё идёт
+// нормально, чтобы разрыв прошёл незаметно, одной короткой буферизацией.
+var _lastProgressTime = Date.now();
+var _lastVideoTime = 0;
+var PREEMPTIVE_REFRESH_MS = 8 * 60 * 1000;
+video.addEventListener('timeupdate', function() {
+  if (video.currentTime !== _lastVideoTime) {
+    _lastVideoTime = video.currentTime;
+    _lastProgressTime = Date.now();
+  }
+});
+setInterval(function() {
+  if (!hls || !currentCh || video.paused || video.seeking) return;
+  if (Date.now() - _lastProgressTime > 18000) {
+    _lastProgressTime = Date.now();
+    setStatus('Обнаружено зависание, переподключение...', true);
+    loadStream(currentCh, true);
+    return;
+  }
+  if (video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
+    loadStream(currentCh, true);
+  }
+}, 5000);
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible' && hls && currentCh) {
+    if (Date.now() - _lastProgressTime > 15000) {
+      _lastProgressTime = Date.now();
+      setStatus('Восстановление после паузы...', true);
+      loadStream(currentCh, true);
+    }
+  }
+});
 
 // ── Unmute ─────────────────────────────────────────────────
 unmuteBtn.addEventListener('click', function() {

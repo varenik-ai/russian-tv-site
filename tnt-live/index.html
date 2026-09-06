@@ -605,6 +605,7 @@ var _maxRetries = 5;
 var _hlsStopped = false;
 var _stableTimer = null;
 var _fullCycles = 0; // полных кругов по всем прокси подряд без успеха
+var _sessionStart = Date.now(); // время последнего (пере)подключения — для профилактического реконнекта
 
 // ── Сторож зависания: если видео не продвигается N сек (источник тихо
 // перестал отдавать новые сегменты, без fatal-ошибки HLS.js) — переподключаемся.
@@ -616,12 +617,17 @@ video.addEventListener('timeupdate', function() {
     _lastProgressTime = Date.now();
   }
 });
+var PREEMPTIVE_REFRESH_MS = 8 * 60 * 1000; // профилактический реконнект до документированных 10-15 мин фриза cinerama.uz
 setInterval(function() {
   if (_hlsStopped || !hls || video.paused || video.seeking) return;
   if (Date.now() - _lastProgressTime > 18000) {
     _lastProgressTime = Date.now();
     setStatus('⏳ Обнаружено зависание, переподключение...');
     _scheduleReconnect();
+    return;
+  }
+  if (video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
+    createHls();
   }
 }, 5000);
 
@@ -679,6 +685,7 @@ function _scheduleReconnect() {
 
 function createHls() {
   if (_hlsStopped) return;
+  _sessionStart = Date.now(); // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
   clearTimeout(_retryTimer);
   const url = _currentProxy() + '/stream?channel=' + CH_ID;
   if (hls) { try { hls.destroy(); } catch(e) {} hls = null; }
