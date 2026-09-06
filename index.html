@@ -813,6 +813,25 @@ document.getElementById('filter-tabs').addEventListener('click', function(e) {
   buildSidebar(searchInput.value);
 });
 
+// ── Открытие с фильтром по категории (?cat=novosti и т.п.) — на этот адрес
+// теперь ведут теги категорий на страницах каналов (раньше вели на
+// несуществующие /novosti/, /kino/ и т.д., которые отдавали 404).
+(function() {
+  var CAT_SLUGS = {
+    novosti:'📡 Новости', razvlecheniya:'🎬 Развлечения', kino:'🎥 Кино',
+    detskie:'👶 Детские', muzyka:'🎵 Музыка', hobbi:'🌿 Хобби и стиль', sport:'⚽ Спорт'
+  };
+  var slug = new URLSearchParams(location.search).get('cat');
+  var label = slug && CAT_SLUGS[slug];
+  if (!label) return;
+  var btn = Array.prototype.find.call(document.querySelectorAll('.filter-tab'), function(b) { return b.dataset.cat === label; });
+  if (btn) setTimeout(function() {
+    btn.click();
+    var tabs = document.getElementById('filter-tabs');
+    if (tabs) tabs.scrollIntoView({ behavior:'smooth', block:'start' });
+  }, 0);
+})();
+
 // ── Build sidebar ──────────────────────────────────────────
 function buildSidebar(filter) {
   filter = filter || '';

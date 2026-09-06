@@ -605,6 +605,25 @@ document.getElementById('filter-tabs').addEventListener('click', function(e) {
   buildSidebar(searchInput.value);
 });
 
+// ── Open with a category filter (?cat=news etc.) — this is now where the
+// category tags on channel pages link to (they used to point to non-existent
+// /en/news/, /en/movies/ etc. pages that returned 404).
+(function() {
+  var CAT_SLUGS = {
+    news:'📡 News', entertainment:'🎬 Entertainment', movies:'🎥 Movies',
+    kids:'👶 Kids', music:'🎵 Music', hobby:'🌿 Hobby', sport:'⚽ Sport'
+  };
+  var slug = new URLSearchParams(location.search).get('cat');
+  var label = slug && CAT_SLUGS[slug];
+  if (!label) return;
+  var btn = Array.prototype.find.call(document.querySelectorAll('.filter-tab'), function(b) { return b.dataset.cat === label; });
+  if (btn) setTimeout(function() {
+    btn.click();
+    var tabs = document.getElementById('filter-tabs');
+    if (tabs) tabs.scrollIntoView({ behavior:'smooth', block:'start' });
+  }, 0);
+})();
+
 function buildSidebar(filter) {
   filter = filter || '';
   var q = filter.toLowerCase();
