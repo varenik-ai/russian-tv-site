@@ -613,7 +613,17 @@ video.addEventListener('timeupdate', function() {
 });
 var PREEMPTIVE_REFRESH_MS = 6 * 60 * 1000; // профилактический реконнект с запасом до наблюдаемых сбоев cinerama.uz (иногда раньше 10 мин)
 setInterval(function() {
-  if (_hlsStopped || !hls || video.paused || video.seeking) return;
+  if (_hlsStopped || !hls || video.seeking) return;
+  if (video.paused && video.readyState < 3) {
+    // В этом плеере нет пользовательского контрола паузы — остановка без
+    // буфера означает зависание/сбой, а не намеренную паузу зрителя.
+    if (Date.now() - _lastProgressTime > 12000) {
+      _lastProgressTime = Date.now();
+      setStatus('⏳ Восстановление воспроизведения...');
+      _scheduleReconnect();
+    }
+    return;
+  }
   if (Date.now() - _lastProgressTime > 18000) {
     _lastProgressTime = Date.now();
     setStatus('⏳ Обнаружено зависание, переподключение...');
@@ -682,12 +692,17 @@ function _scheduleReconnect() {
   _retryTimer = setTimeout(createHls, delay);
 }
 
+var _lastCreateHlsAt = 0;
 function createHls() {
   if (_hlsStopped) return;
-  _sessionStart = Date.now(); // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
+  var _nowTs = Date.now();
+  if (_nowTs - _lastCreateHlsAt < 1500) return; // защита от шторма повторных пересозданий подряд
+  _lastCreateHlsAt = _nowTs;
+  _sessionStart = _nowTs; // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
   clearTimeout(_retryTimer);
   const url = _currentProxy() + '/stream?channel=' + CH_ID;
   if (hls) { try { hls.destroy(); } catch(e) {} hls = null; }
+  try { video.removeAttribute('src'); video.load(); } catch(e) {}
   hls = new Hls({startLevel:0, liveSyncDurationCount:3, enableWorker:true,
     manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2});
   hls.loadSource(url);
@@ -705,8 +720,18 @@ function createHls() {
       _scheduleReconnect();
     }, 8000);
   });
+  var _nonFatalErrCount = 0, _nonFatalErrWinStart = Date.now();
   hls.on(Hls.Events.ERROR, function(e, d) {
-    if (!d.fatal || _hlsStopped) return;
+    if (_hlsStopped) return;
+    if (!d.fatal) {
+      // Шквал некритичных ошибок подряд — признак реально сломанного
+      // подключения, даже если ни одна из них не помечена как fatal.
+      var _now2 = Date.now();
+      if (_now2 - _nonFatalErrWinStart > 5000) { _nonFatalErrWinStart = _now2; _nonFatalErrCount = 0; }
+      _nonFatalErrCount++;
+      if (_nonFatalErrCount > 15) { _nonFatalErrCount = 0; _scheduleReconnect(); }
+      return;
+    }
     if (d.type === Hls.ErrorTypes.MEDIA_ERROR && _retryCount === 0) {
       _retryCount++;
       setStatus('⏳ Восстановление...');

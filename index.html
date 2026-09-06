@@ -917,11 +917,16 @@ function setStatus(msg, isError) {
 }
 function stopStream() {
   if (hls) { hls.destroy(); hls = null; }
-  video.src = ''; liveBadge.style.display = 'none';
+  try { video.removeAttribute('src'); video.load(); } catch(e) {}
+  liveBadge.style.display = 'none';
 }
+var _lastLoadStreamAt = 0;
 async function loadStream(ch, isRetry) {
+  var _nowTs = Date.now();
+  if (isRetry && _nowTs - _lastLoadStreamAt < 1500) return; // защита от шторма повторных пересозданий подряд
+  _lastLoadStreamAt = _nowTs;
   stopStream();
-  _sessionStart = Date.now(); // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
+  _sessionStart = _nowTs; // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
   if (!isRetry) { _proxyRetries = 0; _fullCycles = 0; } // сброс счётчиков при ручном переключении канала
   _netErrorCount = 0; // сброс счётчика сетевых ошибок при (пере)загрузке потока
   var proxyUrl = _currentProxy();
@@ -966,8 +971,17 @@ async function loadStream(ch, isRetry) {
     });
     // Успешная загрузка фрагмента — доказательство, что поток жив: сбрасываем счётчик ошибок
     hls.on(Hls.Events.FRAG_LOADED, function() { _netErrorCount = 0; });
+    var _nonFatalErrCount = 0, _nonFatalErrWinStart = Date.now();
     hls.on(Hls.Events.ERROR, function(e, data) {
-      if (!data.fatal) return;
+      if (!data.fatal) {
+        // Шквал некритичных ошибок подряд — признак реально сломанного
+        // подключения, даже если ни одна из них не помечена как fatal.
+        var _now2 = Date.now();
+        if (_now2 - _nonFatalErrWinStart > 5000) { _nonFatalErrWinStart = _now2; _nonFatalErrCount = 0; }
+        _nonFatalErrCount++;
+        if (_nonFatalErrCount > 15) { _nonFatalErrCount = 0; onFatalError(); }
+        return;
+      }
       if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
         _netErrorCount++;
         try { hls.startLoad(); } catch(e) {}
@@ -1018,7 +1032,17 @@ video.addEventListener('timeupdate', function() {
   }
 });
 setInterval(function() {
-  if (!hls || !currentCh || video.paused || video.seeking) return;
+  if (!hls || !currentCh || video.seeking) return;
+  if (video.paused && video.readyState < 3) {
+    // На главной нет пользовательского контрола паузы — остановка без буфера
+    // означает зависание/сбой, а не намеренную паузу зрителя.
+    if (Date.now() - _lastProgressTime > 12000) {
+      _lastProgressTime = Date.now();
+      setStatus('Восстановление воспроизведения...', true);
+      loadStream(currentCh, true);
+    }
+    return;
+  }
   if (Date.now() - _lastProgressTime > 18000) {
     _lastProgressTime = Date.now();
     setStatus('Обнаружено зависание, переподключение...', true);
