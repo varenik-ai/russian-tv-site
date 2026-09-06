@@ -622,7 +622,7 @@ video.addEventListener('timeupdate', function() {
     _lastProgressTime = Date.now();
   }
 });
-var PREEMPTIVE_REFRESH_MS = 8 * 60 * 1000; // профилактический реконнект до документированных 10-15 мин фриза cinerama.uz
+var PREEMPTIVE_REFRESH_MS = 6 * 60 * 1000; // профилактический реконнект с запасом до наблюдаемых сбоев cinerama.uz (иногда раньше 10 мин)
 setInterval(function() {
   if (_hlsStopped || !hls || video.paused || video.seeking) return;
   if (Date.now() - _lastProgressTime > 18000) {
@@ -632,6 +632,11 @@ setInterval(function() {
     return;
   }
   if (video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
+    // Переключаем прокси и здесь, а не только при сбое: если фриз связан с
+    // переиспользуемым сетевым соединением конкретного прокси до источника,
+    // новый прокси даёт реально другое соединение, а не просто повторный
+    // запрос по тому же пути.
+    _proxyIdx++;
     createHls();
   }
 }, 5000);

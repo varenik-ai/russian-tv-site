@@ -748,7 +748,7 @@ function loadStream(ch, isRetry) {
 // instead of a hang.
 var _lastProgressTime = Date.now();
 var _lastVideoTime = 0;
-var PREEMPTIVE_REFRESH_MS = 8 * 60 * 1000;
+var PREEMPTIVE_REFRESH_MS = 6 * 60 * 1000; // margin below cinerama.uz's observed failures (sometimes under 10 min)
 video.addEventListener('timeupdate', function() {
   if (video.currentTime !== _lastVideoTime) {
     _lastVideoTime = video.currentTime;
@@ -764,6 +764,9 @@ setInterval(function() {
     return;
   }
   if (video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
+    // Rotate proxy here too: if the freeze is tied to a reused connection for
+    // a given proxy, a different proxy is a genuinely different connection.
+    _proxyIdx++;
     loadStream(currentCh, true);
   }
 }, 5000);

@@ -1010,7 +1010,7 @@ async function loadStream(ch, isRetry) {
 // нормально, чтобы разрыв прошёл незаметно, одной короткой буферизацией.
 var _lastProgressTime = Date.now();
 var _lastVideoTime = 0;
-var PREEMPTIVE_REFRESH_MS = 8 * 60 * 1000;
+var PREEMPTIVE_REFRESH_MS = 6 * 60 * 1000; // с запасом ниже наблюдаемых сбоев cinerama.uz (иногда раньше 10 мин)
 video.addEventListener('timeupdate', function() {
   if (video.currentTime !== _lastVideoTime) {
     _lastVideoTime = video.currentTime;
@@ -1026,6 +1026,10 @@ setInterval(function() {
     return;
   }
   if (video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
+    // Прокси тоже переключаем: если фриз связан с переиспользуемым сетевым
+    // соединением конкретного прокси, новый прокси — это реально другое
+    // соединение, а не просто повторный запрос по тому же пути.
+    _nextProxy();
     loadStream(currentCh, true);
   }
 }, 5000);
