@@ -599,8 +599,19 @@ fetch('/proxy.json')
   .then(function(d){ if (d && d.urls && d.urls.length) PROXIES = d.urls; })
   .catch(function(){});
 function _currentProxy(){ return PROXIES[_proxyIdx % PROXIES.length]; }
+var _proxyFailedAt = {};
+function _markProxyFailed(){ _proxyFailedAt[_proxyIdx % PROXIES.length] = Date.now(); }
 function _nextProxy(){
-  _proxyIdx++;
+  // Пропускаем прокси, которые сломались недавно (90 сек), если есть куда —
+  // иначе профилактическая ротация периодически сама заводит зрителя обратно
+  // на прокси, который прямо сейчас не работает.
+  var advanced = false;
+  for (var i = 1; i <= PROXIES.length; i++) {
+    var idx = (_proxyIdx + i) % PROXIES.length;
+    var failedAt = _proxyFailedAt[idx];
+    if (!failedAt || Date.now() - failedAt > 90000) { _proxyIdx += i; advanced = true; break; }
+  }
+  if (!advanced) _proxyIdx++;
   _proxyRetries++;
   return PROXIES[_proxyIdx % PROXIES.length];
 }
@@ -952,6 +963,7 @@ async function loadStream(ch, isRetry) {
     // без возможности восстановления без ручной перезагрузки страницы. Теперь после
     // полного круга начинаем заново с первого прокси (он к тому времени уже мог
     // «остыть»), с растущей паузой между кругами, чтобы не долбить источник впустую.
+    _markProxyFailed();
     _nextProxy();
     if (_proxyIdx % PROXIES.length === 0) _fullCycles++;
     var delay = _fullCycles > 0 ? Math.min(5000 + (_fullCycles - 1) * 3000, 15000) : 800;

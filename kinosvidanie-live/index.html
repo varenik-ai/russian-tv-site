@@ -526,6 +526,19 @@ fetch('/proxy.json').then(function(r){return r.json();}).then(function(d){
   else if(d&&d.url)PROXIES=[d.url,'https://birch-creek.varenik-tab.workers.dev'];
 }).catch(function(){});
 function _currentProxy(){return PROXIES[_proxyIdx%PROXIES.length];}
+var _proxyFailedAt = {};
+function _markProxyFailed(){ _proxyFailedAt[_proxyIdx % PROXIES.length] = Date.now(); }
+// Двигаемся к следующему прокси, но по возможности пропускаем те, что сломались
+// недавно (90 сек) — иначе профилактическая ротация периодически сама заводит
+// зрителя обратно на прокси, который прямо сейчас не работает.
+function _advanceProxy(){
+  for (var i = 1; i <= PROXIES.length; i++) {
+    var idx = (_proxyIdx + i) % PROXIES.length;
+    var failedAt = _proxyFailedAt[idx];
+    if (!failedAt || Date.now() - failedAt > 90000) { _proxyIdx += i; return; }
+  }
+  _proxyIdx++; // все недавно падали — всё равно двигаемся по кругу, чтобы не застрять
+}
 const CH_ID = 'kinosvidanie';
 (function() {
   var EPG_STR = {now:"Сейчас в эфире", leftPrefix:"осталось "};
@@ -636,7 +649,7 @@ setInterval(function() {
     // переиспользуемым сетевым соединением конкретного прокси до источника,
     // новый прокси даёт реально другое соединение, а не просто повторный
     // запрос по тому же пути.
-    _proxyIdx++;
+    _advanceProxy();
     createHls();
   }
 }, 5000);
@@ -673,7 +686,8 @@ function _scheduleReconnect(forceRotate) {
     // независимо от прокси, зритель терял канал без возможности восстановления
     // без ручной перезагрузки страницы. Теперь продолжаем циклически
     // переподключаться, с растущей паузой между полными кругами.
-    _proxyIdx++;
+    _markProxyFailed();
+    _advanceProxy();
     if (_proxyIdx % PROXIES.length === 0) _fullCycles++;
     _retryCount = 0;
     var cycleDelay = _fullCycles > 0 ? Math.min(5000 + (_fullCycles - 1) * 3000, 15000) : 1500;

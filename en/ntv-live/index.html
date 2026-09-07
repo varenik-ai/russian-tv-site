@@ -483,6 +483,19 @@ fetch('/proxy.json').then(function(r){return r.json();}).then(function(d){
   else if(d&&d.url)PROXIES=[d.url,'https://birch-creek.varenik-tab.workers.dev'];
 }).catch(function(){});
 function _currentProxy(){return PROXIES[_proxyIdx%PROXIES.length];}
+var _proxyFailedAt = {};
+function _markProxyFailed(){ _proxyFailedAt[_proxyIdx % PROXIES.length] = Date.now(); }
+// Advance to the next proxy, but skip ones that failed recently (90s) when
+// possible — otherwise the preemptive rotation periodically routes the viewer
+// right back onto a proxy that's currently broken.
+function _advanceProxy(){
+  for (var i = 1; i <= PROXIES.length; i++) {
+    var idx = (_proxyIdx + i) % PROXIES.length;
+    var failedAt = _proxyFailedAt[idx];
+    if (!failedAt || Date.now() - failedAt > 90000) { _proxyIdx += i; return; }
+  }
+  _proxyIdx++; // everything failed recently — keep cycling anyway so we don't get stuck
+}
 const CH_ID = 'ntv';
 (function() {
   var EPG_STR = {now:"On air now", leftPrefix:""};
@@ -592,7 +605,7 @@ setInterval(function() {
     // Also rotate proxy here, not just on failure: if the freeze is tied to a
     // reused network connection for a given proxy, a different proxy gives a
     // genuinely different connection instead of just retrying the same path.
-    _proxyIdx++;
+    _advanceProxy();
     createHls();
   }
 }, 5000);
@@ -627,7 +640,8 @@ function _scheduleReconnect(forceRotate) {
     // itself cuts the viewing session after ~10-12 min regardless of proxy, the
     // viewer would lose the channel with no way to recover without a manual page
     // reload. Now we keep cycling, with a growing pause between full loops.
-    _proxyIdx++;
+    _markProxyFailed();
+    _advanceProxy();
     if (_proxyIdx % PROXIES.length === 0) _fullCycles++;
     _retryCount = 0;
     var cycleDelay = _fullCycles > 0 ? Math.min(5000 + (_fullCycles - 1) * 3000, 15000) : 1500;
