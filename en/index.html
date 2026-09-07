@@ -730,6 +730,14 @@ function loadStream(ch, isRetry) {
         return;
       }
       if (d.type === Hls.ErrorTypes.NETWORK_ERROR) {
+        // A playlist-level error (not a single segment) means the source/proxy is
+        // broken as a whole — no point waiting for 3 network errors in a row,
+        // rotate proxy right away.
+        if (d.details === 'manifestLoadError' || d.details === 'manifestLoadTimeOut'
+          || d.details === 'levelLoadError' || d.details === 'levelLoadTimeOut') {
+          _cycleProxy();
+          return;
+        }
         _netErrorCount++;
         try { hls.startLoad(); } catch(e) {}
         setTimeout(function() {

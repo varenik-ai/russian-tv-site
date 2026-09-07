@@ -983,6 +983,14 @@ async function loadStream(ch, isRetry) {
         return;
       }
       if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+        // Ошибка на уровне плейлиста (не отдельного сегмента) — источник/прокси
+        // сломан целиком, ждать 3 сетевые ошибки подряд бессмысленно, сразу
+        // переключаем прокси.
+        if (data.details === 'manifestLoadError' || data.details === 'manifestLoadTimeOut'
+          || data.details === 'levelLoadError' || data.details === 'levelLoadTimeOut') {
+          onFatalError();
+          return;
+        }
         _netErrorCount++;
         try { hls.startLoad(); } catch(e) {}
         // Переключаем прокси только если несколько сетевых ошибок подряд НЕ были

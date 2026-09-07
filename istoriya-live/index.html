@@ -662,9 +662,9 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
-function _scheduleReconnect() {
+function _scheduleReconnect(forceRotate) {
   if (_hlsStopped) return;
-  if (_retryCount >= _maxRetries) {
+  if (forceRotate || _retryCount >= _maxRetries) {
     // Исчерпаны попытки на этом прокси — пробуем следующий, а после последнего
     // снова с первого (он к тому времени уже мог «остыть»). Раньше здесь
     // трансляция останавливалась навсегда — если источник (например,
@@ -738,7 +738,12 @@ function createHls() {
       hls.recoverMediaError();
       return;
     }
-    _scheduleReconnect();
+    // Ошибка на уровне плейлиста (не отдельного сегмента) — источник/прокси
+    // сломан целиком, повторять тот же прокси бессмысленно. Сразу переключаем
+    // прокси вместо 5 попыток на том же самом (это могло занимать до минуты).
+    var _isPlaylistError = d.details === 'manifestLoadError' || d.details === 'manifestLoadTimeOut'
+      || d.details === 'levelLoadError' || d.details === 'levelLoadTimeOut';
+    _scheduleReconnect(_isPlaylistError);
   });
 }
 

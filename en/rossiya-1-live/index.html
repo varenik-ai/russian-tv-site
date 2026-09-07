@@ -624,9 +624,9 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
-function _scheduleReconnect() {
+function _scheduleReconnect(forceRotate) {
   if (_hlsStopped) return;
-  if (_retryCount >= _maxRetries) {
+  if (forceRotate || _retryCount >= _maxRetries) {
     // Ran out of attempts on this proxy — try the next one, and after the last
     // one loop back to the first (it may have "cooled down" by then). This used
     // to stop the stream for good — if the upstream source (e.g. cinerama.uz)
@@ -699,7 +699,12 @@ function createHls() {
       hls.recoverMediaError();
       return;
     }
-    _scheduleReconnect();
+    // A playlist-level error (not a single segment) means the source/proxy is
+    // broken as a whole — retrying the same proxy is pointless. Rotate proxy
+    // right away instead of 5 same-proxy attempts (which could take up to a minute).
+    var _isPlaylistError = d.details === 'manifestLoadError' || d.details === 'manifestLoadTimeOut'
+      || d.details === 'levelLoadError' || d.details === 'levelLoadTimeOut';
+    _scheduleReconnect(_isPlaylistError);
   });
 }
 
