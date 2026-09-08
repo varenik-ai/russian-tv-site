@@ -6,6 +6,19 @@
 <title>FloSports Racing Live — Russian TV</title>
 <link rel="canonical" href="https://russian-tv.com/flosports-racing-live/">
 <script>window.location.replace('https://russian-tv.com/#floRacing');</script>
+<script>
+// Трекинг клика по любой ссылке на Telegram-канал — GA4 event + цель Яндекс.Метрики
+(function(){
+  function tgTrack(e){
+    var a = e.target && e.target.closest ? e.target.closest('a[href*="t.me/RussiaTV_Hub_Live"]') : null;
+    if(!a) return;
+    var label = a.className || 'tg-link';
+    try{ if(typeof gtag==='function') gtag('event','telegram_click',{event_category:'engagement',event_label:label,link_url:a.href}); }catch(err){}
+    try{ if(typeof ym==='function') ym(110584472,'reachGoal','telegram_click',{label:label}); }catch(err){}
+  }
+  document.addEventListener('click', tgTrack, true);
+})();
+</script>
 </head>
 <body>
 <p>Переход на <a href="https://russian-tv.com/#floRacing">FloSports Racing</a>...</p>

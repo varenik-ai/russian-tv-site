@@ -263,6 +263,19 @@
 <script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(110584472,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});</script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110584472" style="position:absolute;left:-9999px;" alt=""/></div></noscript>
 <!-- /Yandex.Metrika counter -->
+<script>
+// Трекинг клика по любой ссылке на Telegram-канал — GA4 event + цель Яндекс.Метрики
+(function(){
+  function tgTrack(e){
+    var a = e.target && e.target.closest ? e.target.closest('a[href*="t.me/RussiaTV_Hub_Live"]') : null;
+    if(!a) return;
+    var label = a.className || 'tg-link';
+    try{ if(typeof gtag==='function') gtag('event','telegram_click',{event_category:'engagement',event_label:label,link_url:a.href}); }catch(err){}
+    try{ if(typeof ym==='function') ym(110584472,'reachGoal','telegram_click',{label:label}); }catch(err){}
+  }
+  document.addEventListener('click', tgTrack, true);
+})();
+</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -274,9 +287,9 @@
   <nav><a href="#about">About</a></nav>
   <div class="h-right">
     <div class="live-count"><div class="live-dot-sm"></div>42 channels</div>
-    <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-btn" aria-label="Watch on Telegram">
+    <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-btn" aria-label="Subscribe on Telegram">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg>
-      <span>Watch in Telegram</span>
+      <span>Subscribe</span>
     </a>
     <div class="lang-switch"><a href="/">RU</a><a href="/en/" class="active">EN</a></div>
   </div>
@@ -304,7 +317,7 @@
   </div>
 
   <div class="player-col">
-    <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-banner-desk"><div class="tg-banner-desk-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg></div><div class="tg-banner-desk-text"><b>Watch in Telegram</b> — All 42 channels in one app, no ads</div><span class="tg-banner-desk-arrow">→</span></a>
+    <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-banner-desk"><div class="tg-banner-desk-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg></div><div class="tg-banner-desk-text"><b>Subscribe on Telegram</b> — new channels and outage alerts first</div><span class="tg-banner-desk-arrow">→</span></a>
     <div class="player-wrap grid-mode" id="player-wrap">
       <video id="video" autoplay playsinline webkit-playsinline muted></video>
       <div class="player-empty" id="player-empty">
@@ -315,7 +328,7 @@
         <button class="ctrl-btn" id="fullscreen-btn">⛶ Fullscreen</button>
       </div>
     </div>
-    <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" rel="noopener" class="tg-pulse-banner"><div class="tg-pulse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg></div><div class="tg-pulse-text">Watch in Telegram</div><span class="tg-pulse-arrow">→</span></a>
+    <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" rel="noopener" class="tg-pulse-banner"><div class="tg-pulse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg></div><div class="tg-pulse-text">Subscribe to the channel</div><span class="tg-pulse-arrow">→</span></a>
     <div class="player-status" id="player-status">Select a channel to watch</div>
     <div class="epg-box" id="epg-box">
       <div class="epg-head"><h3>Today's schedule</h3><span class="epg-updated" id="epg-updated"></span></div>
@@ -444,7 +457,7 @@
       <a href="/">Русский</a>
     </div>
     <div class="footer-tg">
-      <a href="https://t.me/RussiaTV_Hub_Live" target="_blank">✈️ Telegram without ads</a>
+      <a href="https://t.me/RussiaTV_Hub_Live" target="_blank">✈️ Subscribe on Telegram</a>
     </div>
   </div>
   <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--muted2)">

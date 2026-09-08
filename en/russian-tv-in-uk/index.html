@@ -114,6 +114,19 @@
 <script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(110584472,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});</script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110584472" style="position:absolute;left:-9999px;" alt=""/></div></noscript>
 <!-- /Yandex.Metrika counter -->
+<script>
+// Трекинг клика по любой ссылке на Telegram-канал — GA4 event + цель Яндекс.Метрики
+(function(){
+  function tgTrack(e){
+    var a = e.target && e.target.closest ? e.target.closest('a[href*="t.me/RussiaTV_Hub_Live"]') : null;
+    if(!a) return;
+    var label = a.className || 'tg-link';
+    try{ if(typeof gtag==='function') gtag('event','telegram_click',{event_category:'engagement',event_label:label,link_url:a.href}); }catch(err){}
+    try{ if(typeof ym==='function') ym(110584472,'reachGoal','telegram_click',{label:label}); }catch(err){}
+  }
+  document.addEventListener('click', tgTrack, true);
+})();
+</script>
 </head>
 <body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TWVC9XDN" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -121,7 +134,7 @@
   <a href="/en/" class="logo"><span class="logo-flag">🇷🇺</span><span class="logo-text"><span class="r">Rus</span><span class="w">sian</span></span><span class="b">TV</span></a>
   <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" class="tg-btn">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg>
-    Telegram
+    Subscribe
   </a>
   <a href="https://russian-tv.com/russkie-kanaly-v-velikobritanii/" class="lang-alt">RU</a>
 </header>

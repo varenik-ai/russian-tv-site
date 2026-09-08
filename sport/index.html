@@ -117,6 +117,19 @@
     footer{background:#161b22;border-top:1px solid #30363d;padding:20px;text-align:center;color:#8b949e;font-size:13px}
     footer a{color:#58a6ff;text-decoration:none}
   </style>
+<script>
+// Трекинг клика по любой ссылке на Telegram-канал — GA4 event + цель Яндекс.Метрики
+(function(){
+  function tgTrack(e){
+    var a = e.target && e.target.closest ? e.target.closest('a[href*="t.me/RussiaTV_Hub_Live"]') : null;
+    if(!a) return;
+    var label = a.className || 'tg-link';
+    try{ if(typeof gtag==='function') gtag('event','telegram_click',{event_category:'engagement',event_label:label,link_url:a.href}); }catch(err){}
+    try{ if(typeof ym==='function') ym(110584472,'reachGoal','telegram_click',{label:label}); }catch(err){}
+  }
+  document.addEventListener('click', tgTrack, true);
+})();
+</script>
 </head>
 <body>
 <header>
