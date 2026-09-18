@@ -950,6 +950,7 @@ async function loadStream(ch, isRetry) {
   _lastLoadStreamAt = _nowTs;
   stopStream();
   _sessionStart = _nowTs; // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
+  _lastFrameCount = 0; _lastFrameProgressTime = _nowTs; // сброс счётчика кадров — video.load() обнуляет totalVideoFrames браузера
   if (!isRetry) { _proxyRetries = 0; _fullCycles = 0; } // сброс счётчиков при ручном переключении канала
   _netErrorCount = 0; // сброс счётчика сетевых ошибок при (пере)загрузке потока
   var proxyUrl = _currentProxy();
@@ -1056,6 +1057,8 @@ async function loadStream(ch, isRetry) {
 // нормально, чтобы разрыв прошёл незаметно, одной короткой буферизацией.
 var _lastProgressTime = Date.now();
 var _lastVideoTime = 0;
+var _lastFrameCount = 0;
+var _lastFrameProgressTime = Date.now();
 var PREEMPTIVE_REFRESH_MS = 6 * 60 * 1000; // с запасом ниже наблюдаемых сбоев cinerama.uz (иногда раньше 10 мин)
 video.addEventListener('timeupdate', function() {
   if (video.currentTime !== _lastVideoTime) {
@@ -1065,6 +1068,22 @@ video.addEventListener('timeupdate', function() {
 });
 setInterval(function() {
   if (!hls || !currentCh || video.seeking) return;
+  if (video.readyState >= 3 && typeof video.getVideoPlaybackQuality === 'function') {
+    var _vpq = video.getVideoPlaybackQuality();
+    if (_vpq.totalVideoFrames > _lastFrameCount) {
+      _lastFrameCount = _vpq.totalVideoFrames;
+      _lastFrameProgressTime = Date.now();
+    } else if (!video.paused && Date.now() - _lastFrameProgressTime > 9000) {
+      // currentTime может тикать (аудио/системные часы), пока сам видеокадр не
+      // обновляется — картинка визуально замирает/чернеет при формально "живом"
+      // потоке. Проверка по currentTime это не ловит.
+      _lastFrameProgressTime = Date.now();
+      _lastProgressTime = Date.now();
+      setStatus('Обнаружено зависание кадра, переподключение...', true);
+      loadStream(currentCh, true);
+      return;
+    }
+  }
   if (video.paused && video.readyState < 3) {
     // На главной нет пользовательского контрола паузы — остановка без буфера
     // означает зависание/сбой, а не намеренную паузу зрителя.

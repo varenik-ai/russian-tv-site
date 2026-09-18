@@ -723,6 +723,7 @@ function loadStream(ch, isRetry) {
   _lastLoadStreamAt = _nowTs;
   stopStream(); setStatus('Connecting...');
   _sessionStart = _nowTs; // restart the preemptive-reconnect countdown on every (re)connect
+  _lastFrameCount = 0; _lastFrameProgressTime = _nowTs; // reset frame counter — video.load() resets the browser's totalVideoFrames
   if (!isRetry) { _netErrorCount = 0; _fullCycles = 0; }
   var url = _currentProxy() + '/stream?channel=' + ch.id;
   if (Hls.isSupported()) {
@@ -797,6 +798,8 @@ function loadStream(ch, isRetry) {
 // instead of a hang.
 var _lastProgressTime = Date.now();
 var _lastVideoTime = 0;
+var _lastFrameCount = 0;
+var _lastFrameProgressTime = Date.now();
 var PREEMPTIVE_REFRESH_MS = 6 * 60 * 1000; // margin below cinerama.uz's observed failures (sometimes under 10 min)
 video.addEventListener('timeupdate', function() {
   if (video.currentTime !== _lastVideoTime) {
@@ -806,6 +809,22 @@ video.addEventListener('timeupdate', function() {
 });
 setInterval(function() {
   if (!hls || !currentCh || video.seeking) return;
+  if (video.readyState >= 3 && typeof video.getVideoPlaybackQuality === 'function') {
+    var _vpq = video.getVideoPlaybackQuality();
+    if (_vpq.totalVideoFrames > _lastFrameCount) {
+      _lastFrameCount = _vpq.totalVideoFrames;
+      _lastFrameProgressTime = Date.now();
+    } else if (!video.paused && Date.now() - _lastFrameProgressTime > 9000) {
+      // currentTime can keep ticking (audio/system clock) while the actual
+      // video frame stops updating — the picture visually freezes/blacks out
+      // even though the stream looks "live" by time alone.
+      _lastFrameProgressTime = Date.now();
+      _lastProgressTime = Date.now();
+      setStatus('Frame stall detected, reconnecting...');
+      loadStream(currentCh, true);
+      return;
+    }
+  }
   if (video.paused && video.readyState < 3) {
     // No user pause control on the homepage — stopped with no buffer means a
     // stall/failure, not an intentional viewer pause.

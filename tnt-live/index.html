@@ -645,8 +645,26 @@ video.addEventListener('timeupdate', function() {
   }
 });
 var PREEMPTIVE_REFRESH_MS = 6 * 60 * 1000; // профилактический реконнект с запасом до наблюдаемых сбоев cinerama.uz (иногда раньше 10 мин)
+var _lastFrameCount = 0;
+var _lastFrameProgressTime = Date.now();
 setInterval(function() {
   if (_hlsStopped || !hls || video.seeking) return;
+  if (video.readyState >= 3 && typeof video.getVideoPlaybackQuality === 'function') {
+    var _vpq = video.getVideoPlaybackQuality();
+    if (_vpq.totalVideoFrames > _lastFrameCount) {
+      _lastFrameCount = _vpq.totalVideoFrames;
+      _lastFrameProgressTime = Date.now();
+    } else if (!video.paused && Date.now() - _lastFrameProgressTime > 9000) {
+      // currentTime может тикать (аудио/системные часы), пока сам видеокадр не
+      // обновляется — картинка визуально замирает/чернеет при формально "живом"
+      // потоке. Обычная проверка по currentTime это не ловит.
+      _lastFrameProgressTime = Date.now();
+      _lastProgressTime = Date.now();
+      setStatus('⏳ Обнаружено зависание кадра, переподключение...');
+      _scheduleReconnect();
+      return;
+    }
+  }
   if (video.paused && video.readyState < 3) {
     // В этом плеере нет пользовательского контрола паузы — остановка без
     // буфера означает зависание/сбой, а не намеренную паузу зрителя.
@@ -733,6 +751,7 @@ function createHls() {
   if (_nowTs - _lastCreateHlsAt < 1500) return; // защита от шторма повторных пересозданий подряд
   _lastCreateHlsAt = _nowTs;
   _sessionStart = _nowTs; // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
+  _lastFrameCount = 0; _lastFrameProgressTime = _nowTs; // сброс счётчика кадров — video.load() обнуляет totalVideoFrames браузера
   clearTimeout(_retryTimer);
   const url = _currentProxy() + '/stream?channel=' + CH_ID;
   if (hls) { try { hls.destroy(); } catch(e) {} hls = null; }
