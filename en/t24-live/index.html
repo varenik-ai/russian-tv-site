@@ -604,6 +604,7 @@ setInterval(function() {
     // a stall/failure, not an intentional viewer pause.
     if (Date.now() - _lastProgressTime > 12000) {
       _lastProgressTime = Date.now();
+      if (_tryNudgeGap()) { setStatus('⏳ Buffering...'); return; }
       setStatus('⏳ Recovering playback...');
       _scheduleReconnect();
     }
@@ -611,6 +612,7 @@ setInterval(function() {
   }
   if (Date.now() - _lastProgressTime > 18000) {
     _lastProgressTime = Date.now();
+    if (_tryNudgeGap()) { setStatus('⏳ Buffering...'); return; }
     setStatus('⏳ Stall detected, reconnecting...');
     _scheduleReconnect();
     return;
@@ -627,6 +629,21 @@ setInterval(function() {
 // ── Real playback start (not to be confused with manifest parsing —
 // the manifest can parse fine and segments still never arrive).
 var _playTimeout = null;
+function _tryNudgeGap() {
+  // Перескакиваем через микро-разрыв в буфере (характерно для fs.uplink.kz
+  // и подобных источников с мелкими паузами в PTS между сегментами) —
+  // дешёвая попытка перед тяжёлым реконнектом.
+  try {
+    if (video.buffered && video.buffered.length) {
+      var end = video.buffered.end(video.buffered.length - 1);
+      if (end - video.currentTime > 0.5) {
+        video.currentTime = Math.max(end - 0.25, video.currentTime + 0.1);
+        return true;
+      }
+    }
+  } catch (e) {}
+  return false;
+}
 video.addEventListener('playing', function() {
   clearTimeout(_playTimeout);
   setStatus('▶ Stream started');
@@ -700,6 +717,13 @@ function createHls() {
     clearTimeout(_playTimeout);
     _playTimeout = setTimeout(function() {
       if (_hlsStopped || video.readyState >= 3) return;
+      if (_tryNudgeGap()) {
+        _playTimeout = setTimeout(function() {
+          if (_hlsStopped || video.readyState >= 3) return;
+          _scheduleReconnect();
+        }, 1500);
+        return;
+      }
       _scheduleReconnect();
     }, 8000);
   });

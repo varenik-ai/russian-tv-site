@@ -668,6 +668,7 @@ setInterval(function() {
     // буфера означает зависание/сбой, а не намеренную паузу зрителя.
     if (Date.now() - _lastProgressTime > 12000) {
       _lastProgressTime = Date.now();
+      if (_tryNudgeGap()) { setStatus('⏳ Буферизация...'); return; }
       setStatus('⏳ Восстановление воспроизведения...');
       _scheduleReconnect();
     }
@@ -675,6 +676,7 @@ setInterval(function() {
   }
   if (Date.now() - _lastProgressTime > 18000) {
     _lastProgressTime = Date.now();
+    if (_tryNudgeGap()) { setStatus('⏳ Буферизация...'); return; }
     setStatus('⏳ Обнаружено зависание, переподключение...');
     _scheduleReconnect();
     return;
@@ -692,6 +694,21 @@ setInterval(function() {
 // ── Реальный старт воспроизведения (не путать с разбором манифеста —
 // манифест может распарситься, а сегменты потом не прийти).
 var _playTimeout = null;
+function _tryNudgeGap() {
+  // Перескакиваем через микро-разрыв в буфере (характерно для fs.uplink.kz
+  // и подобных источников с мелкими паузами в PTS между сегментами) —
+  // дешёвая попытка перед тяжёлым реконнектом.
+  try {
+    if (video.buffered && video.buffered.length) {
+      var end = video.buffered.end(video.buffered.length - 1);
+      if (end - video.currentTime > 0.5) {
+        video.currentTime = Math.max(end - 0.25, video.currentTime + 0.1);
+        return true;
+      }
+    }
+  } catch (e) {}
+  return false;
+}
 video.addEventListener('playing', function() {
   clearTimeout(_playTimeout);
   setStatus('▶ Трансляция запущена');
@@ -768,6 +785,13 @@ function createHls() {
     clearTimeout(_playTimeout);
     _playTimeout = setTimeout(function() {
       if (_hlsStopped || video.readyState >= 3) return;
+      if (_tryNudgeGap()) {
+        _playTimeout = setTimeout(function() {
+          if (_hlsStopped || video.readyState >= 3) return;
+          _scheduleReconnect();
+        }, 1500);
+        return;
+      }
       _scheduleReconnect();
     }, 8000);
   });
