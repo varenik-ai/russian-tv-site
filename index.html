@@ -636,11 +636,19 @@ const CHANNEL_GROUPS = [
     { id:'mir',          name:'МИР',              desc:'СНГ — межгосударственное ТВ',   icon:'МИР',  color:'#0288d1', iconBg:'#0a1018', tags:['новости','СНГ'],            slug:'mir-live', logo:'https://smotret.tv/images/logo-mir.svg' },
     { id:'zvezda',       name:'Звезда',           desc:'Патриотическое телевидение',    icon:'★',    color:'#c62828', iconBg:'#180808', tags:['армия','патриотизм'],       slug:'zvezda-live', logo:'https://smotret.tv/images/logo-zvezda.svg' },
     { id:'ch360',        name:'360°',             desc:'Новости Подмосковья',           icon:'360',  color:'#1565c0', iconBg:'#080d1a', tags:['новости','регион'],         slug:'kanal-360-live' },
+    { id:'spb', name:'Санкт-Петербург', desc:'Телеканал Санкт-Петербурга', icon:'СПБ', color:'#1565c0', iconBg:'#080d1a', tags:['новости','новости Петербурга'], slug:'sankt-peterburg-live' },
+    { id:'patriot', name:'Патриот', desc:'Армия, история, патриотика', icon:'ПАТ', color:'#2e7d32', iconBg:'#081208', tags:['новости','патриотическое ТВ'], slug:'patriot-live' },
   ]},
   { label:'🎬 Развлечения', channels:[
     { id:'tnt',          name:'ТНТ4',             desc:'Юмор, сериалы и молодёжные шоу', icon:'ТНТ4', color:'#ff6d00', iconBg:'#1a1000', tags:['юмор','сериалы','шоу'],     slug:'tnt-live', logo:'https://smotret.tv/images/logo-tnt.svg' },
     { id:'soloviev',     name:'Соловьёв Live',    desc:'Политика и аналитика',          icon:'СЛ',   color:'#455a64', iconBg:'#0d1214', tags:['политика','аналитика'],     slug:'soloviev-live', logo:'https://smotret.tv/images/logo-solovev-live.svg' },
     { id:'istoriya',     name:'История',          desc:'Документальное кино',           icon:'ИСТ',  color:'#5d4037', iconBg:'#120e0a', tags:['история','документальное'],  slug:'istoriya-live' },
+    { id:'soyuz', name:'Союз', desc:'Семейное телевидение', icon:'СОЮ', color:'#8d6e63', iconBg:'#120e0a', tags:['развлечения','семейное ТВ'], slug:'soyuz-live' },
+    { id:'prima', name:'Прима', desc:'Развлекательный канал', icon:'ПРИ', color:'#ad1457', iconBg:'#180810', tags:['развлечения','развлекательное ТВ'], slug:'prima-live' },
+    { id:'ryzhiy', name:'Рыжий', desc:'Развлекательный канал', icon:'РЫЖ', color:'#e65100', iconBg:'#1a0e08', tags:['развлечения','развлекательное ТВ'], slug:'ryzhiy-live' },
+    { id:'bober', name:'Бобер', desc:'Развлекательный канал', icon:'БОБ', color:'#8d6e63', iconBg:'#120e0a', tags:['развлечения','развлекательное ТВ'], slug:'bober-live' },
+    { id:'detektiv', name:'Честный детектив', desc:'Детективы и криминал', icon:'ЧД', color:'#546e7a', iconBg:'#0c1216', tags:['развлечения','детективы и криминал'], slug:'chestnyy-detektiv-live' },
+    { id:'rtdoc', name:'RT Documentary', desc:'Документальные фильмы на русском', icon:'RTD', color:'#c62828', iconBg:'#180808', tags:['развлечения','документальные фильмы'], slug:'rt-documentary-live' },
   ]},
   { label:'🎥 Кино', channels:[
     { id:'domkino',      name:'Дом Кино',         desc:'Советское и русское кино',      icon:'ДК',   color:'#7b1fa2', iconBg:'#130a18', tags:['советское','кино'],         slug:'dom-kino-live' },
@@ -657,13 +665,27 @@ const CHANNEL_GROUPS = [
   { label:'👶 Детские', channels:[
     { id:'karusel',      name:'Карусель',         desc:'Для малышей и детей',           icon:'КАР',  color:'#ff6f00', iconBg:'#1a1200', tags:['дети','мультфильмы'],       slug:'karusel-live', logo:'https://smotret.tv/images/logo-karusel.svg' },
     { id:'mult',         name:'Мульт',            desc:'Мультфильмы 24/7',              icon:'МЛТ',  color:'#ff8f00', iconBg:'#1a1400', tags:['мультфильмы','дети'],       slug:'mult-live' },
+    { id:'karuselIntl', name:'Карусель International', desc:'Для малышей и детей', icon:'КИ', color:'#ff6f00', iconBg:'#1a1200', tags:['дети','детские передачи'], slug:'karusel-international-live' },
   ]},
   { label:'🎵 Музыка', channels:[
     { id:'muztv',        name:'МУЗ-ТВ',           desc:'Хиты и клипы',                  icon:'МУЗ',  color:'#e91e63', iconBg:'#1a0a10', tags:['музыка','клипы'],           slug:'muz-tv-live', logo:'https://smotret.tv/images/logo-muz-tv.svg' },
     { id:'muzykaPervogo',name:'Музыка Первого',   desc:'Канал Первого',                 icon:'М1',   color:'#1565c0', iconBg:'#080d1a', tags:['музыка','эстрада'],         slug:'muzyka-pervogo-live' },
+    { id:'muzsoyuz', name:'Муз Союз', desc:'Музыка и клипы', icon:'МС', color:'#e91e63', iconBg:'#1a0a10', tags:['музыка','музыка и клипы'], slug:'muz-soyuz-live' },
+    { id:'fonmusic', name:'FON Music', desc:'Музыкальные клипы', icon:'FON', color:'#7b1fa2', iconBg:'#130a18', tags:['музыка','музыкальные клипы'], slug:'fon-music-live' },
+    { id:'stranafm', name:'Страна FM', desc:'Радио — аудио-эфир', icon:'FM', color:'#e53935', iconBg:'#1a0808', tags:['музыка','радио'], slug:'strana-fm-live' },
+    { id:'vestifm', name:'Вести FM', desc:'Радио — новости и аналитика', icon:'ВФМ', color:'#1565c0', iconBg:'#0a0f1a', tags:['музыка','радио Вести FM'], slug:'vesti-fm-live' },
   ]},
   { label:'🌿 Хобби и стиль', channels:[
     { id:'ohotarybalka', name:'Охота и рыбалка',  desc:'Охота, рыбалка, природа',       icon:'ОР',   color:'#2e7d32', iconBg:'#081208', tags:['охота','рыбалка','природа'], slug:'ohota-i-rybalka-live' },
+    { id:'moymir', name:'Мой мир', desc:'Познавательное телевидение', icon:'МИР', color:'#00897b', iconBg:'#081412', tags:['хобби','познавательное ТВ'], slug:'moy-mir-live' },
+    { id:'priklyucheniya', name:'Приключения', desc:'Приключения и путешествия', icon:'ПРК', color:'#f57f17', iconBg:'#1a1200', tags:['хобби','приключения и путешествия'], slug:'priklyucheniya-live' },
+    { id:'tochka', name:'Точка отрыва', desc:'Экстрим и приключения', icon:'ТО', color:'#c62828', iconBg:'#180808', tags:['хобби','экстрим и приключения'], slug:'tochka-otryva-live' },
+    { id:'planeta', name:'Живая планета', desc:'Природа и животные', icon:'ЖП', color:'#2e7d32', iconBg:'#081208', tags:['хобби','природа и животные'], slug:'zhivaya-planeta-live' },
+    { id:'zoopark', name:'Зоопарк', desc:'Животные 24/7', icon:'ЗОО', color:'#558b2f', iconBg:'#0c1408', tags:['хобби','передачи о животных'], slug:'zoopark-live' },
+    { id:'zhivotnye', name:'Домашние животные', desc:'Всё о домашних питомцах', icon:'ДЖ', color:'#558b2f', iconBg:'#0c1408', tags:['хобби','передачи о питомцах'], slug:'domashnie-zhivotnye-live' },
+    { id:'drive', name:'Драйв', desc:'Авто и мото', icon:'ДРВ', color:'#37474f', iconBg:'#0d1214', tags:['хобби','авто и мото'], slug:'drive-live' },
+    { id:'zdorovoe', name:'Здоровое ТВ', desc:'Здоровье и образ жизни', icon:'ЗТВ', color:'#00897b', iconBg:'#081412', tags:['хобби','здоровье и образ жизни'], slug:'zdorovoe-tv-live' },
+    { id:'bigplanet', name:'Большая планета', desc:'Путешествия и природа', icon:'БП', color:'#2e7d32', iconBg:'#081208', tags:['хобби','путешествия и природа'], slug:'bolshaya-planeta-live' },
   ]},
   { label:'⚽ Спорт', channels:[
     { id:'floHockey',  name:'FloSports Hockey',    desc:'Хоккей 24/7 — лучшие матчи и турниры',  icon:'FH',  color:'#0277bd', iconBg:'#080d1a', tags:['спорт','хоккей','flo'],     slug:'flosports-hockey-live' },
@@ -673,6 +695,8 @@ const CHANNEL_GROUPS = [
     { id:'redbull',    name:'Red Bull TV',          desc:'Экстремальный спорт и приключения',     icon:'RB',  color:'#c62828', iconBg:'#1a0808', tags:['экстрим','спорт'],          slug:'red-bull-tv-live' },
     { id:'unbeaten',   name:'Unbeaten Boxing',      desc:'Бокс без цензуры — бои 24/7',           icon:'UB',  color:'#4a148c', iconBg:'#110818', tags:['бокс','единоборства'],      slug:'unbeaten-boxing-live' },
     { id:'freesports', name:'World of Freesports',  desc:'Мировой спорт — бесплатно 24/7',        icon:'WFS', color:'#37474f', iconBg:'#08100a', tags:['спорт','мировой'],          slug:'world-freesports-live' },
+    { id:'sportivnyy', name:'Спортивный', desc:'Спорт 24/7', icon:'СПО', color:'#d84315', iconBg:'#1a0d08', tags:['спорт','спорт'], slug:'sportivnyy-live' },
+    { id:'tracesport', name:'Trace Sport Stars', desc:'Звёзды спорта', icon:'TSS', color:'#0277bd', iconBg:'#080d1a', tags:['спорт','звёзды спорта'], slug:'trace-sport-stars-live' },
   ]},
 ];
 
