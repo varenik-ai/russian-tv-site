@@ -1,11 +1,14 @@
-/* Monetag In-Page Push — only on channel pages (/…-live/), loaded late so it never delays the player.
+/* Monetag In-Page Push — channel pages (/…-live/) and the home pages (/, /en/), loaded late so it never delays the player.
    Kill switch: set ADS_ENABLED=false (or add ?noads=1 to a URL to test without ads). */
 (function () {
   var ADS_ENABLED = true;
   var ZONE = '11593818';              // In-Page Push "Lucky tag"
   var DELAY_MS = 20000;               // wait 20s after page load so playback starts first
   if (!ADS_ENABLED) return;
-  if (!/-live\/?$/.test(location.pathname.replace(/index\.html$/, ''))) return;
+  var path = location.pathname.replace(/index\.html$/, '');
+  var isChannel = /-live\/?$/.test(path);
+  var isHome = path === '/' || path === '/en/' || path === '/en';
+  if (!isChannel && !isHome) return;
   if (/[?&]noads=1/.test(location.search)) return;
   function load() {
     try {
