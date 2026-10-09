@@ -741,8 +741,9 @@ function loadStream(ch, isRetry) {
   if (!isRetry) { _netErrorCount = 0; _fullCycles = 0; }
   var url = _currentProxy() + '/stream?channel=' + ch.id;
   if (Hls.isSupported()) {
-    hls = new Hls({liveSyncDurationCount:3, lowLatencyMode:true, enableWorker:true});
+    hls = new Hls({ startLevel:0, liveSyncDurationCount:3, enableWorker:true, backBufferLength:30, manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2 });
     hls.loadSource(url); hls.attachMedia(video);
+    try { window.rtvQuality && rtvQuality.attach(hls, video); } catch (e) {}
     hls.on(Hls.Events.MANIFEST_PARSED, function() {
       _fullCycles = 0; // successful reconnect — reset the growing backoff
       setStatus('Live — ' + ch.nameEn);
@@ -794,6 +795,7 @@ function loadStream(ch, isRetry) {
     });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = url;
+    try { window.rtvQuality && rtvQuality.attachNative(video, url); } catch (e) {}
     video.play().catch(function() { video.muted = true; video.play().catch(function(){}); });
     setStatus('Live — ' + ch.nameEn);
   }
@@ -938,5 +940,6 @@ buildRecent();
 </script>
 
 
+<script defer src="/assets/quality.js?v=4"></script>
 </body>
 </html>

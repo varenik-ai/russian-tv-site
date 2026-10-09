@@ -1014,9 +1014,10 @@ async function loadStream(ch, isRetry) {
   }
 
   if (Hls.isSupported()) {
-    hls = new Hls({ liveSyncDurationCount:3, lowLatencyMode:true, enableWorker:true, backBufferLength:30 });
+    hls = new Hls({ startLevel:0, liveSyncDurationCount:3, enableWorker:true, backBufferLength:30, manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2 });
     hls.loadSource(streamUrl);
     hls.attachMedia(video);
+    try { window.rtvQuality && rtvQuality.attach(hls, video); } catch (e) {}
     hls.on(Hls.Events.MANIFEST_PARSED, async function() {
       _fullCycles = 0; // успешное переподключение — сбрасываем нарастающую паузу
       setStatus('Прямая трансляция — ' + ch.name);
@@ -1062,6 +1063,7 @@ async function loadStream(ch, isRetry) {
     });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = streamUrl;
+    try { window.rtvQuality && rtvQuality.attachNative(video, streamUrl); } catch (e) {}
     video.addEventListener('loadedmetadata', async function() {
       setStatus('Прямая трансляция — ' + ch.name);
       liveBadge.style.display = 'flex';
@@ -1246,5 +1248,6 @@ buildRecent();
 
 </script>
 
+<script defer src="/assets/quality.js?v=4"></script>
 </body>
 </html>
