@@ -19,7 +19,7 @@ def make(lang):
     slug = 'advertising' if ru else 'en/advertising'
     t = base
     t = re.sub(r'<title>.*?</title>', '<title>' + ('Реклама на сайте — Russian-TV.com' if ru else 'Advertise on Russian-TV.com') + '</title>', t, 1, flags=re.S)
-    t = re.sub(r'(<meta name="description" content=")[^"]*', r'\g<1>' + ('Реклама на Russian-TV.com: размещение баннеров и спонсорских блоков на страницах российских телеканалов онлайн. Контакт для рекламодателей.' if ru else 'Advertise on Russian-TV.com: banner and sponsored placements on pages of Russian TV channels online. Contact for advertisers.'), t, 1)
+    t = re.sub(r'(<meta name="description" content=")[^"]*', r'\g<1>' + ('Реклама на Russian-TV.com: индивидуальные условия размещения для русскоязычной аудитории по всему миру. Форматы и стоимость обсуждаем под вашу задачу.' if ru else 'Advertise on Russian-TV.com: custom placements for a Russian-speaking audience worldwide. Formats and pricing are tailored to your goals.'), t, 1)
     t = t.replace('canonical" href="https://russian-tv.com/privacy/"', f'canonical" href="https://russian-tv.com/{slug}/"').replace('canonical" href="https://russian-tv.com/en/privacy/"', f'canonical" href="https://russian-tv.com/{slug}/"')
     t = re.sub(r'<link rel="alternate" hreflang="ru"[^>]*>', '<link rel="alternate" hreflang="ru" href="https://russian-tv.com/advertising/"/>', t)
     t = re.sub(r'<link rel="alternate" hreflang="en"[^>]*>', '<link rel="alternate" hreflang="en" href="https://russian-tv.com/en/advertising/"/>', t)
@@ -30,18 +30,25 @@ def make(lang):
   <h1>Реклама на Russian-TV.com</h1>
   <p class="updated">Последнее обновление: 9 октября 2026 г.</p>
 
-  <p><strong>Russian-TV.com</strong> — бесплатный сервис для просмотра российских телеканалов онлайн, ориентированный на русскоязычных зрителей по всему миру. Мы размещаем рекламу на страницах сайта и готовы обсудить размещение вашего проекта.</p>
+  <p><strong>Russian-TV.com</strong> — бесплатный сервис для просмотра российских телеканалов онлайн. Нас смотрят русскоязычные зрители по всему миру: эмигранты, путешественники, студенты и все, кто хочет быть на связи с родным языком и новостями. Если ваш проект интересен этой аудитории, давайте обсудим сотрудничество.</p>
 
-  <h2>Что можно разместить</h2>
+  <h2>Как мы работаем с рекламодателями</h2>
+  <p>У нас нет жёсткого прайса и стандартных пакетов. Формат, место и сроки подбираем индивидуально под вашу задачу и бюджет — от небольшого тестового размещения до долгосрочного партнёрства.</p>
+
+  <h2>Что можно обсудить</h2>
   <ul>
-    <li><strong>Баннер под плеером</strong> на страницах каналов — 728×90 (десктоп) и 320×100 (мобильные).</li>
-    <li><strong>Блок 300×250</strong> рядом с разделом «Похожие каналы».</li>
-    <li><strong>Баннер на главной странице</strong> над списком каналов или под ним.</li>
-    <li><strong>Спонсорская интеграция</strong> на страницах отдельного канала или раздела (новости, кино, детские, музыка, хобби, спорт).</li>
+    <li><strong>Рекламные блоки и баннеры</strong> на главной странице, страницах каналов и тематических разделов — любого формата, который подходит вашему проекту.</li>
+    <li><strong>Спонсорство и партнёрство</strong> — привязка к конкретному каналу или теме (новости, кино, детские, музыка, хобби, спорт).</li>
+    <li><strong>Нативные и текстовые размещения</strong>, упоминания в статьях блога, подборках и описаниях каналов.</li>
+    <li><strong>Свои идеи</strong> — если у вас нестандартная задача, расскажите о ней, и мы подумаем, как её решить.</li>
   </ul>
 
-  <h2>Как это работает</h2>
-  <p>Опишите проект и пожелания по размещению — мы предложим подходящие страницы, форматы и условия. Рекламные материалы отмечаются пометкой «Реклама».</p>
+  <h2>Как начать</h2>
+  <ol>
+    <li>Напишите нам и коротко расскажите о проекте и о том, какого результата вы ждёте.</li>
+    <li>Мы предложим подходящие страницы, формат, сроки и стоимость.</li>
+    <li>Согласуем материалы и запускаем размещение. Рекламные материалы отмечаются пометкой «Реклама».</li>
+  </ol>
 
   <h2>Контакт для рекламодателей</h2>
   <p>Напишите нам: <a href="mailto:{MAIL}?subject=Реклама%20на%20russian-tv.com"><strong>{MAIL}</strong></a></p>
@@ -61,18 +68,25 @@ def make(lang):
   <h1>Advertise on Russian-TV.com</h1>
   <p class="updated">Last updated: October 9, 2026</p>
 
-  <p><strong>Russian-TV.com</strong> is a free service for watching Russian TV channels online, aimed at Russian-speaking viewers around the world. We run advertising on the site and are happy to discuss placing your project.</p>
+  <p><strong>Russian-TV.com</strong> is a free service for watching Russian TV channels online. Our viewers are Russian speakers around the world: expats, travellers, students and anyone who wants to stay connected to their language and news. If your project is relevant to this audience, let's talk.</p>
 
-  <h2>What you can place</h2>
+  <h2>How we work with advertisers</h2>
+  <p>We have no fixed rate card or standard packages. Format, placement and timing are tailored to your goals and budget — from a small test run to a long-term partnership.</p>
+
+  <h2>What we can discuss</h2>
   <ul>
-    <li><strong>Banner below the player</strong> on channel pages — 728×90 (desktop) and 320×100 (mobile).</li>
-    <li><strong>300×250 block</strong> next to the “Similar channels” section.</li>
-    <li><strong>Homepage banner</strong> above or below the channel list.</li>
-    <li><strong>Sponsored placement</strong> on a specific channel or category page (news, movies, kids, music, hobby, sport).</li>
+    <li><strong>Ad blocks and banners</strong> on the homepage, channel pages and category pages — in whatever format suits your project.</li>
+    <li><strong>Sponsorship and partnerships</strong> tied to a specific channel or topic (news, movies, kids, music, hobby, sport).</li>
+    <li><strong>Native and text placements</strong>, mentions in blog articles, selections and channel descriptions.</li>
+    <li><strong>Your own ideas</strong> — if you have an unusual goal, tell us and we will work out how to approach it.</li>
   </ul>
 
-  <h2>How it works</h2>
-  <p>Describe your project and placement wishes — we will suggest suitable pages, formats and terms. Advertising materials are labelled “Advertisement”.</p>
+  <h2>How to get started</h2>
+  <ol>
+    <li>Email us a short description of your project and what you want to achieve.</li>
+    <li>We will propose suitable pages, format, timing and price.</li>
+    <li>We agree on the materials and launch. Advertising is labelled “Advertisement”.</li>
+  </ol>
 
   <h2>Contact for advertisers</h2>
   <p>Email us: <a href="mailto:{MAIL}?subject=Advertising%20on%20russian-tv.com"><strong>{MAIL}</strong></a></p>
