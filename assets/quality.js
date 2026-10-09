@@ -21,6 +21,15 @@
     '.rtvq-item small{color:#9a9ab5;font-weight:400}';
   document.head.appendChild(css);
 
+  function place(btn, host) {
+    var slot = host.querySelector ? host.querySelector('.rtvp-slot') : null;
+    if (slot) { btn.classList.add('rtvq-in-bar'); slot.appendChild(btn); } else host.appendChild(btn);
+  }
+  function openMenu(host, btn, menu) {
+    if (btn.classList.contains('rtvq-in-bar')) menu.classList.add('rtvq-in-bar');
+    host.appendChild(menu); btn.classList.add('rtvq-open');
+  }
+
   function tierLabel(level) {
     var h = level.height, mb = level.bitrate ? (level.bitrate / 1e6) : 0;
     var mbTxt = mb ? (mb >= 10 ? mb.toFixed(0) : mb.toFixed(1)) + ' ' + T.mbps : '';
@@ -69,7 +78,7 @@
       var levels = hls.levels || [];
       if (levels.length < 2) return;
       btn = document.createElement('button'); btn.type = 'button'; btn.className = 'rtvq-btn'; btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-label', T.quality);
-      host.appendChild(btn);
+      place(btn, host);
       applyPref(); refreshBtn();
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -88,7 +97,7 @@
           var t = tierLabel(x.l), val = x.l.height ? String(x.l.height) : 'b' + Math.round((x.l.bitrate || 0) / 1000);
           item(t.main, t.sub, val, pref === val);
         });
-        host.appendChild(menu); btn.classList.add('rtvq-open');
+        openMenu(host, btn, menu);
       });
       document.addEventListener('click', function (e) { if (menu && !menu.contains(e.target) && e.target !== btn) close(); });
     }
@@ -116,7 +125,7 @@
       }
       if (levels.length < 2) return;
       var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'rtvq-btn'; btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-label', T.quality);
-      host.appendChild(btn);
+      place(btn, host);
       var menu = null;
       function qUrl(lv) { return url.replace('/stream?', '/stream-q?') + '&q=' + Math.round((lv.bitrate || 0) / 1000); }
       function pick() {
@@ -151,7 +160,7 @@
         levels.slice().sort(function (a, c) { return c.bitrate - a.bitrate; }).forEach(function (l) {
           var tl = tierLabel(l); item(tl.main, tl.sub, l.height ? String(l.height) : 'b' + Math.round(l.bitrate / 1000));
         });
-        host.appendChild(menu); btn.classList.add('rtvq-open');
+        openMenu(host, btn, menu);
       });
       document.addEventListener('click', function (e) { if (menu && !menu.contains(e.target) && e.target !== btn) close(); });
       apply(false);
