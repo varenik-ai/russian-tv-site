@@ -99,5 +99,63 @@
     video.addEventListener('resize', refreshBtn);
     video.addEventListener('loadedmetadata', refreshBtn);
   }
-  window.rtvQuality = { attach: attach };
+
+  // Нативный HLS (iPhone/iPad Safari, часть WebView): hls.js недоступен, поэтому читаем мастер-плейлист сами,
+  // строим то же меню, а фиксированный уровень включаем через воркер: /stream-q?channel=..&q=<kbps> отдаёт мастер с одним уровнем.
+  function attachNative(video, url) {
+    if (!video || !url || url.indexOf('/stream?') < 0) return;
+    var host = (video.closest ? video.closest('.player-wrap, #player-screen, body') : null) || video.parentNode;
+    Array.prototype.forEach.call(host.querySelectorAll('.rtvq-btn,.rtvq-menu'), function (n) { n.parentNode.removeChild(n); });
+    fetch(url, { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) {
+      var L = t.split('\n'), levels = [];
+      for (var i = 0; i < L.length; i++) {
+        if (L[i].indexOf('#EXT-X-STREAM-INF') === 0) {
+          var b = L[i].match(/BANDWIDTH=(\d+)/), h = L[i].match(/RESOLUTION=\d+x(\d+)/);
+          levels.push({ bitrate: b ? +b[1] : 0, height: h ? +h[1] : 0 });
+        }
+      }
+      if (levels.length < 2) return;
+      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'rtvq-btn'; btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-label', T.quality);
+      host.appendChild(btn);
+      var menu = null;
+      function qUrl(lv) { return url.replace('/stream?', '/stream-q?') + '&q=' + Math.round((lv.bitrate || 0) / 1000); }
+      function pick() {
+        var pref = get(); if (pref === 'auto') return null;
+        var idx = -1, d = 1e12, bh = -1;
+        if (pref.charAt(0) === 'b') { var w = parseInt(pref.slice(1), 10) * 1000; levels.forEach(function (l, i) { var x = Math.abs(l.bitrate - w); if (x < d) { d = x; idx = i; } }); }
+        else { var wh = parseInt(pref, 10); levels.forEach(function (l, i) { if (l.height && l.height <= wh && l.height > bh) { bh = l.height; idx = i; } }); }
+        return idx >= 0 ? levels[idx] : null;
+      }
+      function label() { var lv = pick(); if (!lv) return '⚙ ' + T.auto; var tl = tierLabel(lv); return '⚙ ' + tl.main; }
+      function apply(reload) {
+        var lv = pick(), target = lv ? qUrl(lv) : url;
+        if (video.getAttribute('data-rtvq') !== target) {
+          video.setAttribute('data-rtvq', target);
+          if (reload || lv) { video.src = target; var p = video.play(); if (p && p.catch) p.catch(function () {}); }
+        }
+        btn.textContent = label();
+      }
+      function close() { if (menu) { menu.parentNode.removeChild(menu); menu = null; } btn.classList.remove('rtvq-open'); }
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (menu) { close(); return; }
+        menu = document.createElement('div'); menu.className = 'rtvq-menu'; menu.setAttribute('role', 'menu');
+        var h4 = document.createElement('h4'); h4.textContent = T.quality; menu.appendChild(h4);
+        function item(lab, sub, value) {
+          var b = document.createElement('button'); b.type = 'button'; b.className = 'rtvq-item'; b.setAttribute('role', 'menuitemradio'); b.setAttribute('aria-checked', get() === value ? 'true' : 'false');
+          b.innerHTML = '<span></span><small></small>'; b.firstChild.textContent = lab; b.lastChild.textContent = sub || '';
+          b.addEventListener('click', function (ev) { ev.stopPropagation(); set(value); apply(true); close(); });
+          menu.appendChild(b);
+        }
+        item(T.auto, T.autoHint, 'auto');
+        levels.slice().sort(function (a, c) { return c.bitrate - a.bitrate; }).forEach(function (l) {
+          var tl = tierLabel(l); item(tl.main, tl.sub, l.height ? String(l.height) : 'b' + Math.round(l.bitrate / 1000));
+        });
+        host.appendChild(menu); btn.classList.add('rtvq-open');
+      });
+      document.addEventListener('click', function (e) { if (menu && !menu.contains(e.target) && e.target !== btn) close(); });
+      apply(false);
+    }).catch(function () {});
+  }
+  window.rtvQuality = { attach: attach, attachNative: attachNative };
 })();

@@ -786,6 +786,7 @@ function startStream() {
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     const url = _currentProxy() + '/stream?channel=' + CH_ID;
     video.src = url;
+    try { window.rtvQuality && rtvQuality.attachNative(video, url); } catch (e) {}
     video.play().catch(function(){});
     setStatus('▶ Stream started');
   }
@@ -844,6 +845,6 @@ if (chSearch) {
 </script>
 
 <script defer src="/assets/site-ux.js"></script>
-<script defer src="/assets/quality.js?v=2"></script>
+<script defer src="/assets/quality.js?v=3"></script>
 </body>
 </html>
