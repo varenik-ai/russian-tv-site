@@ -11,10 +11,9 @@
 
   var css = document.createElement('style');
   css.textContent =
-    '.rtvq-btn{position:absolute;bottom:10px;right:54px;z-index:51;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:5px;height:34px;padding:0 10px;font:600 12px/34px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;display:none;white-space:nowrap}' +
+    '.rtvq-btn{position:absolute;bottom:10px;right:54px;z-index:51;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:5px;height:34px;padding:0 10px;font:600 12px/34px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;display:block;opacity:.92;white-space:nowrap}' +
     '.rtvq-btn:hover{background:rgba(0,0,0,.9)}' +
-    '.player-wrap:hover .rtvq-btn,.rtvq-btn.rtvq-open{display:block}' +
-    '@media(hover:none),(pointer:coarse){.rtvq-btn{display:block}}' +
+    '.rtvq-btn:focus-visible{outline:2px solid #6ea8ff}' +
     '.rtvq-menu{position:absolute;bottom:50px;right:10px;z-index:52;background:#12121f;border:1px solid #2a2a40;border-radius:10px;padding:6px;min-width:190px;box-shadow:0 8px 28px rgba(0,0,0,.55);font:13px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e2e2f0}' +
     '.rtvq-menu h4{margin:4px 8px 6px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#8b8ba0}' +
     '.rtvq-item{display:flex;justify-content:space-between;gap:12px;width:100%;background:none;border:0;color:inherit;text-align:left;padding:8px 10px;border-radius:7px;cursor:pointer;font:inherit}' +
