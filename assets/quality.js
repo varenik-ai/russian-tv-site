@@ -37,6 +37,7 @@
   }
 
   function attach(hls, video) {
+    window.rtvQuality.lower = null; window.rtvQuality.canLower = null;
     if (!hls || !video) return;
     var wrap = video.closest ? video.closest('.player-wrap, #player-screen, body') : null;
     var host = wrap || video.parentNode;
@@ -103,6 +104,12 @@
     }
 
 
+    window.rtvQuality.canLower = function () {
+      var lv = hls.levels || []; if (lv.length < 2) return false;
+      var order = lv.map(function (l, i) { return i; }).sort(function (a, b) { return (lv[a].bitrate || 0) - (lv[b].bitrate || 0); });
+      var cur = hls.currentLevel >= 0 ? hls.currentLevel : (hls.loadLevel >= 0 ? hls.loadLevel : order[order.length - 1]);
+      return order.indexOf(cur) > 0;
+    };
     window.rtvQuality.lower = function () {
       var lv = hls.levels || []; if (lv.length < 2) return false;
       var order = lv.map(function (l, i) { return i; }).sort(function (a, b) { return (lv[a].bitrate || 0) - (lv[b].bitrate || 0); });
@@ -122,6 +129,7 @@
   // Нативный HLS (iPhone/iPad Safari, часть WebView): hls.js недоступен, поэтому читаем мастер-плейлист сами,
   // строим то же меню, а фиксированный уровень включаем через воркер: /stream-q?channel=..&q=<kbps> отдаёт мастер с одним уровнем.
   function attachNative(video, url) {
+    window.rtvQuality.lower = null; window.rtvQuality.canLower = null;
     if (!video || !url || url.indexOf('/stream?') < 0) return;
     var host = (video.closest ? video.closest('.player-wrap, #player-screen, body') : null) || video.parentNode;
     Array.prototype.forEach.call(host.querySelectorAll('.rtvq-btn,.rtvq-menu'), function (n) { n.parentNode.removeChild(n); });
@@ -173,6 +181,11 @@
         openMenu(host, btn, menu);
       });
       document.addEventListener('click', function (e) { if (menu && !menu.contains(e.target) && e.target !== btn) close(); });
+      window.rtvQuality.canLower = function () {
+        var order = levels.slice().sort(function (a, b) { return a.bitrate - b.bitrate; });
+        var cur = pick(); var pos = cur ? order.indexOf(cur) : Math.floor(order.length / 2) + 1;
+        return pos > 0;
+      };
       window.rtvQuality.lower = function () {
         var order = levels.slice().sort(function (a, b) { return a.bitrate - b.bitrate; });
         var cur = pick(); var pos = cur ? order.indexOf(cur) : Math.floor(order.length / 2) + 1;

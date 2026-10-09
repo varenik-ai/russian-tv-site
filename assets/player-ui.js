@@ -63,7 +63,7 @@
     '.rtvp-err .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}',
     '.rtvp-err .lbl{font-size:12px;color:#8888a8}',
     '.rtvp-err .rtvp-pill{display:inline-flex;text-decoration:none}.rtvp-err .rtvp-pill.alt{background:rgba(255,255,255,.1)}',
-    '.rtvp-toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%);z-index:58;display:none;align-items:center;gap:12px;max-width:92%;padding:10px 12px 10px 16px;border-radius:14px;background:rgba(18,18,31,.95);border:1px solid #2a2a40;box-shadow:0 8px 28px rgba(0,0,0,.5);color:#e8e8f4;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}',
+    '.rtvp-toast{position:relative;margin:8px 0 0;z-index:5;display:none;align-items:center;gap:12px;box-sizing:border-box;width:100%;padding:10px 12px 10px 16px;border-radius:14px;background:rgba(18,18,31,.95);border:1px solid #2a2a40;box-shadow:0 8px 28px rgba(0,0,0,.5);color:#e8e8f4;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}',
     '.rtvp-toast.rtvp-show{display:flex}.rtvp-toast b{display:block;font-size:13px}.rtvp-toast span{display:block;font-size:12px;color:#a8a8c4;margin-top:2px}',
     '.rtvp-toast .x{background:none;border:0;color:#a8a8c4;font-size:18px;cursor:pointer;padding:4px 8px}',
     /* прячем старые элементы — теперь всё в единой панели */
@@ -77,7 +77,7 @@
     /* узкие экраны и горизонтальный телефон */
     '@media(max-width:560px){.rtvp-bar{gap:6px;padding:24px 8px 8px}.rtvp-btn{width:38px;height:38px}.rtvp-cta{padding:8px 16px 8px 10px;top:10px}.rtvp-cta b{font-size:14px}.rtvq-btn.rtvq-in-bar{padding:0 10px;height:38px}.rtvp-live{padding:6px 8px}.rtvp-pill{padding:0 10px}}',
     '@media(max-width:380px){.rtvp-live{display:none}.rtvq-btn.rtvq-in-bar{font-size:11px;padding:0 8px}}',
-    '@media(max-height:480px) and (orientation:landscape){.rtvp-bar{padding:16px 10px 6px}.rtvp-btn{width:34px;height:34px}.rtvq-btn.rtvq-in-bar{height:34px}.rtvp-cta{top:8px;padding:6px 14px 6px 8px}.rtvp-cta .ico{width:30px;height:30px}.rtvp-cta b{font-size:13px}.rtvp-cta small{display:none}.rtvp-err h4{font-size:15px}.rtvp-err p{display:none}.rtvp-toast{bottom:56px}}'
+    '@media(max-height:480px) and (orientation:landscape){.rtvp-bar{padding:16px 10px 6px}.rtvp-btn{width:34px;height:34px}.rtvq-btn.rtvq-in-bar{height:34px}.rtvp-cta{top:8px;padding:6px 14px 6px 8px}.rtvp-cta .ico{width:30px;height:30px}.rtvp-cta b{font-size:13px}.rtvp-cta small{display:none}.rtvp-err h4{font-size:15px}.rtvp-err p{display:none}}'
   ].join('\n');
   document.head.appendChild(css);
 
@@ -145,7 +145,8 @@
     var hint = el('div', 'rtvp-hint'); hint.textContent = T.key;
     var err = el('div', 'rtvp-err'); err.setAttribute('role', 'alert');
     var toast = el('div', 'rtvp-toast'); toast.setAttribute('role', 'status');
-    [spin, pausebig, bar, cta, hint, err, toast].forEach(function (n) { wrap.appendChild(n); });
+    [spin, pausebig, bar, cta, hint, err].forEach(function (n) { wrap.appendChild(n); });
+    if (wrap.parentNode) wrap.parentNode.insertBefore(toast, wrap.nextSibling); else wrap.appendChild(toast);
 
     // ---- звук ----
     function savedVol() { var v = parseFloat(ls('rtv_vol')); return isFinite(v) && v > 0 ? Math.min(1, v) : 1; }
@@ -258,7 +259,7 @@
     function hideToast() { toast.classList.remove('rtvp-show'); }
     video.addEventListener('waiting', function () {
       var now = Date.now(); waits = waits.filter(function (t) { return now - t < 45000; }); waits.push(now);
-      if (waits.length >= 3 && video.currentTime > 5 && now - toastShownAt > 180000 && window.rtvQuality && window.rtvQuality.lower) {
+      if (waits.length >= 3 && video.currentTime > 5 && now - toastShownAt > 180000 && window.rtvQuality && window.rtvQuality.canLower && window.rtvQuality.canLower()) {
         toastShownAt = now; toast.innerHTML = '';
         var tx = el('div'); tx.appendChild(el('b', '', T.lagTitle)); tx.appendChild(el('span', '', T.lagText)); toast.appendChild(tx);
         var go = pill(T.lagBtn); go.style.display = 'inline-flex'; go.addEventListener('click', function () { try { window.rtvQuality.lower(); } catch (e) {} hideToast(); });

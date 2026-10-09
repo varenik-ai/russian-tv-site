@@ -10,7 +10,7 @@ def patch(path, subs):
         if old not in s: print('MISSING in', path, ':', old[:60]); continue
         s = s.replace(old, new, 1)
     if '/assets/quality.js' not in s:
-        s = s.replace('</body>', '<script defer src="/assets/quality.js?v=6"></script>\n</body>', 1)
+        s = s.replace('</body>', '<script defer src="/assets/quality.js?v=7"></script>\n</body>', 1)
     if s != o: open(p, 'w', encoding='utf-8').write(s); print('patched', path)
 patch('index.html', [
   ("hls = new Hls({ liveSyncDurationCount:3, lowLatencyMode:true, enableWorker:true, backBufferLength:30 });", "hls = new Hls(" + OPTS + ");"),
