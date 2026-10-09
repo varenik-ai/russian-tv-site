@@ -5,7 +5,7 @@
   if (!list) return;
   var EN = (document.documentElement.lang || '').toLowerCase().indexOf('en') === 0;
   var st = document.createElement('style');
-  st.textContent = '.m-switch{display:none;background:var(--card,#12121f);border:1px solid var(--border,#1e1e32);border-radius:12px;padding:10px 0 8px;min-height:112px}' +
+  st.textContent = '.page-wrap,.main-col{min-width:0}.main-col>*{min-width:0;max-width:100%}.m-switch>*{min-width:0;max-width:100%}.m-switch{display:none;max-width:100%;box-sizing:border-box;overflow:hidden;background:var(--card,#12121f);border:1px solid var(--border,#1e1e32);border-radius:12px;padding:10px 0 8px;min-height:112px}' +
     '@media(max-width:1024px){.m-switch{display:block}}' +
     '.m-switch h2{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted,#8b8ba0);margin:0 12px 8px}' +
     '.m-tabs,.m-row{display:flex;gap:8px;overflow-x:auto;padding:0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}' +
