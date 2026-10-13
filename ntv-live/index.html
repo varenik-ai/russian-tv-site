@@ -694,7 +694,7 @@ setInterval(function() {
     _scheduleReconnect();
     return;
   }
-  if (video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
+  if (!_IOS_NATIVE && video.readyState >= 3 && Date.now() - _sessionStart > PREEMPTIVE_REFRESH_MS) {
     // Переключаем прокси и здесь, а не только при сбое: если фриз связан с
     // переиспользуемым сетевым соединением конкретного прокси до источника,
     // новый прокси даёт реально другое соединение, а не просто повторный
@@ -773,6 +773,8 @@ function _scheduleReconnect(forceRotate) {
 }
 
 var _lastCreateHlsAt = 0;
+// НТВ на iPhone/iPad: встроенный плеер Apple + официальный источник cdn.ntv.ru (воркер /stream?native=1, CORS не нужен)
+var _IOS_NATIVE = /iPhone|iPad|iPod/.test(navigator.userAgent) && !!document.createElement('video').canPlayType('application/vnd.apple.mpegurl');
 function createHls() {
   if (_hlsStopped) return;
   var _nowTs = Date.now();
@@ -782,6 +784,13 @@ function createHls() {
   _lastFrameCount = 0; _lastFrameProgressTime = _nowTs; // сброс счётчика кадров — video.load() обнуляет totalVideoFrames браузера
   clearTimeout(_retryTimer);
   const url = _currentProxy() + '/stream?channel=' + CH_ID;
+  if (_IOS_NATIVE) {
+    video.src = url + '&native=1';
+    try { window.rtvQuality && rtvQuality.attachNative(video, url + '&native=1'); } catch (e) {}
+    video.play().catch(function() { video.muted = true; video.play().catch(function(){}); });
+    setStatus('▶ Трансляция запущена');
+    return;
+  }
   if (hls) { try { hls.destroy(); } catch(e) {} hls = null; }
   try { video.removeAttribute('src'); video.load(); } catch(e) {}
   hls = new Hls({startLevel:0, liveSyncDurationCount:3, enableWorker:true,
@@ -839,12 +848,13 @@ function createHls() {
 function startStream() {
   overlay.style.display = 'none';
   setStatus('⏳ Подключение...');
-  if (Hls.isSupported()) {
+  // НТВ: на iPhone/iPad играем встроенным плеером Apple (официальный источник cdn.ntv.ru без CORS, см. воркер /stream?native=1)
+  if (Hls.isSupported() && !_IOS_NATIVE) {
     createHls();
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     const url = _currentProxy() + '/stream?channel=' + CH_ID;
-    video.src = url;
-    try { window.rtvQuality && rtvQuality.attachNative(video, url); } catch (e) {}
+    video.src = url + '&native=1';
+    try { window.rtvQuality && rtvQuality.attachNative(video, url + '&native=1'); } catch (e) {}
     video.play().catch(function(){});
     setStatus('▶ Трансляция запущена');
   }

@@ -10,7 +10,7 @@ for f in glob.glob(os.path.join(ROOT, '**/*-live/index.html'), recursive=True):
     if 'rtvQuality.attach' not in s:
         s = s.replace('hls.attachMedia(video);', 'hls.attachMedia(video);\n  try { window.rtvQuality && rtvQuality.attach(hls, video); } catch (e) {}', 1)
     if 'attachNative' not in s and "    video.src = url;\n    video.play().catch(function(){});" in s:
-        s = s.replace("    video.src = url;\n    video.play().catch(function(){});", "    video.src = url;\n    try { window.rtvQuality && rtvQuality.attachNative(video, url); } catch (e) {}\n    video.play().catch(function(){});", 1)
+        s = s.replace("    video.src = url;\n    video.play().catch(function(){});", "    video.src = url + '&native=1';\n    try { window.rtvQuality && rtvQuality.attachNative(video, url + '&native=1'); } catch (e) {}\n    video.play().catch(function(){});", 1)
     if '/assets/quality.js' not in s:
         s = s.replace('</body>', '<script defer src="/assets/quality.js?v=7"></script>\n</body>', 1)
     if s != o: open(f, 'w', encoding='utf-8').write(s); n += 1

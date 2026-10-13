@@ -740,7 +740,8 @@ function loadStream(ch, isRetry) {
   _lastFrameCount = 0; _lastFrameProgressTime = _nowTs; // reset frame counter — video.load() resets the browser's totalVideoFrames
   if (!isRetry) { _netErrorCount = 0; _fullCycles = 0; }
   var url = _currentProxy() + '/stream?channel=' + ch.id;
-  if (Hls.isSupported()) {
+  // НТВ: на iPhone/iPad играем встроенным плеером Apple (официальный источник cdn.ntv.ru без CORS, см. воркер /stream?native=1)
+  if (Hls.isSupported() && !(ch.id === 'ntv' && /iPhone|iPad|iPod/.test(navigator.userAgent) && video.canPlayType('application/vnd.apple.mpegurl'))) {
     hls = new Hls({ startLevel:0, liveSyncDurationCount:3, enableWorker:true, backBufferLength:30, manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2 });
     hls.loadSource(url); hls.attachMedia(video);
     try { window.rtvQuality && rtvQuality.attach(hls, video); } catch (e) {}
@@ -794,8 +795,8 @@ function loadStream(ch, isRetry) {
       _cycleProxy();
     });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = url;
-    try { window.rtvQuality && rtvQuality.attachNative(video, url); } catch (e) {}
+    video.src = url + '&native=1';
+    try { window.rtvQuality && rtvQuality.attachNative(video, url + '&native=1'); } catch (e) {}
     video.play().catch(function() { video.muted = true; video.play().catch(function(){}); });
     setStatus('Live — ' + ch.nameEn);
   }

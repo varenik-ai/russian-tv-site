@@ -20,5 +20,5 @@ patch('index.html', [
 patch('en/index.html', [
   ("hls = new Hls({liveSyncDurationCount:3, lowLatencyMode:true, enableWorker:true});", "hls = new Hls(" + OPTS + ");"),
   ("    hls.loadSource(url); hls.attachMedia(video);\n", "    hls.loadSource(url); hls.attachMedia(video);\n    try { window.rtvQuality && rtvQuality.attach(hls, video); } catch (e) {}\n"),
-  ("    video.src = url;\n    video.play().catch(function() { video.muted = true;", "    video.src = url;\n    try { window.rtvQuality && rtvQuality.attachNative(video, url); } catch (e) {}\n    video.play().catch(function() { video.muted = true;"),
+  ("    video.src = url;\n    video.play().catch(function() { video.muted = true;", "    video.src = url + '&native=1';\n    try { window.rtvQuality && rtvQuality.attachNative(video, url + '&native=1'); } catch (e) {}\n    video.play().catch(function() { video.muted = true;"),
 ])

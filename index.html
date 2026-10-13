@@ -1013,7 +1013,8 @@ async function loadStream(ch, isRetry) {
     setTimeout(function() { loadStream(ch, true); }, delay);
   }
 
-  if (Hls.isSupported()) {
+  // НТВ: на iPhone/iPad играем встроенным плеером Apple (официальный источник cdn.ntv.ru без CORS, см. воркер /stream?native=1)
+  if (Hls.isSupported() && !(ch.id === 'ntv' && /iPhone|iPad|iPod/.test(navigator.userAgent) && video.canPlayType('application/vnd.apple.mpegurl'))) {
     hls = new Hls({ startLevel:0, liveSyncDurationCount:3, enableWorker:true, backBufferLength:30, manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2 });
     hls.loadSource(streamUrl);
     hls.attachMedia(video);
@@ -1062,8 +1063,8 @@ async function loadStream(ch, isRetry) {
       onFatalError();
     });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = streamUrl;
-    try { window.rtvQuality && rtvQuality.attachNative(video, streamUrl); } catch (e) {}
+    video.src = streamUrl + '&native=1';
+    try { window.rtvQuality && rtvQuality.attachNative(video, streamUrl + '&native=1'); } catch (e) {}
     video.addEventListener('loadedmetadata', async function() {
       setStatus('Прямая трансляция — ' + ch.name);
       liveBadge.style.display = 'flex';

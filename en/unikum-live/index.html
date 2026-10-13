@@ -783,8 +783,8 @@ function startStream() {
     createHls();
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     const url = _currentProxy() + '/stream?channel=' + CH_ID;
-    video.src = url;
-    try { window.rtvQuality && rtvQuality.attachNative(video, url); } catch (e) {}
+    video.src = url + '&native=1';
+    try { window.rtvQuality && rtvQuality.attachNative(video, url + '&native=1'); } catch (e) {}
     video.play().catch(function(){});
     setStatus('▶ Stream started');
   }
