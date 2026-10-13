@@ -742,7 +742,7 @@ function loadStream(ch, isRetry) {
   var url = _currentProxy() + '/stream?channel=' + ch.id;
   // НТВ: на iPhone/iPad играем встроенным плеером Apple (официальный источник cdn.ntv.ru без CORS, см. воркер /stream?native=1)
   if (Hls.isSupported() && !(ch.id === 'ntv' && /iPhone|iPad|iPod/.test(navigator.userAgent) && video.canPlayType('application/vnd.apple.mpegurl'))) {
-    hls = new Hls({ startLevel:0, liveSyncDurationCount:3, enableWorker:true, backBufferLength:30, manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2 });
+    hls = new Hls(Object.assign({ startLevel:0, liveSyncDurationCount:3, enableWorker:true, backBufferLength:30, manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2 }, ch.id === 'ntv' ? { liveSyncDurationCount:8, maxBufferLength:60, maxMaxBufferLength:90, fragLoadingTimeOut:30000, fragLoadingMaxRetry:6, abrEwmaDefaultEstimate:500000 } : {})); // НТВ: больший запас буфера, источник отдаёт сегменты неравномерно
     hls.loadSource(url); hls.attachMedia(video);
     try { window.rtvQuality && rtvQuality.attach(hls, video); } catch (e) {}
     hls.on(Hls.Events.MANIFEST_PARSED, function() {

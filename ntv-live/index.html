@@ -793,8 +793,9 @@ function createHls() {
   }
   if (hls) { try { hls.destroy(); } catch(e) {} hls = null; }
   try { video.removeAttribute('src'); video.load(); } catch(e) {}
-  hls = new Hls({startLevel:0, liveSyncDurationCount:3, enableWorker:true,
-    manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2});
+  // НТВ: источник thestream.cyou отдаёт сегменты неравномерно (иногда дольше их длительности) — держим запас буфера ~30 с, чтобы не фризило
+  hls = new Hls({startLevel:0, liveSyncDurationCount:8, enableWorker:true, maxBufferLength:60, maxMaxBufferLength:90, fragLoadingTimeOut:30000, abrEwmaDefaultEstimate:500000,
+    manifestLoadingMaxRetry:2, fragLoadingMaxRetry:6, levelLoadingMaxRetry:2});
   hls.loadSource(url);
   hls.attachMedia(video);
   try { window.rtvQuality && rtvQuality.attach(hls, video); } catch (e) {}
