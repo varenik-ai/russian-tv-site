@@ -250,7 +250,15 @@
       }
       err.classList.add('rtvp-show'); spin.classList.remove('rtvp-show');
     }
-    video.addEventListener('loadstart', armErr);
+    // смена канала на главной (пользователь выбрал другой в списке): старое сообщение об ошибке гасим сразу,
+    // иначе оно висело поверх уже запущенного нового канала
+    var lastChId = null;
+    function chId() { try { return (typeof currentCh !== 'undefined' && currentCh) ? currentCh.id : null; } catch (e) { return null; } }
+    video.addEventListener('loadstart', function () {
+      var id = chId();
+      if (id !== lastChId) { lastChId = id; hideErr(); disarmErr(); }
+      armErr();
+    });
     video.addEventListener('playing', function () { disarmErr(); hideErr(); });
     video.addEventListener('error', function () { setTimeout(function () { if (video.readyState < 3) showErr(); }, 4000); });
 
