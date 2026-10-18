@@ -109,7 +109,7 @@ def meta_desc(t):
 
 def fix_ld(rel):
     t = rd(rel); o = t
-    if not rel.endswith('-live/index.html'):
+    if not rel.endswith('-live/index.html') and rel not in ('en/russian-tv-in-germany/index.html', 'en/russian-tv-in-usa/index.html'):
         return
     d = meta_desc(t)
 
@@ -188,6 +188,32 @@ DESCS = {
 }
 
 
+# CTR-правки по данным Search Console (18.10.2026): страницы на позициях 8–45 с показами, но почти без кликов.
+# Заголовок задаётся целиком (заменяет любой текущий <title>), описание — через DESCS.
+FORCE_TITLES = {
+    'en/russian-tv-in-germany/index.html': '▶ Russian TV in Germany — Watch 58 Live Channels Free',
+    'en/russian-tv-in-usa/index.html': '▶ Russian TV in the USA — Watch 58 Live Channels Free',
+    'en/perviy-kanal-live/index.html': '▶ Channel One Russia Live — Watch Perviy Kanal Online Free',
+    'rossiya-24-live/index.html': '▶ Россия 24 — прямой эфир онлайн, смотреть Вести 24 бесплатно',
+    'en/rossiya-24-live/index.html': '▶ Rossiya 24 Live — Russian News 24/7 Online Free',
+    'karusel-live/index.html': '▶ Карусель — детский канал онлайн, мультики в прямом эфире',
+    'muz-tv-live/index.html': '▶ МУЗ-ТВ — прямой эфир онлайн, клипы и хит-парады',
+    'rossiya-1-live/index.html': '▶ Россия 1 — прямой эфир онлайн, Вести и сериалы бесплатно',
+    'perviy-kanal-live/index.html': '▶ Первый канал — прямой эфир онлайн бесплатно',
+    'mir-live/index.html': '▶ Телеканал МИР — прямой эфир онлайн бесплатно',
+}
+DESCS.update({
+    'en/russian-tv-in-germany/': ('▶ Watch Russian TV in Germany online: Perviy Kanal, Rossiya 1, NTV, Rossiya 24 and more live channels. Free, in your browser — no app or sign-up.',),
+    'en/russian-tv-in-usa/': ('▶ Watch Russian TV in the USA online: Perviy Kanal, Rossiya 1, NTV, Rossiya 24 and more live channels. Free, in your browser — no app or sign-up.',),
+    'en/perviy-kanal-live/': ('▶ Watch Channel One Russia (Perviy Kanal) live online: news, talk shows and series on the main Russian TV channel. Free, no registration.',),
+    'rossiya-24-live/': ('▶ Смотрите Россию 24 в прямом эфире: новости России и мира круглосуточно. Бесплатно, в браузере, без регистрации — из любой страны.',),
+    'en/rossiya-24-live/': ('▶ Watch Rossiya 24 live: round-the-clock news from Russia and the world. Free in your browser, no registration, from any country.',),
+    'karusel-live/': ('▶ Смотрите детский канал «Карусель» онлайн: мультфильмы и развивающие передачи в прямом эфире. Бесплатно, без регистрации, на телефоне и компьютере.',),
+    'muz-tv-live/': ('▶ МУЗ-ТВ в прямом эфире: российская музыка, клипы и хит-парады 24/7. Смотрите бесплатно в браузере — без регистрации.',),
+    'rossiya-1-live/': ('▶ Смотрите Россию 1 в прямом эфире: Вести, «60 минут», «Прямой эфир», сериалы. Бесплатно, в браузере, без регистрации — из любой страны.',),
+    'perviy-kanal-live/': ('▶ Смотрите Первый канал онлайн в прямом эфире: новости, ток-шоу и сериалы. Бесплатно, в браузере, без регистрации — из любой страны.',),
+    'mir-live/': ('▶ Телеканал МИР онлайн: новости и программы СНГ в прямом эфире. Бесплатно, в браузере, без регистрации.',),
+})
 def attr_replace(t, name_attr, old, new):
     return t.replace(f'{name_attr} content="{old}"', f'{name_attr} content="{new}"')
 
@@ -199,6 +225,8 @@ for rel in PAGES:
         old, new = TITLES[rel]
         t = t.replace('<title>%s</title>' % old, '<title>%s</title>' % new)
         t = t.replace('content="%s"' % old, 'content="%s"' % new)  # og:title / twitter:title, если совпадали
+    if rel in FORCE_TITLES:
+        t = re.sub(r'<title>.*?</title>', lambda m: '<title>%s</title>' % FORCE_TITLES[rel], t, count=1, flags=re.S)
     if key in DESCS:
         new = DESCS[key][0]
         t = re.sub(r'(<meta name="description" content=")[^"]*(")', lambda m: m.group(1) + new + m.group(2), t, count=1)
