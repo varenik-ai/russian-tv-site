@@ -291,6 +291,21 @@ if '/en/blog/' not in s:
     s = s.replace('      <a href="#faq">FAQ</a>\n      <a href="/">Русский</a>', '      <a href="#faq">FAQ</a>\n      <a href="/en/blog/">Blog</a>\n      <a href="/">Русский</a>', 1)
 save(p, s, o, 'internal links')
 
+# ---------------------------------------------------------------- 8b. каналы вне каталога — noindex
+# Эти страницы работают и доступны посетителям, но их нет в каталоге главной (решение владельца 18.10.2026):
+# не индексируются, в sitemap не входят, в «Похожие» не попадают.
+NOINDEX_SLUGS = ['kinopokaz-live', 'kinopremiera-live', 'ntv-hit-live', 'retro-live', 'ru-tv-live', 't24-live', 'unikum-live', 'zagorodnaya-zhizn-live']
+for slug in NOINDEX_SLUGS:
+    for rel in (slug + '/index.html', 'en/' + slug + '/index.html'):
+        if not os.path.exists(os.path.join(ROOT, rel)):
+            continue
+        t = rd(rel); o = t
+        if re.search(r'<meta name="robots"', t):
+            t = re.sub(r'<meta name="robots" content="[^"]*"\s*/>', '<meta name="robots" content="noindex,follow"/>', t, count=1)
+        else:
+            t = re.sub(r'(<link rel="canonical" href="[^"]*"\s*/>)', lambda m: m.group(1) + '\n<meta name="robots" content="noindex,follow"/>', t, count=1)
+        save(rel, t, o, 'noindex')
+
 # ---------------------------------------------------------------- 9. похожие каналы
 CAT_KEYS = ['/novosti/', '/razvlecheniya/', '/kino/', '/detskie/', '/muzyka/', '/hobbi/', '/sport/']
 RELATED = {'/novosti/': ['/razvlecheniya/'], '/razvlecheniya/': ['/novosti/', '/kino/'], '/kino/': ['/razvlecheniya/'],
@@ -471,6 +486,8 @@ def url_entry(m):
 
 
 s = re.sub(r'<url><loc>([^<]+)</loc>.*?</url>', url_entry, s)
+for slug in NOINDEX_SLUGS:
+    s = re.sub(r'[ \t]*<url><loc>https://russian-tv\.com/(?:en/)?' + re.escape(slug) + r'/</loc>.*?</url>\n?', '', s)
 save(p, s, o, 'sitemap')
 
 for k, v in sorted(changed.items()):
