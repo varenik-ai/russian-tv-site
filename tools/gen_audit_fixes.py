@@ -291,6 +291,16 @@ if '/en/blog/' not in s:
     s = s.replace('      <a href="#faq">FAQ</a>\n      <a href="/">Русский</a>', '      <a href="#faq">FAQ</a>\n      <a href="/en/blog/">Blog</a>\n      <a href="/">Русский</a>', 1)
 save(p, s, o, 'internal links')
 
+# ---------------------------------------------------------------- 8a. пульсирующий баннер под плеером
+# «Подписаться на канал» вёл в Telegram-канал с мини-приложением, а не просто на канал — название сбивало с толку.
+PULSE = {'<div class="tg-pulse-text">Подписаться на канал</div>': '<div class="tg-pulse-text">Смотреть в Telegram</div>',
+         '<div class="tg-pulse-text">Subscribe to the channel</div>': '<div class="tg-pulse-text">Watch in Telegram</div>'}
+for rel in PAGES:
+    t = rd(rel); o = t
+    for old_, new_ in PULSE.items():
+        t = t.replace(old_, new_)
+    save(rel, t, o, 'pulse banner')
+
 # ---------------------------------------------------------------- 8b. каналы вне каталога — noindex
 # Эти страницы работают и доступны посетителям, но их нет в каталоге главной (решение владельца 18.10.2026):
 # не индексируются, в sitemap не входят, в «Похожие» не попадают.
