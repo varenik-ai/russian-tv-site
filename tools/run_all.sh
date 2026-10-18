@@ -23,6 +23,9 @@ run gen_quality.py     # выбор качества (hls.js и нативный
 run gen_playerui.py    # единая панель плеера
 run gen_homeplayer.py  # те же скрипты и настройки hls.js на главных
 run gen_counts.py      # числа каналов на страницах категорий
+run gen_audit_fixes.py # исправления по аудиту: GTM, шрифты, логотипы, JSON-LD, title/description, hreflang, похожие каналы, sitemap
+run gen_channel_texts.py # тексты «О канале» для шаблонных страниц, честный ответ про качество
+run gen_audit_fixes.py # повторно: sitemap/lastmod и похожие каналы после правок текстов
 
 # версии скриптов в адресах (сброс кеша браузера) для страниц, созданных заново
 python3 - "$ROOT" <<'PY'
@@ -30,7 +33,7 @@ import sys, glob, os
 root = sys.argv[1]
 for f in glob.glob(os.path.join(root, '**/*.html'), recursive=True):
     s = open(f, encoding='utf-8').read(); o = s
-    s = s.replace('<script src="/assets/consent.js"></script>', '<script src="/assets/consent.js?v=2"></script>')
+    s = s.replace('<script src="/assets/consent.js"></script>', '<script src="/assets/consent.js?v=3"></script>')
     if s != o: open(f, 'w', encoding='utf-8').write(s)
 PY
 echo "готово"

@@ -7,7 +7,7 @@
   <meta name="google-site-verification" content="fqqRdwJIsQn4J0e7CtyO0YyfMia2ZC7BWeDzAPfH6a4" />
   <meta name="yandex-verification" content="539c281e6beb1046" />
   <title>Русское ТВ Онлайн — 58 каналов без VPN, бесплатно | Russkoe TV</title>
-  <meta name="description" content="▶ Русское ТВ онлайн за рубежом без VPN — 58 каналов прямого эфира: Первый канал, Россия 1, НТВ, Россия 24, ТНТ, МУЗ-ТВ, детские, кино. Бесплатно, из любой страны 24/7 без регистрации." />
+  <meta name="description" content="▶ Русское ТВ онлайн за рубежом — 58 каналов прямого эфира: Первый канал, Россия 1, НТВ, ТНТ, МУЗ-ТВ, кино, детские. Бесплатно, без регистрации, 24/7." />
   <meta name="keywords" content="русское тв онлайн, смотреть тв бесплатно, первый канал онлайн, россия 1 онлайн, нтв онлайн, россия 24 онлайн, телевидение онлайн, российские каналы, тв в прямом эфире" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <meta name="author" content="Русское ТВ" />
@@ -102,9 +102,6 @@
     ]
   }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js"></script>
   <script src="/player-config.js" onerror="window._playerReady=false"></script>
   <style>
@@ -359,7 +356,7 @@
     .pop-live, .rec-live { font-size:9px; font-weight:800; color:var(--red); flex-shrink:0; }
   .lang-switch a{position:relative}.lang-switch a::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px}.tg-pulse-banner{display:flex;align-items:center;gap:10px;margin:14px 0;padding:13px 16px;background:linear-gradient(135deg,#0d1f3c,#0a2a3f);border:2px solid #229ED9;border-radius:14px;text-decoration:none;color:#fff;animation:tgPulse 2s ease-in-out infinite}@keyframes tgPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,158,217,.55)}50%{box-shadow:0 0 0 7px rgba(34,158,217,0)}}.tg-pulse-icon{width:38px;height:38px;background:#229ED9;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}.tg-pulse-text{flex:1;font-size:14px;font-weight:700}.tg-pulse-arrow{opacity:.6;flex-shrink:0;font-size:16px}</style>
 <!-- Google tag (gtag.js) -->
-  <script src="/assets/consent.js?v=2"></script>
+  <script src="/assets/consent.js?v=3"></script>
 <!-- Microsoft Clarity -->
 <!-- Yandex.Metrika counter -->
 <!-- /Yandex.Metrika counter -->
@@ -381,6 +378,9 @@
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
   <meta name="twitter:image" content="https://russian-tv.com/og-image.jpg"/>
+<link rel="preload" href="/assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<style id="inter-font">@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-cyrillic.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-cyrillic-ext.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}</style>
 </head>
 <body>
 
@@ -650,16 +650,16 @@ const CHANNEL_GROUPS = [
     { id:'ntv',          name:'НТВ',              desc:'Новости и кино 24/7',           icon:'НТВ',  color:'#2980b9', iconBg:'#0a1020', tags:['новости','кино'],           slug:'ntv-live', logo:'/assets/logos/ntv.svg' },
     { id:'rossiya24',    name:'Россия 24',        desc:'Новости круглосуточно',         icon:'Р24',  color:'#1565c0', iconBg:'#0a0f1a', tags:['новости','круглосуточно'],  slug:'rossiya-24-live', logo:'/assets/logos/rossiya24.svg' },
     { id:'pyatyy',       name:'Пятый канал',      desc:'Новости и публицистика',        icon:'5',    color:'#1976d2', iconBg:'#0a0f1a', tags:['новости','публицистика'],   slug:'pyatyy-kanal-live', logo:'/assets/logos/pyatyy.svg' },
-    { id:'tvc',          name:'ТВЦ',              desc:'Московское телевидение',        icon:'ТВЦ',  color:'#37474f', iconBg:'#0a0f12', tags:['новости','Москва'],         slug:'tv-centr-live', logo:'https://smotret.tv/images/logo-tv-centr.svg' },
-    { id:'mir',          name:'МИР',              desc:'СНГ — межгосударственное ТВ',   icon:'МИР',  color:'#0288d1', iconBg:'#0a1018', tags:['новости','СНГ'],            slug:'mir-live', logo:'https://smotret.tv/images/logo-mir.svg' },
-    { id:'zvezda',       name:'Звезда',           desc:'Патриотическое телевидение',    icon:'★',    color:'#c62828', iconBg:'#180808', tags:['армия','патриотизм'],       slug:'zvezda-live', logo:'https://smotret.tv/images/logo-zvezda.svg' },
+    { id:'tvc',          name:'ТВЦ',              desc:'Московское телевидение',        icon:'ТВЦ',  color:'#37474f', iconBg:'#0a0f12', tags:['новости','Москва'],         slug:'tv-centr-live', logo:'/assets/logos/logo-tv-centr.svg' },
+    { id:'mir',          name:'МИР',              desc:'СНГ — межгосударственное ТВ',   icon:'МИР',  color:'#0288d1', iconBg:'#0a1018', tags:['новости','СНГ'],            slug:'mir-live', logo:'/assets/logos/logo-mir.svg' },
+    { id:'zvezda',       name:'Звезда',           desc:'Патриотическое телевидение',    icon:'★',    color:'#c62828', iconBg:'#180808', tags:['армия','патриотизм'],       slug:'zvezda-live', logo:'/assets/logos/logo-zvezda.svg' },
     { id:'ch360',        name:'360°',             desc:'Новости Подмосковья',           icon:'360',  color:'#1565c0', iconBg:'#080d1a', tags:['новости','регион'],         slug:'kanal-360-live' },
     { id:'spb', name:'Санкт-Петербург', desc:'Телеканал Санкт-Петербурга', icon:'СПБ', color:'#1565c0', iconBg:'#080d1a', tags:['новости','новости Петербурга'], slug:'sankt-peterburg-live' },
     { id:'moskva24', name:'Москва 24', desc:'Новости и жизнь столицы', icon:'М24', color:'#e53935', iconBg:'#1a0808', tags:['новости','новости Москвы'], slug:'moskva-24-live' },
-    { id:'soloviev',     name:'Соловьёв Live',    desc:'Политика и аналитика',          icon:'СЛ',   color:'#455a64', iconBg:'#0d1214', tags:['политика','аналитика'],     slug:'soloviev-live', logo:'https://smotret.tv/images/logo-solovev-live.svg' },
+    { id:'soloviev',     name:'Соловьёв Live',    desc:'Политика и аналитика',          icon:'СЛ',   color:'#455a64', iconBg:'#0d1214', tags:['политика','аналитика'],     slug:'soloviev-live', logo:'/assets/logos/logo-solovev-live.svg' },
   ]},
   { label:'🎬 Развлечения', channels:[
-    { id:'tnt',          name:'ТНТ4',             desc:'Юмор, сериалы и молодёжные шоу', icon:'ТНТ4', color:'#ff6d00', iconBg:'#1a1000', tags:['юмор','сериалы','шоу'],     slug:'tnt-live', logo:'https://smotret.tv/images/logo-tnt.svg' },
+    { id:'tnt',          name:'ТНТ4',             desc:'Юмор, сериалы и молодёжные шоу', icon:'ТНТ4', color:'#ff6d00', iconBg:'#1a1000', tags:['юмор','сериалы','шоу'],     slug:'tnt-live', logo:'/assets/logos/logo-tnt.svg' },
     { id:'istoriya',     name:'История',          desc:'Документальное кино',           icon:'ИСТ',  color:'#5d4037', iconBg:'#120e0a', tags:['история','документальное'],  slug:'istoriya-live' },
     { id:'soyuz', name:'Союз', desc:'Семейное телевидение', icon:'СОЮ', color:'#8d6e63', iconBg:'#120e0a', tags:['развлечения','семейное ТВ'], slug:'soyuz-live' },
     { id:'prima', name:'Прима', desc:'Развлекательный канал', icon:'ПРИ', color:'#ad1457', iconBg:'#180810', tags:['развлечения','развлекательное ТВ'], slug:'prima-live' },
@@ -679,13 +679,13 @@ const CHANNEL_GROUPS = [
     { id:'detektiv', name:'Честный детектив', desc:'Детективы и криминал', icon:'ЧД', color:'#546e7a', iconBg:'#0c1216', tags:['кино','детективы и криминал'], slug:'chestnyy-detektiv-live' },
   ]},
   { label:'👶 Детские', channels:[
-    { id:'karusel',      name:'Карусель',         desc:'Для малышей и детей',           icon:'КАР',  color:'#ff6f00', iconBg:'#1a1200', tags:['дети','мультфильмы'],       slug:'karusel-live', logo:'https://smotret.tv/images/logo-karusel.svg' },
+    { id:'karusel',      name:'Карусель',         desc:'Для малышей и детей',           icon:'КАР',  color:'#ff6f00', iconBg:'#1a1200', tags:['дети','мультфильмы'],       slug:'karusel-live', logo:'/assets/logos/logo-karusel.svg' },
     { id:'mult',         name:'Мульт',            desc:'Мультфильмы 24/7',              icon:'МЛТ',  color:'#ff8f00', iconBg:'#1a1400', tags:['мультфильмы','дети'],       slug:'mult-live' },
     { id:'karuselIntl', name:'Карусель International', desc:'Для малышей и детей', icon:'КИ', color:'#ff6f00', iconBg:'#1a1200', tags:['дети','детские передачи'], slug:'karusel-international-live' },
     { id:'ryzhiy', name:'Рыжий', desc:'Развлекательный канал', icon:'РЫЖ', color:'#e65100', iconBg:'#1a0e08', tags:['дети','развлекательное ТВ'], slug:'ryzhiy-live' },
   ]},
   { label:'🎵 Музыка', channels:[
-    { id:'muztv',        name:'МУЗ-ТВ',           desc:'Хиты и клипы',                  icon:'МУЗ',  color:'#e91e63', iconBg:'#1a0a10', tags:['музыка','клипы'],           slug:'muz-tv-live', logo:'https://smotret.tv/images/logo-muz-tv.svg' },
+    { id:'muztv',        name:'МУЗ-ТВ',           desc:'Хиты и клипы',                  icon:'МУЗ',  color:'#e91e63', iconBg:'#1a0a10', tags:['музыка','клипы'],           slug:'muz-tv-live', logo:'/assets/logos/logo-muz-tv.svg' },
     { id:'muzykaPervogo',name:'Музыка Первого',   desc:'Канал Первого',                 icon:'М1',   color:'#1565c0', iconBg:'#080d1a', tags:['музыка','эстрада'],         slug:'muzyka-pervogo-live' },
     { id:'muzsoyuz', name:'Муз Союз', desc:'Музыка и клипы', icon:'МС', color:'#e91e63', iconBg:'#1a0a10', tags:['музыка','музыка и клипы'], slug:'muz-soyuz-live' },
     { id:'fonmusic', name:'FON Music', desc:'Музыкальные клипы', icon:'FON', color:'#7b1fa2', iconBg:'#130a18', tags:['музыка','музыкальные клипы'], slug:'fon-music-live' },

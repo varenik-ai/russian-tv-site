@@ -39,6 +39,8 @@ python3 tools/gen_site.py . # или отдельный шаг (первый а�
 | `gen_legal.py` | оговорка для правообладателей в подвале, раздел 4.1 и EN-версия политики конфиденциальности |
 | `gen_ads.py` | контакт `dyaltd@gmail.com`, страницы `/advertising/` и `/en/advertising/`, ссылка в подвале |
 | `gen_consent.py` | убирает встроенные трекеры (GA4, GTM, Метрика, Clarity), подключает `assets/consent.js` |
+| `gen_audit_fixes.py` | исправления по аудиту 18.10.2026: убран пустой GTM, самохостинг шрифта Inter, локальные логотипы, JSON-LD без `VideoObject`, укороченные title/description, hreflang блога/спорта, «Похожие каналы» по кольцу категории, `lastmod` из git |
+| `gen_channel_texts.py` | уникальные «О канале» для шаблонных страниц (24 канала) и честный FAQ про качество |
 | `gen_ga_all.py` | подключает `assets/consent.js` на все индексируемые страницы, где его ещё нет |
 | `gen_encat.py` | EN-страницы категорий (`/en/news/` …), hreflang на русских категориях |
 | `gen_seo.py` | `og:image`, число каналов, sitemap с hreflang, ссылки на главной, `ItemList`, `404.html`, подсказки `preconnect` |
