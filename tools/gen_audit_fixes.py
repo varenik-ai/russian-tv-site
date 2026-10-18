@@ -293,8 +293,10 @@ save(p, s, o, 'internal links')
 
 # ---------------------------------------------------------------- 8a. пульсирующий баннер под плеером
 # «Подписаться на канал» вёл в Telegram-канал с мини-приложением, а не просто на канал — название сбивало с толку.
-PULSE = {'<div class="tg-pulse-text">Подписаться на канал</div>': '<div class="tg-pulse-text">Смотреть в Telegram</div>',
-         '<div class="tg-pulse-text">Subscribe to the channel</div>': '<div class="tg-pulse-text">Watch in Telegram</div>'}
+PULSE = {'<div class="tg-pulse-text">Подписаться на канал</div>': '<div class="tg-pulse-text">Смотреть каналы в Telegram</div>',
+         '<div class="tg-pulse-text">Смотреть в Telegram</div>': '<div class="tg-pulse-text">Смотреть каналы в Telegram</div>',
+         '<div class="tg-pulse-text">Subscribe to the channel</div>': '<div class="tg-pulse-text">Watch channels in Telegram</div>',
+         '<div class="tg-pulse-text">Watch in Telegram</div>': '<div class="tg-pulse-text">Watch channels in Telegram</div>'}
 for rel in PAGES:
     t = rd(rel); o = t
     for old_, new_ in PULSE.items():
