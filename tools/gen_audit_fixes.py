@@ -291,6 +291,21 @@ if '/en/blog/' not in s:
     s = s.replace('      <a href="#faq">FAQ</a>\n      <a href="/">Русский</a>', '      <a href="#faq">FAQ</a>\n      <a href="/en/blog/">Blog</a>\n      <a href="/">Русский</a>', 1)
 save(p, s, o, 'internal links')
 
+# ---------------------------------------------------------------- 8c. трансляция на ТВ (Google Cast / AirPlay)
+CAST_TAG = '<script defer src="/assets/cast.js?v=1"></script>'
+for rel in PAGES:
+    t = rd(rel); o = t
+    if '/assets/player-ui.js' in t and 'assets/cast.js' not in t:
+        t = re.sub(r'(<script defer src="/assets/player-ui\.js\?v=\d+"></script>)', lambda m: m.group(1) + '\n' + CAST_TAG, t, count=1)
+    save(rel, t, o, 'cast.js')
+CAST_LI = {'privacy/index.html': '    <li><strong>Google Cast</strong> — кнопка трансляции на телевизор: в браузерах на основе Chromium подгружается скрипт Google (gstatic.com); подключается без вашего участия, трансляция начинается только после нажатия кнопки.</li>\n',
+           'en/privacy/index.html': '    <li><strong>Google Cast</strong> — the cast-to-TV button: in Chromium-based browsers a Google script (gstatic.com) is loaded; casting starts only after you press the button.</li>\n'}
+for rel, li in CAST_LI.items():
+    t = rd(rel); o = t
+    if 'Google Cast' not in t:
+        t = re.sub(r'(<li><strong>Microsoft Clarity</strong>[^\n]*</li>\n)', lambda m: m.group(1) + li, t, count=1)
+    save(rel, t, o, 'cast.js')
+
 # ---------------------------------------------------------------- 8a. пульсирующий баннер под плеером
 # «Подписаться на канал» вёл в Telegram-канал с мини-приложением, а не просто на канал — название сбивало с толку.
 PULSE = {'<div class="tg-pulse-text">Подписаться на канал</div>': '<div class="tg-pulse-text">Смотреть каналы в Telegram</div>',
