@@ -206,8 +206,12 @@
     // клик по видео: мышь — пауза/пуск, двойной клик/касание — полный экран, касание — показать панель
     var clickTimer = null;
     wrap.addEventListener('click', function (e) {
-      var t = e.target;
-      if (t.closest && t.closest('.rtvp-bar,.rtvp-cta,.rtvp-err,.rtvp-toast,.rtvq-menu,.rtvq-btn,button,a,input,#overlay,.player-overlay,.tile-grid')) return;
+      var t = e.target, SKIP = '.rtvp-bar,.rtvp-cta,.rtvp-err,.rtvp-toast,.rtvc-over,.rtvq-menu,.rtvq-btn,button,a,input,#overlay,.player-overlay,.tile-grid';
+      // путь события берём из composedPath(): кнопки панели перерисовывают свою иконку (innerHTML) раньше, чем клик дойдёт сюда,
+      // и e.target оказывается вне DOM — closest() его не находил, и нажатие «Выключить звук» ставило видео на паузу
+      var path = (e.composedPath && e.composedPath()) || [];
+      if (path.some(function (n) { return n.matches && n.matches(SKIP); })) return;
+      if (t.closest && t.closest(SKIP)) return;
       if (wrap.classList.contains('rtvp-inactive') || wrap.classList.contains('grid-mode')) return;
       var touch = (e.pointerType === 'touch') || (e.pointerType === undefined && matchMedia('(pointer:coarse)').matches);
       if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; toggleFs(); return; }
@@ -217,6 +221,11 @@
     // ---- события видео ----
     ['volumechange', 'playing', 'pause', 'play', 'loadedmetadata', 'emptied', 'loadstart', 'canplay'].forEach(function (ev) { video.addEventListener(ev, sync); });
     video.addEventListener('playing', restorePrefs); video.addEventListener('emptied', function () { restored = false; });
+    // «без звука» (сознательный выбор зрителя) действует с самого запуска и после каждого перезапуска потока:
+    // раньше звук включался на 1–2 секунды до события playing, а при перезапуске плеера страницей мог вернуться
+    function enforceMute() { try { if (ls('rtv_muted') === '1' && !video.muted) video.muted = true; } catch (e) {} }
+    ['loadstart', 'loadedmetadata', 'play', 'playing', 'canplay', 'emptied'].forEach(function (ev) { video.addEventListener(ev, enforceMute); });
+    enforceMute();
     ['waiting', 'stalled', 'seeking'].forEach(function (ev) { video.addEventListener(ev, function () { spin.classList.add('rtvp-show'); }); });
     ['playing', 'canplay', 'pause', 'emptied'].forEach(function (ev) { video.addEventListener(ev, function () { spin.classList.remove('rtvp-show'); }); });
 

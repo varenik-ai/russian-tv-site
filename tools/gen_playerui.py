@@ -9,6 +9,6 @@ for f in files:
     if '/assets/quality.js' not in s: continue
     s = re.sub(r'/assets/quality\.js\?v=\d+', '/assets/quality.js?v=7', s)
     if '/assets/player-ui.js' not in s:
-        s = s.replace('<script defer src="/assets/quality.js?v=7"></script>', '<script defer src="/assets/player-ui.js?v=4"></script>\n<script defer src="/assets/quality.js?v=7"></script>', 1)
+        s = s.replace('<script defer src="/assets/quality.js?v=7"></script>', '<script defer src="/assets/player-ui.js?v=5"></script>\n<script defer src="/assets/quality.js?v=7"></script>', 1)
     if s != o: open(f, 'w', encoding='utf-8').write(s); n += 1
 print('pages with unified player UI:', n)
