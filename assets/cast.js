@@ -79,6 +79,16 @@
       vis();
     });
     if (ctx.getCurrentSession()) start();
+    if (/[?&]castdebug=1/.test(location.search)) debugBadge(ctx, vis);
+  }
+  // диагностика: ?castdebug=1 показывает состояние Cast и Remote Playback и принудительно выводит кнопку
+  function debugBadge(ctx, vis) {
+    var d = document.createElement('div');
+    d.style.cssText = 'position:absolute;left:8px;top:8px;z-index:70;background:rgba(0,0,0,.8);color:#fff;font:12px/1.4 monospace;padding:6px 8px;border-radius:6px;pointer-events:none;max-width:90%';
+    wrap.appendChild(d);
+    var remote = 'n/a';
+    try { var probe = document.createElement('video'); probe.src = proxy() + '/stream?channel=' + (chId() || 'tnt'); probe.style.display = 'none'; document.body.appendChild(probe); probe.remote.watchAvailability(function (a) { remote = String(a); }).catch(function (e) { remote = 'err ' + (e && e.name); }); } catch (e) { remote = 'unsupported'; }
+    setInterval(function () { d.textContent = 'Cast: ' + ctx.getCastState() + ' | Remote Playback: ' + remote + ' | Chrome ' + ((UA.match(/Chrome\/(\d+)/) || [])[1] || '?'); btn.style.display = 'inline-flex'; }, 1000);
   }
   function deviceName() { try { return cast.framework.CastContext.getInstance().getCurrentSession().getCastDevice().friendlyName; } catch (e) { return null; } }
   function sendMedia() {

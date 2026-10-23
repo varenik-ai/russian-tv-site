@@ -292,7 +292,7 @@ if '/en/blog/' not in s:
 save(p, s, o, 'internal links')
 
 # ---------------------------------------------------------------- 8c. трансляция на ТВ (Google Cast / AirPlay)
-CAST_TAG = '<script defer src="/assets/cast.js?v=1"></script>'
+CAST_TAG = '<script defer src="/assets/cast.js?v=2"></script>'
 for rel in PAGES:
     t = rd(rel); o = t
     if '/assets/player-ui.js' in t and 'assets/cast.js' not in t:
