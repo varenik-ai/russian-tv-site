@@ -130,12 +130,25 @@
   function initAirPlay() {
     btn = makeBtn(T.air, ICON_AIR); mount(btn);
     try { video.setAttribute('x-webkit-airplay', 'allow'); video.disableRemotePlayback = false; } catch (e) {}
-    var available = false;
-    function vis() { var native = !/^blob:/.test(video.currentSrc || ''); btn.style.display = (available && native) ? 'inline-flex' : 'none'; }
+    var available = false, forced = false;
+    var isBlob = function () { return /^blob:/.test(video.currentSrc || ''); };
+    // iPhone/iPad: hls.js играет через MSE (blob), а AirPlay-видео возможно только с нативным HLS.
+    // Поэтому кнопка видна всегда, а первое нажатие на blob-канале переключает его на нативный плеер, второе открывает выбор устройства.
+    function vis() { btn.style.display = chId() ? 'inline-flex' : 'none'; btn.classList.toggle('rtvc-ready', !isBlob()); }
     video.addEventListener('webkitplaybacktargetavailabilitychanged', function (e) { available = e.availability === 'available'; vis(); });
     video.addEventListener('loadstart', vis);
     video.addEventListener('playing', vis);
-    btn.addEventListener('click', function () { try { video.webkitShowPlaybackTargetPicker(); } catch (e) {} });
+    btn.addEventListener('click', function () {
+      if (isBlob()) {
+        forced = true;
+        try { if (typeof hls !== 'undefined' && hls && hls.destroy) { hls.destroy(); hls = null; } } catch (e) {}
+        video.src = proxy() + '/stream?channel=' + encodeURIComponent(chId()) + '&native=1';
+        try { var pp = video.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {}
+        btn.title = T.air + ' ▶';
+        return;
+      }
+      try { video.webkitShowPlaybackTargetPicker(); } catch (e) {}
+    });
   }
 
   // ---------------------------------------------------------------- запуск

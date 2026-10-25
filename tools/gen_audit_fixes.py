@@ -292,11 +292,12 @@ if '/en/blog/' not in s:
 save(p, s, o, 'internal links')
 
 # ---------------------------------------------------------------- 8c. трансляция на ТВ (Google Cast / AirPlay)
-CAST_TAG = '<script defer src="/assets/cast.js?v=2"></script>'
+CAST_TAG = '<script defer src="/assets/cast.js?v=3"></script>'
 for rel in PAGES:
     t = rd(rel); o = t
     if '/assets/player-ui.js' in t and 'assets/cast.js' not in t:
         t = re.sub(r'(<script defer src="/assets/player-ui\.js\?v=\d+"></script>)', lambda m: m.group(1) + '\n' + CAST_TAG, t, count=1)
+    t = t.replace('/assets/cast.js?v=2', '/assets/cast.js?v=3')
     save(rel, t, o, 'cast.js')
 CAST_LI = {'privacy/index.html': '    <li><strong>Google Cast</strong> — кнопка трансляции на телевизор: в браузерах на основе Chromium подгружается скрипт Google (gstatic.com); подключается без вашего участия, трансляция начинается только после нажатия кнопки.</li>\n',
            'en/privacy/index.html': '    <li><strong>Google Cast</strong> — the cast-to-TV button: in Chromium-based browsers a Google script (gstatic.com) is loaded; casting starts only after you press the button.</li>\n'}

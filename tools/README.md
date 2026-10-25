@@ -55,7 +55,7 @@ python3 tools/gen_site.py . # или отдельный шаг (первый а�
 
 ## Ограничения
 
-- Версии скриптов в адресах (сейчас `quality.js?v=7`, `player-ui.js?v=5`, `cast.js?v=2`, `site-ux.js?v=2`, `consent.js?v=3`) заданы в соответствующих генераторах (`gen_quality.py`, `gen_playerui.py`, `gen_homeplayer.py`, `gen_ga_all.py`, `run_all.sh`); при правке `assets/*.js` поднимайте номер и в них, и в страницах (`sed` по `*.html`).
+- Версии скриптов в адресах (сейчас `quality.js?v=7`, `player-ui.js?v=5`, `cast.js?v=3`, `site-ux.js?v=2`, `consent.js?v=3`) заданы в соответствующих генераторах (`gen_quality.py`, `gen_playerui.py`, `gen_homeplayer.py`, `gen_ga_all.py`, `run_all.sh`); при правке `assets/*.js` поднимайте номер и в них, и в страницах (`sed` по `*.html`).
 - Тексты «О канале» у 24 каналов (`gen_channel_texts.py`) написаны по общеизвестным признакам и описанию из каталога; их стоит дополнять реальными данными о каналах. У остальных каналов текст берётся из `MORE` в `gen_site.py`.
 - Страницы каналов вне каталога (`NOINDEX_SLUGS`) закрыты `noindex,follow`; чтобы вернуть канал в поиск, уберите его из списка и добавьте в каталог главной.
 - Тесты после пересборки: `python3 -m http.server` в корне и проверка по sitemap (200, title/description без дублей, hreflang взаимные, у каждого канала по 4 «Похожих»).
