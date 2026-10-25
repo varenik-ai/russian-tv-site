@@ -75,7 +75,7 @@
     'body.rtv-cinema .player-wrap:not(.grid-mode){width:min(100%,calc((100vh - 120px)*16/9));margin-left:auto;margin-right:auto}}',
     '.rtvp-cinema-btn{display:none}@media(min-width:1025px){.rtvp-cinema-btn{display:inline-flex}}',
     /* узкие экраны и горизонтальный телефон */
-    '@media(max-width:560px){.rtvp-bar{gap:6px;padding:24px 8px 8px}.rtvp-btn{width:38px;height:38px}.rtvp-cta{padding:8px 16px 8px 10px;top:10px}.rtvp-cta b{font-size:14px}.rtvq-btn.rtvq-in-bar{padding:0 10px;height:38px}.rtvp-live{padding:6px 8px}.rtvp-pill{padding:0 10px}}',
+    '@media(max-width:560px){.rtvp-bar{gap:6px;row-gap:6px;flex-wrap:wrap;padding:24px 8px 8px}.rtvq-w{display:none}.rtvp-pill.golive{font-size:11px;padding:0 9px;white-space:nowrap}.rtvp-bar .rtvp-spacer{flex:1 1 0;min-width:0}.rtvp-bar>.rtvp-btn{flex:0 0 auto}.rtvp-btn{width:38px;height:38px}.rtvp-cta{padding:8px 16px 8px 10px;top:10px}.rtvp-cta b{font-size:14px}.rtvq-btn.rtvq-in-bar{padding:0 10px;height:38px}.rtvp-live{padding:6px 8px}.rtvp-pill{padding:0 10px}}',
     '@media(max-width:380px){.rtvp-live{display:none}.rtvq-btn.rtvq-in-bar{font-size:11px;padding:0 8px}}',
     '@media(max-height:480px) and (orientation:landscape){.rtvp-bar{padding:16px 10px 6px}.rtvp-btn{width:34px;height:34px}.rtvq-btn.rtvq-in-bar{height:34px}.rtvp-cta{top:8px;padding:6px 14px 6px 8px}.rtvp-cta .ico{width:30px;height:30px}.rtvp-cta b{font-size:13px}.rtvp-cta small{display:none}.rtvp-err h4{font-size:15px}.rtvp-err p{display:none}}'
   ].join('\n');

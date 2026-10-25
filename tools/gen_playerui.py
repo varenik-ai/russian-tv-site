@@ -7,8 +7,8 @@ files = glob.glob(os.path.join(ROOT, '**/*-live/index.html'), recursive=True) + 
 for f in files:
     s = open(f, encoding='utf-8').read(); o = s
     if '/assets/quality.js' not in s: continue
-    s = re.sub(r'/assets/quality\.js\?v=\d+', '/assets/quality.js?v=7', s)
+    s = re.sub(r'/assets/quality\.js\?v=\d+', '/assets/quality.js?v=8', s)
     if '/assets/player-ui.js' not in s:
-        s = s.replace('<script defer src="/assets/quality.js?v=7"></script>', '<script defer src="/assets/player-ui.js?v=5"></script>\n<script defer src="/assets/quality.js?v=7"></script>', 1)
+        s = s.replace('<script defer src="/assets/quality.js?v=8"></script>', '<script defer src="/assets/player-ui.js?v=6"></script>\n<script defer src="/assets/quality.js?v=8"></script>', 1)
     if s != o: open(f, 'w', encoding='utf-8').write(s); n += 1
 print('pages with unified player UI:', n)

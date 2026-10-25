@@ -57,7 +57,7 @@
       if (cl) { var t = tierLabel(cl); return t.main; }
       return pref.charAt(0) === 'b' ? (parseInt(pref.slice(1), 10) / 1000).toFixed(1) + ' ' + T.mbps : pref + 'p';
     }
-    function refreshBtn() { if (btn) btn.textContent = '⚙ ' + T.quality + ': ' + currentLabel(); }
+    function refreshBtn() { if (btn) btn.innerHTML = '⚙ <span class="rtvq-w">' + T.quality + ': </span>' + currentLabel(); }
 
     function applyPref() {
       var pref = get(), levels = hls.levels || [];
@@ -153,14 +153,14 @@
         else { var wh = parseInt(pref, 10); levels.forEach(function (l, i) { if (l.height && l.height <= wh && l.height > bh) { bh = l.height; idx = i; } }); }
         return idx >= 0 ? levels[idx] : null;
       }
-      function label() { var lv = pick(); if (!lv) return '⚙ ' + T.quality + ': ' + T.auto; var tl = tierLabel(lv); return '⚙ ' + T.quality + ': ' + tl.main; }
+      function label() { var lv = pick(); if (!lv) return '⚙ <span class="rtvq-w">' + T.quality + ': </span>' + T.auto; var tl = tierLabel(lv); return '⚙ <span class="rtvq-w">' + T.quality + ': </span>' + tl.main; }
       function apply(reload) {
         var lv = pick(), target = lv ? qUrl(lv) : url;
         if (video.getAttribute('data-rtvq') !== target) {
           video.setAttribute('data-rtvq', target);
           if (reload || lv) { video.src = target; var p = video.play(); if (p && p.catch) p.catch(function () {}); }
         }
-        btn.textContent = label();
+        btn.innerHTML = label();
       }
       function close() { if (menu) { menu.parentNode.removeChild(menu); menu = null; } btn.classList.remove('rtvq-open'); }
       btn.addEventListener('click', function (e) {
