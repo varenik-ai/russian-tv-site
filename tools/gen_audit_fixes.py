@@ -517,5 +517,16 @@ for slug in NOINDEX_SLUGS:
     s = re.sub(r'[ \t]*<url><loc>https://russian-tv\.com/(?:en/)?' + re.escape(slug) + r'/</loc>.*?</url>\n?', '', s)
 save(p, s, o, 'sitemap')
 
+# ---------------------------------------------------------------- 20. Мобильная вёрстка: переполнение по ширине и наезд переключателя языка на логотип
+MFIX = ('<style id="rtv-mfix">@media(max-width:1024px){.page-wrap{grid-template-columns:minmax(0,1fr)!important}'
+        '.main-col,.related-section{min-width:0}.related-section{width:100%}}'
+        '@media(max-width:480px){.lang-switch{position:static;transform:none;margin:0 8px 0 auto}}</style>')
+for rel in PAGES:
+    t = rd(rel); o = t
+    if '.page-wrap{' in t and 'id="rtv-mfix"' not in t:
+        t = t.replace('</head>', MFIX + '\n</head>', 1)
+    save(rel, t, o, 'mobile fix')
+
+
 for k, v in sorted(changed.items()):
     print('%-22s %d файлов' % (k, len(v)))
