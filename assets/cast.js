@@ -7,11 +7,12 @@
 (function () {
   var EN = (document.documentElement.lang || '').toLowerCase().indexOf('en') === 0;
   var T = EN
-    ? { cast: 'Cast to TV', air: 'AirPlay', on: 'Casting to', stop: 'Stop casting', fail: 'Could not send this channel to the TV. Try again or pick another channel.', tv: 'TV' }
-    : { cast: 'Трансляция на ТВ', air: 'AirPlay', on: 'Транслируется на', stop: 'Остановить трансляцию', fail: 'Не удалось отправить канал на ТВ. Попробуйте ещё раз или выберите другой канал.', tv: 'телевизор' };
+    ? { cast: 'Cast to TV', air: 'AirPlay', on: 'Casting to', stop: 'Stop casting', fail: 'Could not send this channel to the TV. Try again or pick another channel.', tv: 'TV', next: 'Tap again to choose a TV', noTv: 'No Google Cast TV found', help: 'Keep the phone and TV on the same Wi-Fi. Most Samsung and LG TVs have no built-in Google Cast. Turn on screen mirroring on the phone (Smart View or Screen Cast), or open this address in the TV browser:', ok: 'OK' }
+    : { cast: 'Трансляция на ТВ', air: 'AirPlay', on: 'Транслируется на', stop: 'Остановить трансляцию', fail: 'Не удалось отправить канал на ТВ. Попробуйте ещё раз или выберите другой канал.', tv: 'телевизор', next: 'Нажмите ещё раз, чтобы выбрать ТВ', noTv: 'Телевизор с Google Cast не найден', help: 'Телефон и ТВ должны быть в одной сети Wi-Fi. На большинстве Samsung и LG встроенного Google Cast нет. Включите на телефоне повтор экрана (Smart View или «Трансляция») либо откройте в браузере телевизора адрес:', ok: 'Понятно' };
   var UA = navigator.userAgent || '';
   var isIOS = /iPhone|iPad|iPod/.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var chromium = !!window.chrome && !isIOS && !/Firefox|FxiOS/.test(UA);
+  var isAndroid = /Android/i.test(UA);
   var ICON_CAST = '<svg viewBox="0 0 24 24"><path d="M1 18v3h3c0-1.66-1.34-3-3-3zm0-4v2c2.76 0 5 2.24 5 5h2c0-3.87-3.13-7-7-7zm0-4v2c4.97 0 9 4.03 9 9h2c0-6.08-4.93-11-11-11zm20-7H3c-1.1 0-2 .9-2 2v3h2V5h18v14h-7v2h7c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>';
   var ICON_AIR = '<svg viewBox="0 0 24 24"><path d="M6 22h12l-6-6-6 6zM21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v-2H3V5h18v12h-4v2h4c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>';
 
@@ -39,7 +40,9 @@
     s.textContent = '.rtvc-over{position:absolute;inset:0;z-index:37;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;background:#0b0b14;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}' +
       '.rtvc-over.rtvc-show{display:flex}.rtvc-over svg{width:44px;height:44px;fill:#7db4ff}.rtvc-over b{font-size:17px}.rtvc-over span{font-size:13px;color:#a8a8c4;max-width:420px}' +
       '.rtvc-over button{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;border-radius:18px;padding:9px 18px;font:700 13px/1 inherit;cursor:pointer}' +
-      '.rtvc-over button:hover{background:rgba(255,255,255,.2)}';
+      '.rtvc-over button:hover{background:rgba(255,255,255,.2)}' +
+      '.rtvc-over.rtvc-help{z-index:60;gap:8px;padding:10px 14px;overflow:auto}.rtvc-over.rtvc-help b{font-size:15px}.rtvc-over.rtvc-help span{font-size:12px;line-height:1.35}.rtvc-over.rtvc-help i{font-style:normal;font-size:12px;color:#fff;word-break:break-all}' +
+      '.rtvc-next{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;display:none;border:0;border-radius:22px;padding:12px 18px;max-width:90%;background:#d62612;color:#fff;font:700 14px/1.2 -apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer}.rtvc-next.rtvc-show{display:block}';
     document.head.appendChild(s);
   }
   function makeBtn(label, icon) {
@@ -55,7 +58,7 @@
     wrap.appendChild(overlay); return overlay;
   }
   function showOverlay(device, err) {
-    var o = ensureOverlay(); o.innerHTML = '';
+    var o = ensureOverlay(); o.innerHTML = ''; o.classList.remove('rtvc-help');
     o.insertAdjacentHTML('beforeend', ICON_CAST);
     var b = document.createElement('b'); b.textContent = T.on + ' ' + (device || T.tv); o.appendChild(b);
     var s = document.createElement('span'); s.textContent = err ? T.fail : chName(); o.appendChild(s);
@@ -65,12 +68,31 @@
   }
 
   // ---------------------------------------------------------------- Google Cast
+  var castCtx = null;
+  function castButton() {
+    btn = makeBtn(T.cast, ICON_CAST); mount(btn);
+    btn.addEventListener('click', function () {
+      if (casting) return;
+      if (!castCtx || castCtx.getCastState() === 'NO_DEVICES_AVAILABLE') { if (isAndroid) showHelp(); return; }
+      try { castCtx.requestSession().catch(function () {}); } catch (e) {}
+    });
+  }
+  // Android: большинство ТВ (Samsung, LG) без Google Cast. Зритель приходит сюда по кнопке «На ТВ» из мини-аппа, поэтому объясняем, что делать, а не прячем кнопку.
+  function showHelp() {
+    var o = ensureOverlay(); o.innerHTML = ''; o.classList.add('rtvc-help');
+    var b = document.createElement('b'); b.textContent = T.noTv; o.appendChild(b);
+    var s = document.createElement('span'); s.textContent = T.help; o.appendChild(s);
+    var u = document.createElement('i'); u.textContent = location.host + location.pathname; o.appendChild(u);
+    var c = document.createElement('button'); c.type = 'button'; c.textContent = T.ok;
+    c.addEventListener('click', function () { o.classList.remove('rtvc-show', 'rtvc-help'); }); o.appendChild(c);
+    o.classList.add('rtvc-show');
+  }
   function initCast() {
     var ctx = cast.framework.CastContext.getInstance();
     ctx.setOptions({ receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED });
-    btn = makeBtn(T.cast, ICON_CAST); mount(btn);
-    btn.addEventListener('click', function () { if (casting) return; try { ctx.requestSession().catch(function () {}); } catch (e) {} });
-    function vis() { var st = ctx.getCastState(); btn.style.display = (st && st !== 'NO_DEVICES_AVAILABLE') ? 'inline-flex' : 'none'; btn.classList.toggle('on', st === 'CONNECTED'); }
+    castCtx = ctx;
+    if (!btn) castButton();
+    function vis() { var st = ctx.getCastState(); btn.style.display = (isAndroid || (st && st !== 'NO_DEVICES_AVAILABLE')) ? 'inline-flex' : 'none'; btn.classList.toggle('on', st === 'CONNECTED'); }
     ctx.addEventListener(cast.framework.CastContextEventType.CAST_STATE_CHANGED, vis); vis();
     ctx.addEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, function (e) {
       var S = cast.framework.SessionState;
@@ -130,24 +152,49 @@
   function initAirPlay() {
     btn = makeBtn(T.air, ICON_AIR); mount(btn);
     try { video.setAttribute('x-webkit-airplay', 'allow'); video.disableRemotePlayback = false; } catch (e) {}
-    var available = false, forced = false;
+    var forced = false, retries = 0;
     var isBlob = function () { return /^blob:/.test(video.currentSrc || ''); };
-    // iPhone/iPad: hls.js играет через MSE (blob), а AirPlay-видео возможно только с нативным HLS.
-    // Поэтому кнопка видна всегда, а первое нажатие на blob-канале переключает его на нативный плеер, второе открывает выбор устройства.
-    function vis() { btn.style.display = chId() ? 'inline-flex' : 'none'; btn.classList.toggle('rtvc-ready', !isBlob()); }
-    video.addEventListener('webkitplaybacktargetavailabilitychanged', function (e) { available = e.availability === 'available'; vis(); });
+    var next = document.createElement('button'); next.type = 'button'; next.className = 'rtvc-next'; next.textContent = T.next; wrap.appendChild(next);
+    function pick() { next.classList.remove('rtvc-show'); try { video.webkitShowPlaybackTargetPicker(); } catch (e) {} }
+    // Заглушённое видео iOS не передаёт на ТВ, поэтому звук включаем прямо в жесте нажатия (и снимаем сохранённое «без звука»: его снова применяет player-ui.js)
+    function unmute() {
+      try { localStorage.setItem('rtv_muted', '0'); } catch (e) {}
+      try { if (typeof userUnmuted !== 'undefined') userUnmuted = true; } catch (e) {}
+      video.muted = false; if (!video.volume) video.volume = 1;
+    }
+    function toNative() {
+      try { if (typeof _retryTimer !== 'undefined') clearTimeout(_retryTimer); } catch (e) {}
+      try { if (typeof hls !== 'undefined' && hls && hls.destroy) { hls.destroy(); hls = null; } } catch (e) {}
+      try { if (typeof overlay !== 'undefined' && overlay) overlay.style.display = 'none'; } catch (e) {}
+      video.src = proxy() + '/stream?channel=' + encodeURIComponent(chId()) + '&native=1';
+      try { var pp = video.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {}
+    }
+    // iPhone/iPad: hls.js играет через MSE (blob), а AirPlay-видео возможно только с нативным HLS: с blob на ТВ уходит только звук.
+    // Поэтому кнопка видна всегда, первое нажатие переключает канал на нативный плеер, второе (кнопка по центру плеера) открывает выбор устройства.
+    function vis() { btn.style.display = chId() ? 'inline-flex' : 'none'; btn.classList.toggle('rtvc-ready', !!video.currentSrc && !isBlob()); }
+    function ready() { retries = 0; if (forced && !isBlob() && !video.webkitCurrentPlaybackTargetIsWireless) next.classList.add('rtvc-show'); }
+    video.addEventListener('webkitplaybacktargetavailabilitychanged', vis);
     video.addEventListener('loadstart', vis);
     video.addEventListener('playing', vis);
+    video.addEventListener('loadedmetadata', ready);
+    video.addEventListener('playing', ready);
+    video.addEventListener('webkitcurrentplaybacktargetiswirelesschanged', function () { if (video.webkitCurrentPlaybackTargetIsWireless) { forced = true; next.classList.remove('rtvc-show'); } });
+    // Страница может сама запустить hls.js заново (смена канала, отложенный повтор): в режиме AirPlay сразу возвращаем нативный плеер
+    video.addEventListener('loadstart', function () { if (forced && isBlob()) toNative(); });
+    video.addEventListener('error', function () {
+      if (!forced || isBlob() || retries >= 5) return;
+      retries++;
+      try { if (typeof _advanceProxy === 'function') _advanceProxy(); } catch (e) {}
+      setTimeout(function () { if (forced) toNative(); }, 3000);
+    });
+    next.addEventListener('click', function (e) { e.stopPropagation(); unmute(); pick(); });
     btn.addEventListener('click', function () {
-      if (isBlob()) {
-        forced = true;
-        try { if (typeof hls !== 'undefined' && hls && hls.destroy) { hls.destroy(); hls = null; } } catch (e) {}
-        video.src = proxy() + '/stream?channel=' + encodeURIComponent(chId()) + '&native=1';
-        try { var pp = video.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {}
-        btn.title = T.air + ' ▶';
-        return;
+      unmute();
+      if (isBlob() || !video.currentSrc) {
+        if (forced) return;   // нативный плеер ещё запускается
+        forced = true; toNative(); return;
       }
-      try { video.webkitShowPlaybackTargetPicker(); } catch (e) {}
+      pick();
     });
   }
 
@@ -159,6 +206,7 @@
     if (!bar) return false;
     css();
     if (window.WebKitPlaybackTargetAvailabilityEvent) { initAirPlay(); return true; }
+    if (isAndroid) { castButton(); btn.style.display = 'inline-flex'; }
     if (chromium) {
       // смена канала на главной во время трансляции: отправляем новый канал на ТВ, локальное видео остаётся на паузе
       video.addEventListener('loadstart', function () {
