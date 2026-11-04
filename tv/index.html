@@ -38,6 +38,10 @@ video{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
 #menu.show{display:block}
 #menu button.on{color:#7db4ff;font-weight:700}
 #menu button.on:focus{color:#fff}
+#menu.code{left:50%!important;top:50%;bottom:auto!important;transform:translate(-50%,-50%);max-height:none;min-width:28rem;padding:1.4rem;text-align:center;font-size:1rem;line-height:1.4}
+#menu.code b{display:block;font-size:3.6rem;letter-spacing:.35rem;margin:.6rem 0;color:#fff}
+#menu.code button{text-align:center;background:#22223a;margin-top:.8rem}
+#menu.code button:focus{background:#2a5fd0}
 #info,#testBtn{display:none}
 body.test #info{display:block;font-size:.85rem;line-height:1.35;margin-top:.5rem;max-height:24vh;overflow-y:auto;white-space:pre-wrap}
 body.test #testBtn{display:block;font-weight:700;background:#22223a}
@@ -62,6 +66,7 @@ body.full.ctl #bar{display:flex;left:0;right:0;bottom:0;padding:1.5rem;backgroun
     <button id="bSound" type="button"></button>
     <button id="bQuality" type="button"></button>
     <button id="bFull" type="button"></button>
+    <button id="bPhone" type="button">📱 Подключить телефон</button>
   </div>
   <div id="info"><div id="sum"></div><div id="dev"></div></div>
 </div>
@@ -75,7 +80,7 @@ var PROXIES = ["https://stream.russian-tv.com", "https://oak-valley.dyaltd.worke
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var video = $('v'), groupsEl = $('groups'), chsEl = $('chs'), railEl = $('rail'), menuEl = $('menu'), bodyEl = document.body;
-  var bSound = $('bSound'), bQuality = $('bQuality'), bFull = $('bFull'), testBtn = $('testBtn');
+  var bSound = $('bSound'), bQuality = $('bQuality'), bFull = $('bFull'), bPhone = $('bPhone'), testBtn = $('testBtn');
   var TEST = /[?&]test=1/.test(location.search);
   var ATTEMPT_MS = 12000, NEED_S = 2, OSD_MS = 4000, BAR_MS = 6000;
   var flat = [], gi = 0, chBtns = [], gBtns = [], results = {}, hls = null, timer = null, poll = null, watch = null, run = 0, current = null, testing = false, played = false;
@@ -199,6 +204,52 @@ var PROXIES = ["https://stream.russian-tv.com", "https://oak-valley.dyaltd.worke
     menuEl.style.bottom = (window.innerHeight - r.top + 8) + 'px';
     mark.focus();
   });
+  // ---------- связь с телефоном (воркер russia-tv-pair)
+  var PAIR = 'https://pair.russian-tv.com', tvId = lsGet('rtv_tv_id'), wsDelay = 2000, codeT = null;
+  if (!/^[0-9a-f]{32}$/.test(tvId || '')) {
+    tvId = ''; var rnd = new Uint8Array(16); (window.crypto || window.msCrypto).getRandomValues(rnd);
+    for (var ri = 0; ri < 16; ri++) tvId += ('0' + rnd[ri].toString(16)).slice(-2);
+    lsSet('rtv_tv_id', tvId);
+  }
+  function fromPhone(m) {
+    if (m.t === 'paired') { if (menuFrom === bPhone) closeMenu(); setStatus('Телефон подключён'); return; }
+    if (m.t !== 'play' || testing) return;
+    var ch = null, g = -1;
+    flat.forEach(function (f) { if (f.ch.id === m.channel) { ch = f.ch; g = f.g; } });
+    if (!ch) ch = { id: m.channel, name: m.name || m.channel };
+    if (menuFrom) closeMenu();
+    if (g >= 0 && g !== gi) renderGroup(g);
+    open(ch);
+    if (!bodyEl.classList.contains('full')) focusCurrent();
+  }
+  function connect() {
+    var ws;
+    try { ws = new WebSocket(PAIR.replace('https', 'wss') + '/ws?tv=' + tvId); } catch (e) { setTimeout(connect, wsDelay); return; }
+    var ping = null;
+    ws.onopen = function () { wsDelay = 2000; ping = setInterval(function () { try { ws.send('ping'); } catch (e) {} }, 25000); };
+    ws.onmessage = function (e) { var m; try { m = JSON.parse(e.data); } catch (x) { return; } fromPhone(m); };
+    ws.onclose = function () { clearInterval(ping); setTimeout(connect, wsDelay); wsDelay = Math.min(wsDelay * 2, 30000); };
+  }
+  function showCode(text, code) {
+    menuEl.innerHTML = ''; menuEl.className = 'show code'; menuEl.style.left = ''; menuEl.style.bottom = '';
+    var d = document.createElement('div'); d.textContent = text; menuEl.appendChild(d);
+    if (code) { var c = document.createElement('b'); c.textContent = code; menuEl.appendChild(c); var h = document.createElement('div'); h.textContent = 'Код действует 10 минут. После подключения телевизор запомнится, и вводить код больше не нужно.'; menuEl.appendChild(h); }
+    var x = document.createElement('button'); x.type = 'button'; x.textContent = 'Закрыть'; x.addEventListener('click', closeMenu); menuEl.appendChild(x);
+    menuFrom = bPhone; x.focus();
+  }
+  function askCode() {
+    clearTimeout(codeT);
+    var q = new XMLHttpRequest(); q.open('POST', PAIR + '/code'); q.setRequestHeader('Content-Type', 'application/json');
+    q.onload = function () {
+      var d = {}; try { d = JSON.parse(q.responseText); } catch (e) {}
+      if (!d.code) { showCode('Не удалось получить код. Попробуйте ещё раз через несколько минут.'); return; }
+      showCode('Откройте канал в мини-аппе Telegram, нажмите «На ТВ» и введите код:', d.code);
+      codeT = setTimeout(function () { if (menuFrom === bPhone) askCode(); }, (d.ttl - 20) * 1000);
+    };
+    q.onerror = function () { showCode('Нет связи с сервером. Проверьте интернет на телевизоре.'); };
+    q.send(JSON.stringify({ tv: tvId }));
+  }
+  bPhone.addEventListener('click', askCode);
   function setFull(on) {
     bodyEl.classList.toggle('full', on);
     bFull.textContent = on ? '☰ Показать список' : '⛶ На весь экран';
@@ -273,7 +324,7 @@ var PROXIES = ["https://stream.russian-tv.com", "https://oak-valley.dyaltd.worke
     if (i < 0 || n < 0 || n >= list.length) return false;
     list[n].focus(); if (list === chBtns) center(chsEl, list[n]); return true;
   }
-  function barList() { return [bSound, bQuality, bFull].filter(function (b) { return b.style.display !== 'none'; }); }
+  function barList() { return [bSound, bQuality, bFull, bPhone].filter(function (b) { return b.style.display !== 'none'; }); }
   document.addEventListener('keydown', function (e) {
     var k = e.keyCode, full = bodyEl.classList.contains('full'), ctl = bodyEl.classList.contains('ctl');
     var isBack = k === 27 || k === 461 || k === 10009, a = document.activeElement;
@@ -351,7 +402,7 @@ var PROXIES = ["https://stream.russian-tv.com", "https://oak-valley.dyaltd.worke
   flat.forEach(function (f) { if (f.ch === startCh) gi = f.g; });
   renderGroup(gi);
   if (TEST) { current = startCh; markPlaying(); testBtn.focus(); }
-  else { open(startCh); focusCurrent(); }
+  else { open(startCh); focusCurrent(); connect(); }
 })();
 </script>
 </body>
