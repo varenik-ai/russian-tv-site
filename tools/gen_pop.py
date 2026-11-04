@@ -3,7 +3,7 @@
 Пропускает страницы-редиректы и файл подтверждения Google. Запускается последним, после gen_tv.py."""
 import sys, os, glob
 ROOT = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else '.')
-TAG = '<script defer src="/assets/pop.js?v=2"></script>'
+TAG = '<script defer src="/assets/pop.js?v=3"></script>'
 POLICY = {
     'privacy/index.html': ('  <h2>5. Ваши права</h2>',
         '  <h2 id="ads">4.3. Реклама</h2>\n'
