@@ -307,6 +307,18 @@ for rel, li in CAST_LI.items():
         t = re.sub(r'(<li><strong>Microsoft Clarity</strong>[^\n]*</li>\n)', lambda m: m.group(1) + li, t, count=1)
     save(rel, t, o, 'cast.js')
 
+TV_POLICY = {
+    'privacy/index.html': ('<h2>5. Ваши права</h2>', '<h2 id="tv">4.2. Передача на телевизор с телефона</h2>\n  <p>Страница <code>/tv/</code> и кнопка «На ТВ» в мини-приложении работают через сервер на Cloudflare (<code>pair.russian-tv.com</code>). Телевизор создаёт случайный идентификатор и хранит его в своём браузере, а телефон после ввода кода хранит этот идентификатор у себя. Через сервер проходят только код подключения, идентификатор телевизора, номер и название канала; видео через него не идёт. Код удаляется после использования или через 10 минут. IP-адрес временно используется для ограничения числа попыток, счётчик удаляется примерно через 10 минут. Историю просмотров мы не храним. Чтобы отвязать телевизор, очистите данные сайта в его браузере.</p>\n\n  ',
+        'Последнее обновление: 9 октября 2026 г.', 'Последнее обновление: 4 ноября 2026 г.'),
+    'en/privacy/index.html': ('<h2>5. Your rights</h2>', '<h2 id="tv">4.2. Sending channels from a phone to a TV</h2>\n  <p>The <code>/tv/</code> page and the “To TV” button in the mini app work through a Cloudflare server (<code>pair.russian-tv.com</code>). The TV creates a random identifier and keeps it in its browser; after you enter the code, the phone keeps that identifier too. Only the pairing code, the TV identifier and the channel number and name pass through the server; video does not. The code is deleted once used or after 10 minutes. Your IP address is used briefly to limit attempts, and that counter is deleted after about 10 minutes. We do not keep a viewing history. To unlink a TV, clear the site data in its browser.</p>\n\n  ',
+        'Last updated: October 9, 2026', 'Last updated: November 4, 2026'),
+}
+for rel, (mark, par, old, new) in TV_POLICY.items():
+    t = rd(rel); o = t
+    if 'id="tv"' not in t:
+        t = t.replace(mark, par + mark, 1).replace(old, new, 1)
+    save(rel, t, o, 'policy tv')
+
 # ---------------------------------------------------------------- 8a. пульсирующий баннер под плеером
 # «Подписаться на канал» вёл в Telegram-канал с мини-приложением, а не просто на канал — название сбивало с толку.
 PULSE = {'<div class="tg-pulse-text">Подписаться на канал</div>': '<div class="tg-pulse-text">Смотреть каналы в Telegram</div>',
