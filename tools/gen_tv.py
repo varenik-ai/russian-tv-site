@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
-"""Страница /tv/ для браузера телевизора: список каналов (пульт), плеер, проверка всех каналов. Каналы берёт из index.html. Идемпотентно."""
+"""Страница /tv/ для браузера телевизора: разделы и каналы (пульт), плеер, качество, весь экран. Проверка всех каналов: /tv/?test=1. Каналы берёт из index.html. Идемпотентно."""
 import sys, os, re, json
 ROOT = sys.argv[1]
 home = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
 a = home.index('const CHANNEL_GROUPS = ['); b = home.index('\n];', a)
 groups = []
-for m in re.finditer(r"\{ label:'([^']*)'|\{ id:'([^']+)',\s*name:'([^']+)'", home[a:b]):
-    if m.group(1): groups.append({'label': m.group(1), 'channels': []})
-    else: groups[-1]['channels'].append({'id': m.group(2), 'name': m.group(3)})
+for line in home[a:b].splitlines():
+    g = re.search(r"\{ label:'([^']*)'", line)
+    if g:
+        groups.append({'label': g.group(1), 'channels': []}); continue
+    c = re.search(r"\{ id:'([^']+)',\s*name:'([^']+)'", line)
+    if c:
+        logo = re.search(r"logo:'([^']+)'", line)
+        groups[-1]['channels'].append({'id': c.group(1), 'name': c.group(2), 'logo': logo.group(1) if logo else ''})
 pm = re.search(r'var PROXIES = \[(.*?)\];', home, re.S)
 proxies = re.findall(r"https://[^'\"\s]+", pm.group(1))
 HTML = r'''<!DOCTYPE html>
@@ -19,38 +24,65 @@ HTML = r'''<!DOCTYPE html>
 <meta name="referrer" content="no-referrer"/>
 <title>Русское ТВ на телевизоре</title>
 <style>
-html{font-size:1.45vw}
+html{font-size:1.4vw}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#0a0a14;color:#e8e8f0;font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;overflow:hidden}
-#side{position:absolute;left:0;top:0;bottom:0;width:27%;background:#12121f;overflow-y:auto;padding:.6rem}
-#main{position:absolute;left:27%;right:0;top:0;bottom:0}
-body.full #side{display:none}
-body.full #main{left:0}
-body.full #info{display:none}
-body.full #vbox{bottom:0}
-#vbox{position:absolute;left:0;right:0;top:0;bottom:30%;background:#000}
-video{width:100%;height:100%;display:block}
-#info{position:absolute;left:0;right:0;bottom:0;height:30%;padding:.7rem 1rem;overflow-y:auto;font-size:.9rem;line-height:1.4}
-#title{font-size:1.2rem;font-weight:700}
-#status{color:#9a9ab0;margin:.15rem 0 .4rem}
-#sum{white-space:pre-wrap}
-#dev{color:#77778f;font-size:.72rem;margin-top:.4rem;word-break:break-all}
-h1{font-size:1.1rem;margin:.2rem .4rem .5rem}
-h2{font-size:.8rem;color:#9a9ab0;font-weight:700;margin:.8rem .4rem .3rem}
-button{display:block;width:100%;text-align:left;background:#1c1c30;color:#e8e8f0;border:.15rem solid transparent;border-radius:.45rem;padding:.4rem .6rem;margin:.18rem 0;font:inherit;font-size:.92rem;cursor:pointer;outline:0}
-button:focus{border-color:#fff;background:#2a5fd0}
-button.cmd{background:#2a2a48;font-weight:700}
-button.on{color:#7db4ff}
-button .m{float:right}
+button{display:block;width:100%;text-align:left;background:transparent;color:#e8e8f0;border:.15rem solid transparent;border-radius:.5rem;padding:.45rem .6rem;margin:.15rem 0;font:inherit;font-size:.92rem;cursor:pointer;outline:0}
+button:focus{border-color:#fff;background:#2a5fd0;color:#fff}
+#rail,#chs{position:absolute;top:0;bottom:0;overflow-y:auto;padding:.6rem .5rem;scroll-behavior:smooth;scrollbar-width:none}
+#rail{left:0;width:13%;background:#0e0e1a}
+#chs{left:13%;width:21%;background:#14142300;background:#141423}
+#rail::-webkit-scrollbar,#chs::-webkit-scrollbar{display:none}
+#rail button.sel{background:#22223a}
+#rail button.sel:focus{background:#2a5fd0}
+#chs button{display:flex;align-items:center;padding:.35rem .5rem}
+#chs button.on{color:#7db4ff;font-weight:700}
+#chs button.on:focus{color:#fff}
+#chs img{width:2rem;height:2rem;object-fit:contain;margin-right:.55rem;flex:0 0 2rem}
+#chs .n{flex:1 1 auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#chs .m{margin-left:.4rem}
+#main{position:absolute;left:34%;right:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;padding:0 1rem}
+#vbox{position:relative;width:100%;background:#000;border-radius:.5rem;overflow:hidden}
+#vbox:before{content:'';display:block;padding-top:56.25%}
+video{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+#now{display:flex;align-items:baseline;margin:.6rem .2rem .3rem}
+#title{font-size:1.25rem;font-weight:700;margin-right:.8rem;white-space:nowrap}
+#status{color:#9a9ab0;font-size:.85rem}
+#bar{display:flex}
+#bar button{width:auto;background:#22223a;margin:0 .5rem 0 0;white-space:nowrap}
+#bar button:focus{background:#2a5fd0}
+#menu{display:none;position:absolute;z-index:30;background:#1c1c30;border-radius:.5rem;padding:.35rem;min-width:11rem;max-height:70%;overflow-y:auto}
+#menu.show{display:block}
+#menu button.on{color:#7db4ff;font-weight:700}
+#menu button.on:focus{color:#fff}
+#info,#testBtn{display:none}
+body.test #info{display:block;font-size:.85rem;line-height:1.35;margin-top:.5rem;max-height:24vh;overflow-y:auto;white-space:pre-wrap}
+body.test #testBtn{display:block;font-weight:700;background:#22223a}
+#dev{color:#77778f;font-size:.7rem;margin-top:.3rem;word-break:break-all}
 .ok{color:#6fdc8c}.au{color:#ffc857}.bad{color:#ff6b6b}
+body.full #rail,body.full #chs{display:none}
+body.full #main{left:0;padding:0;display:block}
+body.full #vbox{position:absolute;left:0;top:0;right:0;bottom:0;border-radius:0}
+body.full #vbox:before{display:none}
+body.full #now,body.full #bar{position:absolute;z-index:20;display:none}
+body.full.osd #now{display:flex;left:0;right:0;top:0;margin:0;padding:1rem 1.5rem;background:linear-gradient(rgba(0,0,0,.75),transparent)}
+body.full.ctl #bar{display:flex;left:0;right:0;bottom:0;padding:1.5rem;background:linear-gradient(transparent,rgba(0,0,0,.75))}
 </style>
 </head>
 <body>
-<div id="side"><h1>Русское ТВ</h1><div id="list"></div></div>
+<div id="rail"><button id="testBtn" type="button">▶ Проверить все</button><div id="groups"></div></div>
+<div id="chs"></div>
 <div id="main">
   <div id="vbox"><video id="v" autoplay playsinline></video></div>
-  <div id="info"><div id="title">Выберите канал</div><div id="status">Кнопки пульта: вверх и вниз, ОК. Вправо: на весь экран, влево: список.</div><div id="sum"></div><div id="dev"></div></div>
+  <div id="now"><div id="title"></div><div id="status"></div></div>
+  <div id="bar">
+    <button id="bSound" type="button"></button>
+    <button id="bQuality" type="button"></button>
+    <button id="bFull" type="button"></button>
+  </div>
+  <div id="info"><div id="sum"></div><div id="dev"></div></div>
 </div>
+<div id="menu"></div>
 <script>
 var GROUPS = __GROUPS__;
 var PROXIES = __PROXIES__;
@@ -58,19 +90,24 @@ var PROXIES = __PROXIES__;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js"></script>
 <script>
 (function () {
-  var video = document.getElementById('v'), list = document.getElementById('list');
-  var titleEl = document.getElementById('title'), statusEl = document.getElementById('status'), sumEl = document.getElementById('sum'), devEl = document.getElementById('dev');
-  var ATTEMPT_MS = 12000, NEED_S = 2;
-  var channels = [], results = {}, btns = {}, hls = null, timer = null, poll = null, run = 0, current = null, testing = false, testBtn, soundBtn;
-  var sound = true;
+  var $ = function (id) { return document.getElementById(id); };
+  var video = $('v'), groupsEl = $('groups'), chsEl = $('chs'), railEl = $('rail'), menuEl = $('menu'), bodyEl = document.body;
+  var bSound = $('bSound'), bQuality = $('bQuality'), bFull = $('bFull'), testBtn = $('testBtn');
+  var TEST = /[?&]test=1/.test(location.search);
+  var ATTEMPT_MS = 12000, NEED_S = 2, OSD_MS = 4000, BAR_MS = 6000;
+  var flat = [], gi = 0, chBtns = [], gBtns = [], results = {}, hls = null, timer = null, poll = null, watch = null, run = 0, current = null, testing = false, played = false;
+  var osdT = null, barT = null, menuFrom = null, wantSound = lsGet('rtv_tv_sound') !== '0', lastT = 0, lastTAt = 0, statusT = null;
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-  function setStatus(t) { statusEl.textContent = t; }
-
-  try { results = JSON.parse(lsGet('rtv_tv_results') || '{}') || {}; } catch (e) { results = {}; }
+  function setStatus(t, keep) {
+    $('status').textContent = t; clearTimeout(statusT);
+    if (t && !keep) statusT = setTimeout(function () { $('status').textContent = ''; }, 4000);
+  }
+  if (TEST) { bodyEl.classList.add('test'); try { results = JSON.parse(lsGet('rtv_tv_results') || '{}') || {}; } catch (e) { results = {}; } }
   try { var cfg = new XMLHttpRequest(); cfg.open('GET', '/proxy.json'); cfg.onload = function () { try { var d = JSON.parse(cfg.responseText); if (d && d.urls && d.urls.length) PROXIES = d.urls; } catch (e) {} }; cfg.send(); } catch (e) {}
 
+  // ---------- плеер
   function hlsOk() { return !!(window.Hls && Hls.isSupported()); }
   function nativeOk() { return !!video.canPlayType('application/vnd.apple.mpegurl'); }
   function attempts() {
@@ -83,34 +120,37 @@ var PROXIES = __PROXIES__;
     run++;
     clearTimeout(timer); clearInterval(poll);
     if (hls) { try { hls.destroy(); } catch (e) {} hls = null; }
-    try { video.removeAttribute('src'); video.load(); } catch (e) {}
+    try { video.onerror = null; video.removeAttribute('src'); video.load(); } catch (e) {}
+    updateQuality();
   }
   function startPlay() {
-    video.muted = testing || !sound;
+    video.muted = testing || !wantSound;
     var p = video.play();
-    if (p && p.catch) p.catch(function () { video.muted = true; var q = video.play(); if (q && q.catch) q.catch(function () {}); });
+    if (p && p.catch) p.catch(function () { video.muted = true; updateSound(); var q = video.play(); if (q && q.catch) q.catch(function () {}); });
   }
   // cb(итог): 'video' — есть картинка, 'audio' — идёт только звук, 'fail' — не запустился
   function play(ch, cb) {
     stop();
-    var my = run, list2 = attempts(), i = 0, done = false;
+    var my = run, tries = attempts(), i = 0, done = false;
     function finish(res, how) { if (done || my !== run) return; done = true; clearTimeout(timer); clearInterval(poll); cb(res, how); }
     function next(why) {
       if (done || my !== run) return;
       clearTimeout(timer); clearInterval(poll);
       if (hls) { try { hls.destroy(); } catch (e) {} hls = null; }
-      if (i >= list2.length) { finish('fail', why || 'нет способа воспроизведения'); return; }
-      var a = list2[i++], url = a.proxy + '/stream?channel=' + encodeURIComponent(ch.id), from = null;
-      setStatus('Подключение: ' + (a.mode === 'hls' ? 'hls.js' : 'встроенный плеер') + '...');
+      if (i >= tries.length) { finish('fail', why || 'нет способа воспроизведения'); return; }
+      var a = tries[i++], url = a.proxy + '/stream?channel=' + encodeURIComponent(ch.id), from = null;
+      setStatus('Подключение...', true);
       if (a.mode === 'hls') {
-        hls = new Hls({ startLevel: 0, liveSyncDurationCount: 3, manifestLoadingMaxRetry: 1, levelLoadingMaxRetry: 1, fragLoadingMaxRetry: 2 });
+        hls = new Hls({ startLevel: -1, liveSyncDurationCount: 3, manifestLoadingMaxRetry: 1, levelLoadingMaxRetry: 1, fragLoadingMaxRetry: 2 });
         hls.on(Hls.Events.ERROR, function (ev, d) { if (d && d.fatal && my === run) { if (done) lost(my); else next('hls.js: ' + d.details); } });
+        hls.on(Hls.Events.LEVEL_SWITCHED, updateQuality);
         hls.loadSource(url); hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, startPlay);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () { applyQuality(); updateQuality(); startPlay(); });
       } else {
         video.onerror = function () { if (my !== run) return; if (done) lost(my); else next('встроенный плеер: ошибка ' + (video.error ? video.error.code : '?')); };
         video.src = url + '&native=1'; startPlay();
       }
+      updateQuality();
       timer = setTimeout(function () { next('нет видео за ' + (ATTEMPT_MS / 1000) + ' с'); }, ATTEMPT_MS);
       poll = setInterval(function () {
         if (from === null) { if (video.currentTime > 0) from = video.currentTime; return; }
@@ -119,81 +159,216 @@ var PROXIES = __PROXIES__;
         else if (adv >= NEED_S * 2) finish('audio', a.mode);
       }, 400);
     }
-    video.onerror = null;
     next();
   }
   // поток оборвался во время просмотра: подключаемся заново
-  function lost(my) { setStatus('Переподключение...'); setTimeout(function () { if (my === run && !testing && current) open(current); }, 3000); }
-  function mark(ch) {
-    var r = results[ch.id], b = btns[ch.id]; if (!b) return;
-    var m = b.querySelector('.m');
+  function lost(my) { setStatus('Переподключение...', true); setTimeout(function () { if (my === run && !testing && current) open(current); }, 3000); }
+  function open(ch) {
+    testing = false; current = ch; played = false; $('title').textContent = ch.name; lsSet('rtv_tv_last', ch.id);
+    markPlaying(); showOsd();
+    play(ch, function (res, how) {
+      if (TEST) save(ch, res, how);
+      played = res !== 'fail';
+      lastT = video.currentTime; lastTAt = Date.now();
+      setStatus(res === 'video' ? '' : res === 'audio' ? 'Идёт только звук, картинки нет' : 'Канал не запустился, выберите другой', res !== 'video');
+    });
+  }
+  // сторож: картинка встала без ошибки
+  setInterval(function () {
+    if (!played || testing || !current || video.paused) return;
+    if (video.currentTime !== lastT) { lastT = video.currentTime; lastTAt = Date.now(); return; }
+    if (Date.now() - lastTAt > 20000) { lastTAt = Date.now(); open(current); }
+  }, 5000);
+
+  // ---------- кнопки под плеером
+  function updateSound() { bSound.textContent = video.muted ? '🔇 Звук выключен' : '🔊 Звук включён'; }
+  bSound.addEventListener('click', function () { wantSound = video.muted; lsSet('rtv_tv_sound', wantSound ? '1' : '0'); video.muted = !wantSound; updateSound(); });
+  video.addEventListener('volumechange', updateSound);
+  function levelName(l) { return l.height ? l.height + 'p' : Math.round((l.bitrate || 0) / 1000) + ' кбит/с'; }
+  function updateQuality() {
+    var lv = hls && hls.levels && hls.levels.length ? hls.levels : null;
+    bQuality.style.display = lv && lv.length > 1 ? '' : 'none';
+    if (!lv) return;
+    var cur = hls.currentLevel;
+    if (hls.autoLevelEnabled) bQuality.textContent = '⚙ Авто' + (lv[cur] ? ' (' + levelName(lv[cur]) + ')' : '');
+    else bQuality.textContent = '⚙ ' + (lv[cur] ? levelName(lv[cur]) : 'Качество');
+  }
+  function applyQuality() {
+    var want = lsGet('rtv_tv_q'); if (!want || !hls) return;
+    for (var i = 0; i < hls.levels.length; i++) if (levelName(hls.levels[i]) === want) { hls.currentLevel = i; return; }
+  }
+  function closeMenu() { menuEl.className = ''; menuEl.innerHTML = ''; if (menuFrom) menuFrom.focus(); menuFrom = null; }
+  bQuality.addEventListener('click', function () {
+    if (!hls) return;
+    menuEl.innerHTML = ''; menuFrom = bQuality;
+    function add(text, idx, on) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = text; if (on) b.className = 'on';
+      b.addEventListener('click', function () { hls.currentLevel = idx; lsSet('rtv_tv_q', idx < 0 ? '' : text); closeMenu(); updateQuality(); });
+      menuEl.appendChild(b); return b;
+    }
+    var first = add('Авто', -1, hls.autoLevelEnabled), mark = first, i, order = [];
+    for (i = 0; i < hls.levels.length; i++) order.push(i);
+    order.sort(function (x, y) { return (hls.levels[y].bitrate || 0) - (hls.levels[x].bitrate || 0); });
+    order.forEach(function (i) { var on = !hls.autoLevelEnabled && hls.currentLevel === i, b = add(levelName(hls.levels[i]), i, on); if (on) mark = b; });
+    menuEl.className = 'show';
+    var r = bQuality.getBoundingClientRect();
+    menuEl.style.left = r.left + 'px';
+    menuEl.style.bottom = (window.innerHeight - r.top + 8) + 'px';
+    mark.focus();
+  });
+  function setFull(on) {
+    bodyEl.classList.toggle('full', on);
+    bFull.textContent = on ? '☰ Показать список' : '⛶ На весь экран';
+    try {
+      var el = document.documentElement;
+      if (on && el.requestFullscreen && !document.fullscreenElement) { var p = el.requestFullscreen(); if (p && p.catch) p.catch(function () {}); }
+      else if (!on && document.fullscreenElement && document.exitFullscreen) { var q = document.exitFullscreen(); if (q && q.catch) q.catch(function () {}); }
+    } catch (e) {}
+    hideBar();
+    if (on) { showOsd(); if (document.activeElement) document.activeElement.blur(); }
+    else focusCurrent();
+  }
+  bFull.addEventListener('click', function () { setFull(!bodyEl.classList.contains('full')); });
+  document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement && bodyEl.classList.contains('full')) setFull(false); });
+  function showOsd() { bodyEl.classList.add('osd'); clearTimeout(osdT); osdT = setTimeout(function () { bodyEl.classList.remove('osd'); }, OSD_MS); }
+  function showBar(focus) {
+    bodyEl.classList.add('ctl'); showOsd(); clearTimeout(barT);
+    barT = setTimeout(hideBar, BAR_MS);
+    if (focus) bSound.focus();
+  }
+  function hideBar() { bodyEl.classList.remove('ctl'); clearTimeout(barT); if (bodyEl.classList.contains('full') && document.activeElement) document.activeElement.blur(); }
+
+  // ---------- разделы и каналы
+  function markPlaying() { chBtns.forEach(function (b) { b.classList.toggle('on', !!current && b.getAttribute('data-id') === current.id); }); }
+  function mark(ch, b) {
+    if (!TEST || !b) return;
+    var r = results[ch.id], m = b.querySelector('.m');
     m.textContent = !r ? '' : r.r === 'video' ? '✓' : r.r === 'audio' ? '♪' : '✕';
     m.className = 'm ' + (!r ? '' : r.r === 'video' ? 'ok' : r.r === 'audio' ? 'au' : 'bad');
   }
-  function summary() {
-    var ok = 0, bad = [], au = [], seen = 0;
-    channels.forEach(function (c) { var r = results[c.id]; if (!r) return; seen++; if (r.r === 'video') ok++; else if (r.r === 'audio') au.push(c.name); else bad.push(c.name); });
-    if (!seen) { sumEl.textContent = ''; return; }
-    sumEl.textContent = 'Проверено ' + seen + ' из ' + channels.length + '. С картинкой: ' + ok + '.' +
-      (au.length ? '\nТолько звук: ' + au.join(', ') + '.' : '') + (bad.length ? '\nНе запустились: ' + bad.join(', ') + '.' : '');
-  }
-  function save(ch, res, how) { results[ch.id] = { r: res, h: how }; lsSet('rtv_tv_results', JSON.stringify(results)); mark(ch); summary(); }
-  function open(ch) {
-    testing = false; current = ch; titleEl.textContent = ch.name; lsSet('rtv_tv_last', ch.id);
-    play(ch, function (res, how) {
-      save(ch, res, how);
-      if (res === 'video') setStatus('Идёт трансляция (' + how + ')');
-      else if (res === 'audio') setStatus('Идёт только звук, картинки нет (' + how + ')');
-      else setStatus('Канал не запустился: ' + how);
-    });
-  }
-  function test() {
-    if (testing) { testing = false; stop(); testBtn.textContent = '▶ Проверить все каналы'; setStatus('Проверка остановлена'); return; }
-    testing = true; results = {}; channels.forEach(mark); summary(); testBtn.textContent = '■ Остановить проверку';
-    var i = 0;
-    (function step() {
-      if (!testing) return;
-      if (i >= channels.length) { testing = false; stop(); testBtn.textContent = '▶ Проверить все каналы'; titleEl.textContent = 'Проверка завершена'; setStatus('Сфотографируйте этот экран и пришлите результат.'); return; }
-      var ch = channels[i++]; titleEl.textContent = 'Проверка ' + i + ' из ' + channels.length + ': ' + ch.name;
-      play(ch, function (res, how) { save(ch, res, how); step(); });
-    })();
-  }
-  function makeBtn(text, cls, fn) {
-    var b = document.createElement('button'); b.type = 'button'; if (cls) b.className = cls; b.textContent = text;
-    b.addEventListener('click', fn); list.appendChild(b); return b;
-  }
-  testBtn = makeBtn('▶ Проверить все каналы', 'cmd', test);
-  soundBtn = makeBtn('🔊 Звук включён', 'cmd', function () { sound = !sound; video.muted = testing || !sound; soundBtn.textContent = sound ? '🔊 Звук включён' : '🔇 Звук выключен'; });
-  GROUPS.forEach(function (g) {
-    var h = document.createElement('h2'); h.textContent = g.label; list.appendChild(h);
-    g.channels.forEach(function (c) {
-      channels.push(c);
-      var b = makeBtn('', '', function () { if (current === c && !testing && !document.body.classList.contains('full') && video.currentTime > 0) { document.body.classList.add('full'); return; } open(c); });
-      var n = document.createElement('span'); n.textContent = c.name; b.appendChild(n);
+  function center(box, el) { box.scrollTop = el.offsetTop - box.offsetTop - (box.clientHeight - el.offsetHeight) / 2; }
+  function renderGroup(i) {
+    gi = i; chsEl.innerHTML = ''; chBtns = [];
+    gBtns.forEach(function (b, n) { b.classList.toggle('sel', n === i); });
+    center(railEl, gBtns[i]);
+    GROUPS[i].channels.forEach(function (c) {
+      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('data-id', c.id);
+      var im = document.createElement('img'); im.alt = ''; im.onerror = function () { im.style.visibility = 'hidden'; }; if (c.logo) im.src = c.logo; else im.style.visibility = 'hidden'; b.appendChild(im);
+      var n = document.createElement('span'); n.className = 'n'; n.textContent = c.name; b.appendChild(n);
       var m = document.createElement('span'); m.className = 'm'; b.appendChild(m);
-      btns[c.id] = b; mark(c);
+      b.addEventListener('click', function () { if (current === c && played) setFull(true); else open(c); });
+      b.addEventListener('focus', function () { center(chsEl, b); });
+      chsEl.appendChild(b); chBtns.push(b); mark(c, b);
     });
+    chsEl.scrollTop = 0;
+    markPlaying();
+  }
+  GROUPS.forEach(function (g, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = g.label;
+    b.addEventListener('focus', function () { if (gi !== i) renderGroup(i); center(railEl, b); });
+    b.addEventListener('click', function () { renderGroup(i); if (chBtns[0]) chBtns[0].focus(); });
+    groupsEl.appendChild(b); gBtns.push(b);
+    g.channels.forEach(function (c) { flat.push({ ch: c, g: i }); });
   });
-  summary();
+  function focusCurrent() {
+    var at = -1;
+    if (current) flat.forEach(function (f) { if (f.ch === current) at = f.g; });
+    if (at >= 0 && at !== gi) renderGroup(at);
+    var on = chsEl.querySelector('button.on') || chBtns[0];
+    if (on) on.focus();
+  }
+  // соседний канал по всему списку: для кнопок канала и вверх/вниз на весь экран
+  function step(d) {
+    if (!current) return;
+    var at = 0; flat.forEach(function (f, n) { if (f.ch === current) at = n; });
+    var f = flat[(at + d + flat.length) % flat.length];
+    if (f.g !== gi) renderGroup(f.g);
+    open(f.ch);
+  }
+  function moveIn(list, d) {
+    var i = list.indexOf(document.activeElement), n = i + d;
+    if (i < 0 || n < 0 || n >= list.length) return false;
+    list[n].focus(); if (list === chBtns) center(chsEl, list[n]); return true;
+  }
+  function barList() { return [bSound, bQuality, bFull].filter(function (b) { return b.style.display !== 'none'; }); }
   document.addEventListener('keydown', function (e) {
-    var k = e.keyCode, full = document.body.classList.contains('full');
-    if (full) {
-      if (k === 37 || k === 27 || k === 461 || k === 10009 || k === 13) { document.body.classList.remove('full'); var f = current && btns[current.id]; if (f) f.focus(); e.preventDefault(); }
+    var k = e.keyCode, full = bodyEl.classList.contains('full'), ctl = bodyEl.classList.contains('ctl');
+    var isBack = k === 27 || k === 461 || k === 10009, a = document.activeElement;
+    var handled = function () { e.preventDefault(); e.stopPropagation(); };
+    if (k === 427 || k === 33) { step(-1); handled(); return; }
+    if (k === 428 || k === 34) { step(1); handled(); return; }
+    if (menuFrom) {
+      var items = [].slice.call(menuEl.querySelectorAll('button'));
+      if (k === 38) { moveIn(items, -1); handled(); } else if (k === 40) { moveIn(items, 1); handled(); }
+      else if (isBack || k === 37 || k === 39) { closeMenu(); handled(); }
+      if (full) showBar(false);
       return;
     }
-    if (k === 39) { if (current) document.body.classList.add('full'); e.preventDefault(); return; }
-    if (k !== 38 && k !== 40) return;
-    e.preventDefault();
-    var all = list.querySelectorAll('button'), idx = -1, i;
-    for (i = 0; i < all.length; i++) if (all[i] === document.activeElement) idx = i;
-    idx = k === 40 ? Math.min(idx + 1, all.length - 1) : Math.max(idx - 1, 0);
-    all[idx].focus(); if (all[idx].scrollIntoView) all[idx].scrollIntoView({ block: 'center' });
+    if (full) {
+      if (ctl) {
+        showBar(false);
+        if (k === 37) { moveIn(barList(), -1); handled(); } else if (k === 39) { moveIn(barList(), 1); handled(); }
+        else if (k === 38 || k === 40 || isBack) { hideBar(); handled(); }
+        return;
+      }
+      if (k === 38) { step(-1); handled(); } else if (k === 40) { step(1); handled(); }
+      else if (k === 13 || k === 37 || k === 39) { showBar(true); handled(); }
+      else if (isBack) { setFull(false); handled(); }
+      return;
+    }
+    if ([37, 38, 39, 40].indexOf(k) < 0) return;
+    handled();
+    var inCh = chBtns.indexOf(a) >= 0, inRail = gBtns.indexOf(a) >= 0, inBar = barList().indexOf(a) >= 0, isTest = a === testBtn;
+    if (inBar) {
+      if (k === 39) moveIn(barList(), 1);
+      else if (k === 37 && !moveIn(barList(), -1)) focusCurrent();
+      else if (k === 38 || k === 40) focusCurrent();
+    } else if (inCh) {
+      if (k === 37) gBtns[gi].focus();
+      else if (k === 39) barList()[0].focus();
+      else if (!moveIn(chBtns, k === 40 ? 1 : -1)) {
+        // край раздела: сразу соседний раздел, список листается без остановки
+        var ng = (gi + (k === 40 ? 1 : -1) + GROUPS.length) % GROUPS.length;
+        renderGroup(ng);
+        var t = chBtns[k === 40 ? 0 : chBtns.length - 1]; if (t) t.focus();
+      }
+    } else if (inRail || isTest) {
+      if (k === 39) { if (chBtns[0]) (chsEl.querySelector('button.on') || chBtns[0]).focus(); }
+      else if (k === 38 && gBtns[0] === a && TEST) testBtn.focus();
+      else if (k === 40 && isTest) gBtns[0].focus();
+      else if (inRail) { moveIn(gBtns, k === 40 ? 1 : -1); var ri = gBtns.indexOf(document.activeElement); if (ri >= 0 && ri !== gi) renderGroup(ri); }
+    } else focusCurrent();
+  }, true);
+
+  // ---------- проверка всех каналов (/tv/?test=1)
+  function summary() {
+    var ok = 0, bad = [], au = [], seen = 0;
+    flat.forEach(function (f) { var r = results[f.ch.id]; if (!r) return; seen++; if (r.r === 'video') ok++; else if (r.r === 'audio') au.push(f.ch.name); else bad.push(f.ch.name); });
+    $('sum').textContent = seen ? 'Проверено ' + seen + ' из ' + flat.length + '. С картинкой: ' + ok + '.' + (au.length ? '\nТолько звук: ' + au.join(', ') + '.' : '') + (bad.length ? '\nНе запустились: ' + bad.join(', ') + '.' : '') : '';
+  }
+  function save(ch, res, how) { results[ch.id] = { r: res, h: how }; lsSet('rtv_tv_results', JSON.stringify(results)); chBtns.forEach(function (b) { if (b.getAttribute('data-id') === ch.id) mark(ch, b); }); summary(); }
+  testBtn.addEventListener('click', function () {
+    if (testing) { testing = false; stop(); testBtn.textContent = '▶ Проверить все'; setStatus('Проверка остановлена'); return; }
+    testing = true; results = {}; renderGroup(gi); summary(); testBtn.textContent = '■ Остановить';
+    var i = 0;
+    (function next() {
+      if (!testing) return;
+      if (i >= flat.length) { testing = false; stop(); testBtn.textContent = '▶ Проверить все'; $('title').textContent = 'Проверка завершена'; setStatus('Сфотографируйте экран и пришлите результат', true); return; }
+      var ch = flat[i++].ch; $('title').textContent = i + ' из ' + flat.length + ': ' + ch.name;
+      play(ch, function (res, how) { save(ch, res, how); next(); });
+    })();
   });
-  devEl.textContent = 'hls.js: ' + (hlsOk() ? 'да' : 'нет') + ' · встроенный HLS: ' + (nativeOk() ? 'да' : 'нет') + ' · ' + navigator.userAgent;
-  var last = lsGet('rtv_tv_last'), start = null;
-  channels.forEach(function (c) { if (c.id === last) start = c; });
-  (start && btns[start.id] || testBtn).focus();
-  window.onerror = function (msg) { setStatus('Ошибка страницы: ' + msg); };
+  if (TEST) { $('dev').textContent = 'hls.js: ' + (hlsOk() ? 'да' : 'нет') + ' · встроенный HLS: ' + (nativeOk() ? 'да' : 'нет') + ' · ' + navigator.userAgent; summary(); }
+
+  // ---------- старт
+  bFull.textContent = '⛶ На весь экран'; updateSound(); updateQuality();
+  window.onerror = function (msg) { setStatus('Ошибка страницы: ' + msg, true); };
+  var last = lsGet('rtv_tv_last'), startCh = flat[0].ch;
+  flat.forEach(function (f) { if (f.ch.id === last) startCh = f.ch; });
+  flat.forEach(function (f) { if (f.ch === startCh) gi = f.g; });
+  renderGroup(gi);
+  if (TEST) { current = startCh; markPlaying(); testBtn.focus(); }
+  else { open(startCh); focusCurrent(); }
 })();
 </script>
 </body>
