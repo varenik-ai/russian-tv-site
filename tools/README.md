@@ -41,6 +41,7 @@ python3 tools/gen_site.py . # или отдельный шаг (первый а�
 | `gen_consent.py` | убирает встроенные трекеры (GA4, GTM, Метрика, Clarity), подключает `assets/consent.js` |
 | `gen_audit_fixes.py` | исправления по аудиту 18.10.2026 (запускается дважды: после основных шагов и после `gen_channel_texts.py`): убран пустой GTM, самохостинг шрифта Inter, локальные логотипы, JSON-LD без `VideoObject`, title/description (словари `TITLES`, `FORCE_TITLES`, `DESCS`), hreflang блога/спорта, текст пульсирующего баннера (`PULSE`), подключение `assets/cast.js` и строка про Google Cast в политике, правки по Search Console (`FORCE_TITLES`), `noindex` для 8 каналов вне каталога (`NOINDEX_SLUGS`), «Похожие каналы» по кольцу категории, sitemap (`lastmod` из git, без `changefreq`/`priority`, без `noindex`-страниц) |
 | `gen_channel_texts.py` | уникальные «О канале» для 24 каналов (словарь `T`: RU+EN, добавляйте сюда новые каналы) и честный FAQ про качество вместо «HD-качестве» на всех страницах |
+| `gen_links.py` | заглушки-редиректы старых адресов (`/univer-tv-live/` → `/razvlecheniya/`, `/en/about/` → `/about/`), блок ссылок на страны и статьи в подвале главных RU/EN |
 | `gen_ga_all.py` | подключает `assets/consent.js` на все индексируемые страницы, где его ещё нет |
 | `gen_encat.py` | EN-страницы категорий (`/en/news/` …), hreflang на русских категориях |
 | `gen_seo.py` | `og:image`, число каналов, sitemap с hreflang, ссылки на главной, `ItemList`, `404.html`, подсказки `preconnect` |
