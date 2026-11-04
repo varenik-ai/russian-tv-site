@@ -319,6 +319,13 @@ for rel, (mark, par, old, new) in TV_POLICY.items():
         t = t.replace(mark, par + mark, 1).replace(old, new, 1)
     save(rel, t, o, 'policy tv')
 
+# плейлисты напрямую у источника (меньше запросов к воркерам), см. assets/direct.js
+for rel in PAGES:
+    t = rd(rel); o = t
+    if 'hls.min.js' in t and 'assets/direct.js' not in t:
+        t = re.sub(r'(<script defer src="https://cdnjs\.cloudflare\.com/ajax/libs/hls\.js/[^"]+"></script>)', lambda m: m.group(1) + '\n  <script defer src="/assets/direct.js?v=1"></script>', t, count=1)
+    save(rel, t, o, 'direct.js')
+
 # ---------------------------------------------------------------- 8a. пульсирующий баннер под плеером
 # «Подписаться на канал» вёл в Telegram-канал с мини-приложением, а не просто на канал — название сбивало с толку.
 PULSE = {'<div class="tg-pulse-text">Подписаться на канал</div>': '<div class="tg-pulse-text">Смотреть каналы в Telegram</div>',
