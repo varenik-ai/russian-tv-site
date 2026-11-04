@@ -6,7 +6,7 @@
    Поэтому, когда слой исчезает, клик передаётся элементу сайта в той же точке.
    Отключить: POP_ENABLED = false или ?noads=1 в адресе. */
 (function () {
-  var POP_ENABLED = true;
+  var POP_ENABLED = false; // выключено 5.11.2026: тег перехватывает первый клик, плеер не запускается
   var ZONE = '12194084';
   var SRC = 'https://al5sm.com/tag.min.js';
   var DELAY_MS = 5000;
