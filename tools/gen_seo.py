@@ -8,7 +8,7 @@ sys.argv = [sys.argv[0], ROOT]
 g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
 CHANNELS = g.CHANNELS
 
-TOTAL = 58
+TOTAL = 60
 OGIMG = 'https://russian-tv.com/og-image.jpg'
 TODAY = '2026-10-09'
 

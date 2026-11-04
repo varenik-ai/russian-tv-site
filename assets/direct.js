@@ -4,7 +4,7 @@
    Встроенный плеер (AirPlay) сюда не попадает: у него нет hls.js. */
 (function () {
   if (!window.Hls || !Hls.DefaultConfig) return;
-  var HOSTS = /^https:\/\/(stream\.smotrim\.ru|streaming\.thestream\.cyou|tvc-hls\.cdnvideo\.ru)\//;
+  var HOSTS = /^https:\/\/(stream\.smotrim\.ru|streaming\.thestream\.cyou|tvc-hls\.cdnvideo\.ru|live-vgtrksmotrim\.cdnvideo\.ru)\//;
   var TIMEOUT_MS = 8000, KEY = 'rtv_direct_off', off = {};
   try { off = JSON.parse(sessionStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
   function disable(host) { off[host] = 1; try { sessionStorage.setItem(KEY, JSON.stringify(off)); } catch (e) {} }

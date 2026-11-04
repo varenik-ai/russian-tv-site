@@ -44,12 +44,16 @@ CH = [
  ('bigplanet','bolshaya-planeta-live','hobby','Большая планета','Bolshaya Planeta (Big Planet)','Путешествия и природа','Travel and nature','БП','#2e7d32','#081208','путешествия и природа','travel and nature'),
  ('sportivnyy','sportivnyy-live','sport','Спортивный','Sportivny','Спорт 24/7','Sport 24/7','СПО','#d84315','#1a0d08','спорт','sports'),
  ('tracesport','trace-sport-stars-live','sport','Trace Sport Stars','Trace Sport Stars (Russian)','Звёзды спорта','Sports stars','TSS','#0277bd','#080d1a','звёзды спорта','sports stars'),
+ ('doverie','moskva-doverie-live','news','Москва. Доверие','Moskva Doverie','Городской канал Москвы','Moscow city channel','МД','#d81b60','#1a0810','московское телевидение','Moscow television'),
+ ('news360','360-novosti-live','news','360 Новости','360 News','Новости Подмосковья и России','Moscow region and Russian news','360Н','#c62828','#180808','новости Подмосковья','Moscow region news'),
 ]
 KEYS = ['id','slug','cat','ru','en','ru_desc','en_desc','icon','color','bg','ru_kw','en_kw']
 CHANNELS = [dict(zip(KEYS, t)) for t in CH]
 
 
 MORE = {
+ 'doverie': ('Городской телеканал Москвы: фильмы, передачи о столице и программы для всей семьи.','A Moscow city channel: films, programmes about the capital and shows for the whole family.'),
+ 'news360': ('Новости Подмосковья и России, интервью и повторы эфирных программ.','News from the Moscow region and Russia, interviews and repeats of on-air programmes.'),
  'moskva24': ('Новости, события и жизнь Москвы в прямом эфире.','News, events and daily life in Moscow, live.'),
  'spb': ('Региональный телеканал Санкт-Петербурга: городские новости, события и жизнь северной столицы.','A regional channel for Saint Petersburg: city news, events and life in the northern capital.'),
  'soyuz': ('Семейный телеканал с программами для зрителей разного возраста.','A family channel with programming for viewers of all ages.'),

@@ -93,7 +93,7 @@ var GROUPS = __GROUPS__;
 var PROXIES = __PROXIES__;
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js"></script>
-<script src="/assets/direct.js?v=1"></script>
+<script src="/assets/direct.js?v=2"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };

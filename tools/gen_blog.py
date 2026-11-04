@@ -8,7 +8,7 @@ def wr(p, s):
     open(os.path.join(ROOT, p), 'w', encoding='utf-8').write(s)
 def esc(s): return html.escape(s, quote=True)
 DATE = '2026-10-09'
-TOTAL = 58
+TOTAL = 60
 
 RU_T = rd('blog/kak-smotret-russkoe-tv-na-smart-tv/index.html')
 EN_T = rd('en/blog/how-to-watch-russian-tv-in-usa/index.html')

@@ -146,10 +146,10 @@ TITLES = {
     'istoriya-live/index.html': ('▶ Телеканал История прямой эфир онлайн — документальные фильмы без VPN', '▶ Телеканал История прямой эфир — документальные фильмы онлайн'),
     'kino-detektiv-live/index.html': ('▶ Viju TV1000 Русское кино прямой эфир — русское кино онлайн без VPN', '▶ Viju TV1000 Русское кино — прямой эфир, фильмы онлайн'),
     'kinopremiera-live/index.html': ('▶ Кинопремьера прямой эфир — новинки кино онлайн бесплатно без VPN', '▶ Кинопремьера прямой эфир — новинки кино онлайн бесплатно'),
-    'russkie-kanaly-v-velikobritanii/index.html': ('▶ Русское ТВ в Великобритании — 58 каналов онлайн без VPN, бесплатно', '▶ Русское ТВ в Великобритании — 58 каналов онлайн бесплатно'),
-    'en/russian-tv-in-netherlands/index.html': ('▶ Watch Russian TV in the Netherlands Free Online — 58 Channels, No VPN', '▶ Watch Russian TV in the Netherlands Free — 58 Channels, No VPN'),
-    'en/russian-tv-in-switzerland/index.html': ('▶ Watch Russian TV in Switzerland Free Online — 58 Channels, No VPN', '▶ Watch Russian TV in Switzerland Free — 58 Channels, No VPN'),
-    'en/russian-tv-in-czech-republic/index.html': ('▶ Watch Russian TV in the Czech Republic Free Online — 58 Channels, No VPN', '▶ Russian TV in the Czech Republic Free — 58 Channels, No VPN'),
+    'russkie-kanaly-v-velikobritanii/index.html': ('▶ Русское ТВ в Великобритании — 60 каналов онлайн без VPN, бесплатно', '▶ Русское ТВ в Великобритании — 60 каналов онлайн бесплатно'),
+    'en/russian-tv-in-netherlands/index.html': ('▶ Watch Russian TV in the Netherlands Free Online — 60 Channels, No VPN', '▶ Watch Russian TV in the Netherlands Free — 60 Channels, No VPN'),
+    'en/russian-tv-in-switzerland/index.html': ('▶ Watch Russian TV in Switzerland Free Online — 60 Channels, No VPN', '▶ Watch Russian TV in Switzerland Free — 60 Channels, No VPN'),
+    'en/russian-tv-in-czech-republic/index.html': ('▶ Watch Russian TV in the Czech Republic Free Online — 60 Channels, No VPN', '▶ Russian TV in the Czech Republic Free — 60 Channels, No VPN'),
     'en/flosports-racing-live/index.html': ('▶ FloSports Racing Live Stream Free | Motor Racing Online — No VPN', '▶ FloSports Racing Live Stream Free | Motor Racing — No VPN'),
     'en/kinokomediya-live/index.html': ('▶ Kinokomediya Live Stream Free | Russian Comedies Online — No VPN', '▶ Kinokomediya Live Stream Free | Russian Comedies — No VPN'),
     'blog/index.html': ('Блог — статьи о русском ТВ, каналах и вещании за границей | Русское ТВ', 'Блог о русском ТВ — каналы и просмотр за границей | Русское ТВ'),
@@ -168,8 +168,8 @@ TITLES = {
     'en/ntv-hit-live/index.html': ('▶ NTV Hit Live Stream Free | Russian Music — No VPN', '▶ NTV Hit Live Stream Free | Russian Series — No VPN'),
 }
 DESCS = {
-    '': ('▶ Русское ТВ онлайн за рубежом — 58 каналов прямого эфира: Первый канал, Россия 1, НТВ, ТНТ, МУЗ-ТВ, кино, детские. Бесплатно, без регистрации, 24/7.',),
-    'en/': ('▶ Watch Russian TV free online — 58 live channels: Perviy Kanal, Rossiya 1, NTV, TNT, MUZ-TV, kids & films. Works worldwide 24/7, no registration.',),
+    '': ('▶ Русское ТВ онлайн за рубежом — 60 каналов прямого эфира: Первый канал, Россия 1, НТВ, ТНТ, МУЗ-ТВ, кино, детские. Бесплатно, без регистрации, 24/7.',),
+    'en/': ('▶ Watch Russian TV free online — 60 live channels: Perviy Kanal, Rossiya 1, NTV, TNT, MUZ-TV, kids & films. Works worldwide 24/7, no registration.',),
     'en/karusel-live/': ("▶ Watch Karusel live online free — Russian children's cartoons and educational shows. No VPN, no registration, 24/7.",),
     'en/muz-tv-live/': ('▶ Watch MUZ-TV live online free — Russian pop music, clips and charts. No VPN, no registration, 24/7.',),
     'en/ntv-hit-live/': ('▶ Watch NTV Hit live online free — Russian detective series and dramas from NTV. No VPN, no registration, 24/7.',),
@@ -184,15 +184,15 @@ DESCS = {
     'en/music/': ('▶ Watch Russian music TV and radio live online for free: MUZ-TV, Muzyka Pervogo, Muz Soyuz, FON Music, Strana FM. No VPN, 24/7.',),
     'ntv-hit-live/': ('▶ НТВ Хит онлайн — лучшие сериалы и развлекательные программы НТВ в прямом эфире. Бесплатно, без VPN и регистрации 24/7.',),
     'sport/': ('▶ Спортивные каналы в прямом эфире: FloSports, Viju+ Sport, M1 MMA, Red Bull TV, Unbeaten Boxing. Бесплатно, без регистрации, 24/7.',),
-    'russkie-kanaly-za-rubezhom/': ('▶ Смотрите 58 русских каналов за рубежом без VPN: Польша, Германия, США, Великобритания, Франция и другие страны. Бесплатно, 24/7.',),
+    'russkie-kanaly-za-rubezhom/': ('▶ Смотрите 60 русских каналов за рубежом без VPN: Польша, Германия, США, Великобритания, Франция и другие страны. Бесплатно, 24/7.',),
 }
 
 
 # CTR-правки по данным Search Console (18.10.2026): страницы на позициях 8–45 с показами, но почти без кликов.
 # Заголовок задаётся целиком (заменяет любой текущий <title>), описание — через DESCS.
 FORCE_TITLES = {
-    'en/russian-tv-in-germany/index.html': '▶ Russian TV in Germany — Watch 58 Live Channels Free',
-    'en/russian-tv-in-usa/index.html': '▶ Russian TV in the USA — Watch 58 Live Channels Free',
+    'en/russian-tv-in-germany/index.html': '▶ Russian TV in Germany — Watch 60 Live Channels Free',
+    'en/russian-tv-in-usa/index.html': '▶ Russian TV in the USA — Watch 60 Live Channels Free',
     'en/perviy-kanal-live/index.html': '▶ Channel One Russia Live — Watch Perviy Kanal Online Free',
     'rossiya-24-live/index.html': '▶ Россия 24 — прямой эфир онлайн, смотреть Вести 24 бесплатно',
     'en/rossiya-24-live/index.html': '▶ Rossiya 24 Live — Russian News 24/7 Online Free',
@@ -235,7 +235,7 @@ for rel in PAGES:
 # og:description и счётчики на странице «за рубежом»
 p = 'russkie-kanaly-za-rubezhom/index.html'
 s = rd(p); o = s
-s = s.replace('35 русских каналов прямого эфира за рубежом', '58 русских каналов прямого эфира за рубежом')
+s = s.replace('35 русских каналов прямого эфира за рубежом', '60 русских каналов прямого эфира за рубежом')
 save(p, s, o, 'titles/descriptions')
 # после смены meta description пересобираем description в JSON-LD каналов
 for rel in PAGES:
@@ -323,8 +323,14 @@ for rel, (mark, par, old, new) in TV_POLICY.items():
 for rel in PAGES:
     t = rd(rel); o = t
     if 'hls.min.js' in t and 'assets/direct.js' not in t:
-        t = re.sub(r'(<script defer src="https://cdnjs\.cloudflare\.com/ajax/libs/hls\.js/[^"]+"></script>)', lambda m: m.group(1) + '\n  <script defer src="/assets/direct.js?v=1"></script>', t, count=1)
+        t = re.sub(r'(<script defer src="https://cdnjs\.cloudflare\.com/ajax/libs/hls\.js/[^"]+"></script>)', lambda m: m.group(1) + '\n  <script defer src="/assets/direct.js?v=2"></script>', t, count=1)
     save(rel, t, o, 'direct.js')
+
+# число каналов там, где его не обновил gen_seo.py (закрытые страницы, 404, страницы стран)
+for rel in PAGES + ['404.html']:
+    t = rd(rel); o = t
+    t = re.sub(r'\b(?:58|59) (каналов|канала|live|Live|channels|Channels|российских|русских|Russian)', r'60 \1', t)
+    save(rel, t, o, 'channel count')
 
 # ---------------------------------------------------------------- 8a. пульсирующий баннер под плеером
 # «Подписаться на канал» вёл в Telegram-канал с мини-приложением, а не просто на канал — название сбивало с толку.

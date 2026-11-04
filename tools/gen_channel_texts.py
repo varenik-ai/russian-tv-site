@@ -22,6 +22,16 @@ def wr(p, s):
 
 # slug: (RU вступление, RU уточнение, EN вступление, EN уточнение). {n} — название канала на странице
 T = {
+    'moskva-doverie-live': (
+        '«{n}» — городской телеканал Москвы: художественные фильмы, передачи о столице и программы для всей семьи.',
+        'В эфире бывают и фильмы прошлых лет, поэтому канал подойдёт для спокойного просмотра вечером.',
+        '{n} is a Moscow city channel showing feature films, programmes about the capital and family shows.',
+        'The schedule includes older films, so it suits relaxed evening viewing.'),
+    '360-novosti-live': (
+        '«{n}» — информационный канал о событиях в Подмосковье и России: новости, интервью и сюжеты о жизни региона.',
+        'Часть программ идёт в повторе, дата выхода обычно указана в кадре.',
+        '{n} is a news channel covering the Moscow region and Russia: bulletins, interviews and regional reports.',
+        'Some programmes are repeats, and the original air date is usually shown on screen.'),
     'bober-live': (
         '«{n}» — развлекательный телеканал из категории «Хобби и стиль»: передачи и программы для отдыха и досуга, которые удобно включать фоном.',
         'Подходит для спокойного вечернего просмотра: не нужно следить за каждым выпуском, поэтому канал удобно оставлять включённым.',
