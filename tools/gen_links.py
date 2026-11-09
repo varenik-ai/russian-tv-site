@@ -35,7 +35,7 @@ def block(lang):
         t1, t2, all_ = 'Russian TV by country', 'Articles', ''
     return ('<!--links-->\n  <nav class="footer-seo" style="max-width:1100px;margin:18px auto 0;padding:0 12px;font-size:12px;line-height:2;color:#8b8ba0;text-align:center">'
             '<div><b>%s:</b> %s%s</div><div><b>%s:</b> %s</div></nav><!--/links-->\n' % (t1, c, all_, t2, b))
-STYLE = '<style id="footer-seo-css">.footer-seo a{color:inherit;text-decoration:none;margin:0 7px;white-space:nowrap}.footer-seo a:hover{color:var(--text);text-decoration:underline}</style>'
+STYLE = '<style id="footer-seo-css">.footer-seo a{color:inherit;text-decoration:none;margin:0 7px;white-space:nowrap}.footer-seo a:hover{color:var(--text);text-decoration:underline}.footer-seo>div{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline}.footer-seo b{margin-right:4px}</style>'
 for page, lang in (('index.html', 'ru'), ('en/index.html', 'en')):
     s = rd(page)
     if '<!--links-->' in s:
@@ -46,4 +46,6 @@ for page, lang in (('index.html', 'ru'), ('en/index.html', 'en')):
     s = s.replace(marker, '</div>\n  ' + block(lang) + '  <div style="text-align:center;margin-top:16px;font-size:11px', 1)
     if 'footer-seo-css' not in s:
         s = s.replace('</head>', STYLE + '</head>', 1)
+    if lang == 'en' and 'en-header-fix' not in s:   # шапка EN-главной шире экрана 390 px: прячем счётчик каналов на узких телефонах
+        s = s.replace('</head>', '<style id="en-header-fix">@media(max-width:400px){.live-count{display:none}}</style></head>', 1)
     wr(page, s)
