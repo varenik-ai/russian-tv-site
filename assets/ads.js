@@ -61,6 +61,11 @@
       window.atOptions = { key: KEY, format: 'iframe', height: 250, width: 300, params: {} };
       var s = document.createElement('script');
       s.async = true; s.src = 'https://www.highrevenueformat.com/' + KEY + '/invoke.js';
+      d.style.visibility = 'hidden';            // no ad (no fill / blocked) = no empty label or gap
+      var t0 = Date.now(), iv = setInterval(function () {
+        if (d.querySelector('iframe')) { d.style.visibility = 'visible'; clearInterval(iv); }
+        else if (Date.now() - t0 > 10000) { clearInterval(iv); d.parentNode && d.parentNode.removeChild(d); }
+      }, 500);
       d.querySelector('.box').appendChild(s);
     } catch (e) {}
   }
