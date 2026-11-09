@@ -323,7 +323,7 @@ for rel, (mark, par, old, new) in TV_POLICY.items():
 for rel in PAGES:
     t = rd(rel); o = t
     if 'hls.min.js' in t and 'assets/direct.js' not in t:
-        t = re.sub(r'(<script defer src="https://cdnjs\.cloudflare\.com/ajax/libs/hls\.js/[^"]+"></script>)', lambda m: m.group(1) + '\n  <script defer src="/assets/direct.js?v=2"></script>', t, count=1)
+        t = re.sub(r'(<script defer src="https://cdnjs\.cloudflare\.com/ajax/libs/hls\.js/[^"]+"></script>)', lambda m: m.group(1) + '\n  <script defer src="/assets/direct.js?v=3"></script>', t, count=1)
     save(rel, t, o, 'direct.js')
 
 # число каналов там, где его не обновил gen_seo.py (закрытые страницы, 404, страницы стран)
