@@ -63,11 +63,13 @@ python3 tools/gen_site.py . # или отдельный шаг (первый а�
 | `gen_scrollbar.py` | красная полоса прокрутки списка каналов слева (страницы каналов и главные) |
 | `gen_header_narrow.py` | шапка страниц стран и блога на телефонах до 430 px без горизонтальной прокрутки |
 | `gen_noscroll.py` | страница не уезжает вниз после выбора канала (прокручивается только список, на главной — до баннера над плеером) |
+| `gen_remove_broken.py` | убирает 6 неработающих каналов (список `BROKEN`) и ссылки на 7 каналов вне каталога (`OUTSIDE`) из списков, карточек, таблиц, данных главных и JSON-LD, пересчитывает число каналов (60 → 54, в том числе на EN-страницах категорий), переписывает страницу «Развлечения» (она строилась вокруг ТНТ4) |
+| `gen_fixtext.py` | правки по аудиту 11.11.2026: кириллическая «о» в «Киносвидание», склонение в FAQ, убранные описания в списках, `SearchAction`, `og:*` на юридических страницах, hreflang `/about/`, сообщение «Ничего не найдено», числа «54 российских телеканала» |
 | `gen_moves.py` | **разовый** помощник для переноса/удаления каналов (в `run_all.sh` не входит) |
 
 ## Порядок шагов и ограничения
 
-Новые шаги ноября 2026 стоят в `run_all.sh` после `gen_pop.py`: `gen_tgneon` → `gen_tgtext` → `gen_logos_trim` → `gen_layout` → `gen_logos_more` → `gen_sync_channels` → `gen_scrollbar` → `gen_noscroll` → `gen_header_narrow`. `gen_layout` должен идти после `gen_logos_trim`, `gen_logos_more` — после `gen_layout`.
+Новые шаги ноября 2026 стоят в `run_all.sh` после `gen_pop.py`: `gen_tgneon` → `gen_tgtext` → `gen_logos_trim` → `gen_layout` → `gen_logos_more` → `gen_sync_channels` → `gen_scrollbar` → `gen_noscroll` → `gen_header_narrow`; `gen_remove_broken` и `gen_fixtext` стоят в `run_all.sh` сразу после `gen_pop` и должны идти после `gen_audit_fixes` (он возвращает старые описания с «60»; их переписывает `gen_remove_broken`). `gen_layout` должен идти после `gen_logos_trim`, `gen_logos_more` — после `gen_layout`.
 
 - Версии скриптов в адресах (сейчас `quality.js?v=8`, `player-ui.js?v=6`, `cast.js?v=4`, `direct.js?v=3`, `site-ux.js?v=2`, `consent.js?v=3`, `pop.js?v=4`, `ch-icons.css?v=8`; версию `ch-icons.css` задаёт `gen_layout.py`) заданы в соответствующих генераторах (`gen_quality.py`, `gen_playerui.py`, `gen_homeplayer.py`, `gen_ga_all.py`, `run_all.sh`); при правке `assets/*.js` поднимайте номер и в них, и в страницах (`sed` по `*.html`).
 - Тексты «О канале» у 24 каналов (`gen_channel_texts.py`) написаны по общеизвестным признакам и описанию из каталога; их стоит дополнять реальными данными о каналах. У остальных каналов текст берётся из `MORE` в `gen_site.py`.
