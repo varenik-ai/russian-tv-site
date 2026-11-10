@@ -17,3 +17,16 @@
 Копии для списков (в т.ч. с перекрашенными чёрными буквами у Viju): assets/logos/trim/, создаются tools/gen_logos_more.py.
 
 Кинокомедия и Родное кино: файлы скачаны (logo-kinokomediya.png, logo-rodnoe-kino.png), но в списках пока не используются: логотипы шириной около 8:1 в плитке 80×10 px нечитаемы, остались буквенные плитки.
+
+## Добавлено позже 10.11.2026
+
+| Канал | Файл в assets/logos/ | Файл в Commons | Метка в Commons | Примечание |
+|---|---|---|---|---|
+| 360° и 360 Новости | logo-360.png | File:360logoblack.png | Public domain | чёрные буквы инвертируются CSS |
+| RT Documentary | logo-rt-doc.png | File:Логотип телеканала RT Doc.png | Public domain | уменьшен до 240 px |
+| Viju+ Sport | logo-viju-sport.svg | File:Viju+ Sport logo.svg | Public domain | чёрный цвет заменён на белый в trim/ |
+| Вести FM | logo-vesti-fm.svg | File:Vesti FM logo.svg | Public domain | в trim/ залит белым |
+| FON Music | logo-fon-music.png | File:FON MUSIC Logo 2026.webp | Public domain | преобразован в PNG 240 px |
+| FloSports Hockey и Racing | logo-flosports.png | File:FloSports logo.png | Public domain | один логотип бренда на оба канала |
+
+Просмотрены, но не использованы: Дом Кино (JPEG на белом фоне), Наше кино (устаревший квадратный логотип), Кинохит/Киносвидание/Индийское кино (логотипы 8:1, нечитаемы в плитке), «Мульт»/«Музыка Первого» (JPEG на фоне), BOB.tv и M-1 Global (чужой логотип/JPEG).

@@ -13,7 +13,7 @@ CSS = (
  '@media(min-width:1025px){.main-col{margin:0!important}.page-wrap{grid-template-columns:300px minmax(0,1fr)}}'
  '.ch-name-s{font-size:17.25px}'
 )
-LINK = '<link rel="stylesheet" href="/assets/ch-icons.css?v=5">'
+LINK = '<link rel="stylesheet" href="/assets/ch-icons.css?v=6">'
 TRIM = set(os.listdir(os.path.join(ROOT, 'assets/logos/trim'))) if os.path.isdir(os.path.join(ROOT, 'assets/logos/trim')) else set()
 IMG = re.compile(r'(<img src=")/assets/logos/(?:light/|trim/)?([^/"]+\.svg)"')
 JSLOGO = re.compile(r'(logo:\s*[\'"])/assets/logos/(?:light/|trim/)?([^/\'"]+\.svg)([\'"])')   # данные каналов в скриптах главных

@@ -10,13 +10,18 @@ ROOT = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else '.')
 MAP = {
  'sankt-peterburg-live': 'logo-spb.png', 'moskva-24-live': 'logo-moskva24.png',
  'viju-tv-live': 'logo-viju-tv1000.svg', 'kino-detektiv-live': 'logo-viju-russian.svg',
+ 'kanal-360-live': 'logo-360.png', '360-novosti-live': 'logo-360.png', 'rt-documentary-live': 'logo-rt-doc.png',
+ 'viju-sport-live': 'logo-viju-sport.svg', 'vesti-fm-live': 'logo-vesti-fm.svg', 'fon-music-live': 'logo-fon-music.png',
+ 'flosports-hockey-live': 'logo-flosports.png', 'flosports-racing-live': 'logo-flosports.png',
  'trace-sport-stars-live': 'logo-trace-sport-stars.png',
 }
 src = os.path.join(ROOT, 'assets/logos'); out = os.path.join(src, 'trim'); os.makedirs(out, exist_ok=True)
 for f in sorted(set(MAP.values())):
     s = os.path.join(src, f); d = os.path.join(out, f)
-    if f.endswith('.svg') and 'viju' in f:
-        t = open(s, encoding='utf-8').read().replace('fill="black"', 'fill="white"')   # чёрные буквы -> белые
+    if f.endswith('.svg'):
+        t = open(s, encoding='utf-8').read().replace('fill="black"', 'fill="white"')   # чёрные буквы -> белые (Viju)
+        if 'fill=' not in t.split('>', 2)[1] and 'vesti' in f:                       # Вести FM: чёрное по умолчанию -> белое
+            t = t.replace('<svg ', '<svg fill="#fff" ', 1)
         open(d, 'w', encoding='utf-8').write(t)
     else:
         shutil.copyfile(s, d)

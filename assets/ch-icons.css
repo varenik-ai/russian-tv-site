@@ -18,5 +18,5 @@
 .left-sidebar .ch-item-s{min-width:0}
 .left-sidebar .ch-item-s>div:nth-child(2){min-width:0;flex:1 1 auto}
 .left-sidebar .ch-name-s{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.25}
-/* логотип с тёмными буквами (Москва 24): инверсия яркости, цвет значка сохраняется */
-.ch-logo-s img[src*="logo-moskva24"]{filter:invert(1) hue-rotate(180deg)}
+/* логотипы с чёрными буквами (Москва 24, 360, FON Music, FloSports): инверсия яркости, цвет значка сохраняется */
+.ch-logo-s img[src*="logo-moskva24"],.ch-logo-s img[src*="logo-360"],.ch-logo-s img[src*="logo-fon-music"],.ch-logo-s img[src*="logo-flosports"]{filter:invert(1) hue-rotate(180deg)}
