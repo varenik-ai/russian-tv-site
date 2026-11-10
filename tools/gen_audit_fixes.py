@@ -347,7 +347,7 @@ for rel in PAGES:
 # ---------------------------------------------------------------- 8b. каналы вне каталога — noindex
 # Эти страницы работают и доступны посетителям, но их нет в каталоге главной (решение владельца 18.10.2026):
 # не индексируются, в sitemap не входят, в «Похожие» не попадают.
-NOINDEX_SLUGS = ['kinopokaz-live', 'kinopremiera-live', 'ntv-hit-live', 'retro-live', 'ru-tv-live', 't24-live', 'unikum-live', 'zagorodnaya-zhizn-live']
+NOINDEX_SLUGS = ['kinopokaz-live', 'kinopremiera-live', 'ntv-hit-live', 'retro-live', 'ru-tv-live', 't24-live', 'unikum-live', 'zagorodnaya-zhizn-live', 'tnt-live', 'bober-live', 'bolshaya-planeta-live', 'karusel-international-live', 'fon-music-live', 'sportivnyy-live']
 for slug in NOINDEX_SLUGS:
     for rel in (slug + '/index.html', 'en/' + slug + '/index.html'):
         if not os.path.exists(os.path.join(ROOT, rel)):

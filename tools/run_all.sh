@@ -29,6 +29,8 @@ run gen_audit_fixes.py # повторно: sitemap/lastmod и похожие к�
 run gen_links.py       # редиректы старых адресов, ссылки на страны и блог в подвале главных
 run gen_tv.py          # страница /tv/ для браузера телевизора
 run gen_pop.py         # Monetag OnClick на всех страницах, раздел о рекламе в политике
+run gen_remove_broken.py # убрать 6 неработающих каналов и 7 каналов вне каталога из списков и пересчитать числа (60 -> 54)
+run gen_fixtext.py       # аудит 11.11.2026: латинская «o», склонения в FAQ, описания в списках, SearchAction, og, поиск
 run gen_tgneon.py      # пульсирующий неон у баннера Telegram над плеером
 run gen_tgtext.py      # текст баннера Telegram над плеером
 run gen_logos_trim.py  # логотипы без пустых полей (assets/logos/trim)
