@@ -5,8 +5,8 @@
 .ch-item-s.active .ch-icon-s{box-shadow:0 0 0 2px rgba(26,95,217,.55)}
 @media(min-width:901px){
   .ch-icon-s{width:92px;height:52px;border-radius:10px;font-size:15px;font-weight:900;letter-spacing:.3px}
-  .sidebar-wrapper .ch-icon-s{width:76px;height:44px;font-size:13px}
-  .sidebar-wrapper .ch-name-s{font-size:17.25px}
+  .sidebar-wrapper .ch-icon-s{width:68px;height:42px;font-size:13px}
+  .sidebar-wrapper .ch-name-s{font-size:17.25px;white-space:normal;-webkit-line-clamp:2}
 }
 /* Список каналов слева от плеера: только название (описания убраны: именно они растягивали колонку и давали горизонтальную прокрутку).
    Ширина колонки 320 px; от 1824 px сужается до места, нужного рекламному блоку справа от плеера: 50vw - 620px
@@ -20,3 +20,9 @@
 .left-sidebar .ch-name-s{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.25}
 /* логотипы с чёрными буквами (Москва 24, 360, FON Music, FloSports): инверсия яркости, цвет значка сохраняется */
 .ch-logo-s img[src*="logo-moskva24"],.ch-logo-s img[src*="logo-360"],.ch-logo-s img[src*="logo-fon-music"],.ch-logo-s img[src*="logo-flosports"]{filter:invert(1) hue-rotate(180deg)}
+/* Главная: список каналов слева без горизонтальной прокрутки (колонка с названием сжимается, название переносится) */
+.channel-sidebar{overflow-x:hidden}
+.sidebar-wrapper .ch-item{min-width:0}
+.sidebar-wrapper .ch-item>div:nth-child(2){min-width:0;flex:1 1 auto}
+/* Главная, полоса категорий над сеткой каналов: на компьютере вкладки переносятся на вторую строку вместо горизонтальной прокрутки */
+@media(min-width:901px){.filter-tabs{flex-wrap:wrap;overflow-x:visible}}
