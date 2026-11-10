@@ -8,3 +8,15 @@
   .sidebar-wrapper .ch-icon-s{width:76px;height:44px;font-size:13px}
   .sidebar-wrapper .ch-name-s{font-size:17.25px}
 }
+/* Список каналов слева от плеера: без горизонтальной прокрутки, тексты переносятся (имя до 2 строк, описание до 3), колонка шире на больших экранах.
+   Ширина: 300 px (от 1025), 380 px (от 1366: плеер 960 px всё равно помещается), от 1824 px колонка сужается до места,
+   нужного рекламному блоку справа от плеера: 50vw - 620px (на 1920 px это 340 px), но не уже 300 и не шире 380. */
+@media(min-width:1025px){.page-wrap{grid-template-columns:300px minmax(0,1fr)}}
+@media(min-width:1366px){.page-wrap{grid-template-columns:380px minmax(0,1fr)}}
+@media(min-width:1824px){.page-wrap{grid-template-columns:clamp(300px,calc(50vw - 620px),380px) minmax(0,1fr)}}
+.left-sidebar .ch-list-scroll{overflow-x:hidden}
+.left-sidebar .ch-item-s{min-width:0}
+.left-sidebar .ch-item-s>div:nth-child(2){min-width:0;flex:1 1 auto}
+.left-sidebar .ch-name-s,.left-sidebar .ch-desc-s{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;line-height:1.25}
+.left-sidebar .ch-name-s{-webkit-line-clamp:2}
+.left-sidebar .ch-desc-s{-webkit-line-clamp:3}
