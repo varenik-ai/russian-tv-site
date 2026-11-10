@@ -29,10 +29,10 @@
   if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
 })();
 
-/* Adsterra Banner 300x250 — test, to the right of the player on wide desktop screens only (channel pages /…-live/).
-   The player column (960px) is left-aligned next to the channel list; the block is shown only when 300px + gap fit between
-   the column and the window edge (about ≥1760px wide) and a mouse is present. On phones, tablets and smaller screens nothing
-   is loaded and the layout is untouched.
+/* Adsterra Banner 300x250 — test, channel pages (/…-live/).
+   Wide screens (a mouse and room for 300px + gap between the left-aligned player column and the window edge, about ≥1760px):
+   shown to the right of the player. All other screens (phones, tablets, laptops): shown centered right under the player
+   status line, hidden until the ad actually loads (no empty gap). No ad (no fill / blocked) = the block is removed after 10s.
    Kill switch: BANNER_ENABLED=false (or ?noads=1). Ad unit: Adsterra site 6187633, unit 32178193. */
 (function () {
   var BANNER_ENABLED = true;
@@ -45,29 +45,34 @@
   var armed = false;
   function show() {
     try {
-      if (!window.matchMedia || !matchMedia('(hover:hover)').matches) return;
       var col = document.querySelector('.main-col'), pl = document.getElementById('player-wrap');
       if (!col || !pl || document.getElementById('rtv-ban')) return;
       function fits() { return col.getBoundingClientRect().right + 12 + 300 <= document.documentElement.clientWidth - 8; }
-      if (!fits()) return;
+      var wide = !!(window.matchMedia && matchMedia('(hover:hover)').matches) && fits();
       var st = document.createElement('style');
-      st.textContent = '.main-col{position:relative}' +
-        '#rtv-ban{position:absolute;left:calc(100% + 12px);width:300px;font:11px/1.2 sans-serif;color:#8b8ba0}' +
-        '#rtv-ban small{display:block;margin:0 0 4px}#rtv-ban .box{width:300px;height:250px}' +
-        '#rtv-ban.off{display:none}';
+      st.textContent = '#rtv-ban{width:300px;max-width:100%;font:11px/1.2 sans-serif;color:#8b8ba0}' +
+        '#rtv-ban small{display:block;margin:0 0 4px}#rtv-ban .box{width:300px;max-width:100%;height:250px;overflow:hidden}' +
+        '#rtv-ban.off{display:none}' +
+        '#rtv-ban.side{position:absolute;left:calc(100% + 12px)}#rtv-ban.under{margin:4px auto 12px}';
       document.head.appendChild(st);
       var en = /^en/i.test(document.documentElement.lang || '');
       var d = document.createElement('div'); d.id = 'rtv-ban';
-      d.style.top = pl.offsetTop + 'px';
       d.innerHTML = '<small>' + (en ? 'Advertisement' : 'Реклама') + '</small><div class="box"></div>';
-      col.appendChild(d);
-      window.addEventListener('resize', function () { d.className = fits() ? '' : 'off'; });
+      if (wide) {
+        col.style.position = 'relative';
+        d.className = 'side'; d.style.top = pl.offsetTop + 'px'; d.style.visibility = 'hidden';
+        col.appendChild(d);
+        window.addEventListener('resize', function () { d.className = fits() ? 'side' : 'off'; });
+      } else {
+        d.className = 'under'; d.style.display = 'none';
+        var anchor = document.getElementById('status') || pl;
+        anchor.parentNode.insertBefore(d, anchor.nextSibling);
+      }
       window.atOptions = { key: KEY, format: 'iframe', height: 250, width: 300, params: {} };
       var s = document.createElement('script');
       s.async = true; s.src = 'https://www.highrevenueformat.com/' + KEY + '/invoke.js';
-      d.style.visibility = 'hidden';            // no ad (no fill / blocked) = no empty label or gap
       var t0 = Date.now(), iv = setInterval(function () {
-        if (d.querySelector('iframe')) { d.style.visibility = 'visible'; clearInterval(iv); }
+        if (d.querySelector('iframe')) { d.style.visibility = 'visible'; d.style.display = ''; clearInterval(iv); }
         else if (Date.now() - t0 > 10000) { clearInterval(iv); d.parentNode && d.parentNode.removeChild(d); }
       }, 500);
       d.querySelector('.box').appendChild(s);

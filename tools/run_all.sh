@@ -31,7 +31,7 @@ run gen_tv.py          # страница /tv/ для браузера теле�
 run gen_pop.py         # Monetag OnClick на всех страницах, раздел о рекламе в политике
 run gen_tgneon.py      # пульсирующий неон у баннера Telegram над плеером
 run gen_tgtext.py      # текст баннера Telegram над плеером
-run gen_logos_light.py # светлые варианты логотипов для списка каналов
+run gen_logos_trim.py  # логотипы без пустых полей (assets/logos/trim)
 run gen_layout.py      # колонка плеера к списку каналов, крупнее названия и логотипы
 run gen_sync_channels.py # «НТВ Хит» убран из списков (нет потока на воркере), как в мини-аппе
 run gen_scrollbar.py   # красная полоса прокрутки у списка каналов

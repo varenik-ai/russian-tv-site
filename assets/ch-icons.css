@@ -1,0 +1,10 @@
+/* Плитки значков каналов в списках (страницы каналов и главные): широкая тёмная плитка, логотип без пустых полей.
+   Логотипы в списках подменяются на assets/logos/trim/ (tools/gen_logos_trim.py, tools/gen_layout.py). */
+.ch-icon-s.ch-logo-s{background:var(--card,#12121f)!important;padding:4px 6px;box-sizing:border-box}
+.ch-icon-s.ch-logo-s img{width:100%;height:100%;object-fit:contain;display:block}
+.ch-item-s.active .ch-icon-s{box-shadow:0 0 0 2px rgba(26,95,217,.55)}
+@media(min-width:901px){
+  .ch-icon-s{width:92px;height:52px;border-radius:10px;font-size:15px;font-weight:900;letter-spacing:.3px}
+  .sidebar-wrapper .ch-icon-s{width:76px;height:44px;font-size:13px}
+  .sidebar-wrapper .ch-name-s{font-size:17.25px}
+}
