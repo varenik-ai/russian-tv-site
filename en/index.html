@@ -276,7 +276,7 @@
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <style id="inter-font">@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-cyrillic.woff2) format("woff2");unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-cyrillic-ext.woff2) format("woff2");unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}</style>
 <style id="footer-seo-css">.footer-seo a{color:inherit;text-decoration:none;margin:0 7px;white-space:nowrap}.footer-seo a:hover{color:var(--text);text-decoration:underline}.footer-seo>div{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline}.footer-seo b{margin-right:4px}</style>  <script defer src="/assets/pop.js?v=4"></script>
-<style id="en-header-fix">@media(max-width:400px){.live-count{display:none}}</style><link rel="stylesheet" href="/assets/ch-icons.css?v=4"></head>
+<style id="en-header-fix">@media(max-width:400px){.live-count{display:none}}</style><link rel="stylesheet" href="/assets/ch-icons.css?v=5"></head>
 <body>
 
 <header>
@@ -503,8 +503,8 @@ const CHANNEL_GROUPS = [
     { id:"mir", name:"\u041c\u0418\u0420", nameEn:"MIR TV", desc:"CIS interstate broadcasting", icon:"\u041c\u0418\u0420", color:"#0288d1", iconBg:"#0a1018", slug:"mir-live", logo:"/assets/logos/trim/logo-mir.svg" },
     { id:"zvezda", name:"\u0417\u0432\u0435\u0437\u0434\u0430", nameEn:"Zvezda", desc:"Military & patriotic TV", icon:"\u2605", color:"#c62828", iconBg:"#180808", slug:"zvezda-live", logo:"/assets/logos/trim/logo-zvezda.svg" },
     { id:"ch360", name:"360\u00b0", nameEn:"360", desc:"Moscow region news", icon:"360", color:"#1565c0", iconBg:"#080d1a", slug:"kanal-360-live" },
-    { id:"spb", name:"Санкт-Петербург", nameEn:"Saint Petersburg TV", desc:"Saint Petersburg city channel", icon:"СПБ", color:"#1565c0", iconBg:"#080d1a", slug:"sankt-peterburg-live" },
-    { id:"moskva24", name:"Москва 24", nameEn:"Moskva 24", desc:"News and city life of Moscow", icon:"М24", color:"#e53935", iconBg:"#1a0808", slug:"moskva-24-live" },
+    { id:"spb", name:"Санкт-Петербург", nameEn:"Saint Petersburg TV", desc:"Saint Petersburg city channel", icon:"СПБ", color:"#1565c0", iconBg:"#080d1a", slug:"sankt-peterburg-live", logo:'/assets/logos/trim/logo-spb.png' },
+    { id:"moskva24", name:"Москва 24", nameEn:"Moskva 24", desc:"News and city life of Moscow", icon:"М24", color:"#e53935", iconBg:"#1a0808", slug:"moskva-24-live", logo:'/assets/logos/trim/logo-moskva24.png' },
     { id:"soloviev", name:"\u0421\u043e\u043b\u043e\u0432\u044c\u0451\u0432 Live", nameEn:"Soloviev Live", desc:"Politics & analytics", icon:"\u0421\u041b", color:"#455a64", iconBg:"#0d1214", slug:"soloviev-live", logo:"/assets/logos/trim/logo-solovev-live.svg" },
     { id:"doverie", name:"Москва. Доверие", nameEn:"Moskva Doverie", desc:"Moscow city channel", icon:"МД", color:"#d81b60", iconBg:"#1a0810", slug:"moskva-doverie-live" },
     { id:"news360", name:"360 Новости", nameEn:"360 News", desc:"Moscow region and Russian news", icon:"360Н", color:"#c62828", iconBg:"#180808", slug:"360-novosti-live" },
@@ -520,12 +520,12 @@ const CHANNEL_GROUPS = [
     { id:"domkino", name:"\u0414\u043e\u043c \u041a\u0438\u043d\u043e", nameEn:"Dom Kino", desc:"Soviet & Russian cinema", icon:"\u0414\u041a", color:"#7b1fa2", iconBg:"#130a18", slug:"dom-kino-live" },
     { id:"kinohit", name:"\u041a\u0438\u043d\u043e\u0445\u0438\u0442", nameEn:"Kinohit", desc:"Best films 24/7", icon:"\u041a\u0425\u0422", color:"#e53935", iconBg:"#1a0808", slug:"kinohit-live" },
     { id:"kinokomediya", name:"\u041a\u0438\u043d\u043e\u043a\u043e\u043c\u0435\u0434\u0438\u044f", nameEn:"Kinokomediya", desc:"Comedies 24/7", icon:"\u041a\u041c\u0414", color:"#f9a825", iconBg:"#1a1400", slug:"kinokomediya-live" },
-    { id:"viju", name:"Viju TV1000", nameEn:"Viju TV1000", desc:"Movies & series", icon:"VJU", color:"#00897b", iconBg:"#081412", slug:"viju-tv-live" },
+    { id:"viju", name:"Viju TV1000", nameEn:"Viju TV1000", desc:"Movies & series", icon:"VJU", color:"#00897b", iconBg:"#081412", slug:"viju-tv-live", logo:'/assets/logos/trim/logo-viju-tv1000.svg' },
     { id:"nasheKino", name:"\u041d\u0430\u0448\u0435 \u043a\u0438\u043d\u043e", nameEn:"Nashe Kino", desc:"New Russian cinema", icon:"\u041d\u041a", color:"#c62828", iconBg:"#180808", slug:"nashe-kino-live" },
     { id:"rodnoeKino", name:"\u0420\u043e\u0434\u043d\u043e\u0435 \u043a\u0438\u043d\u043e", nameEn:"Rodnoe Kino", desc:"Russian classic films", icon:"\u0420\u0414\u041d", color:"#ad1457", iconBg:"#180810", slug:"rodnoe-kino-live" },
     { id:"kinosvidanie", name:"\u041a\u0438\u043d\u043e\u0441\u0432\u0438\u0434\u0430\u043d\u0438\u0435", nameEn:"Kinosvidanie", desc:"Romantic cinema", icon:"\u041a\u0421\u0412", color:"#d81b60", iconBg:"#180a10", slug:"kinosvidanie-live" },
     { id:"indiyskoekino", name:"\u0418\u043d\u0434\u0438\u0439\u0441\u043a\u043e\u0435 \u043a\u0438\u043d\u043e", nameEn:"Bollywood TV", desc:"Best Bollywood films", icon:"\u0418\u041d\u0414", color:"#f57f17", iconBg:"#1a1200", slug:"indiyskoekino-live" },
-    { id:"kinodetektiv", name:"Viju TV1000 \u0420\u0443\u0441\u0441\u043a\u043e\u0435 \u043a\u0438\u043d\u043e", nameEn:"Viju TV1000 Russian Cinema", desc:"Russian films and series 24/7", icon:"VRK", color:"#546e7a", iconBg:"#0c1216", slug:"kino-detektiv-live" },
+    { id:"kinodetektiv", name:"Viju TV1000 \u0420\u0443\u0441\u0441\u043a\u043e\u0435 \u043a\u0438\u043d\u043e", nameEn:"Viju TV1000 Russian Cinema", desc:"Russian films and series 24/7", icon:"VRK", color:"#546e7a", iconBg:"#0c1216", slug:"kino-detektiv-live", logo:'/assets/logos/trim/logo-viju-russian.svg' },
     { id:"kinoekshn", name:"\u041a\u0438\u043d\u043e \u042d\u043a\u0448\u043d", nameEn:"Kino Ekshn", desc:"Action movies 24/7", icon:"\u042d\u041a\u0428", color:"#d84315", iconBg:"#1a0d08", slug:"kino-ekshn-live" },
     { id:"detektiv", name:"Честный детектив", nameEn:"Chestnyy Detektiv", desc:"Detective and crime programming", icon:"ЧД", color:"#546e7a", iconBg:"#0c1216", slug:"chestnyy-detektiv-live" },
   ]},
@@ -565,7 +565,7 @@ const CHANNEL_GROUPS = [
     { id:"unbeaten", name:"Unbeaten Boxing", nameEn:"Unbeaten Boxing", desc:"Uncensored boxing 24/7", icon:"UB", color:"#4a148c", iconBg:"#110818", slug:"unbeaten-boxing-live" },
     { id:"freesports", name:"World of Freesports", nameEn:"World of Freesports", desc:"World sport, free 24/7", icon:"WFS", color:"#37474f", iconBg:"#08100a", slug:"world-freesports-live" },
     { id:"sportivnyy", name:"Спортивный", nameEn:"Sportivny", desc:"Sport 24/7", icon:"СПО", color:"#d84315", iconBg:"#1a0d08", slug:"sportivnyy-live" },
-    { id:"tracesport", name:"Trace Sport Stars", nameEn:"Trace Sport Stars (Russian)", desc:"Sports stars", icon:"TSS", color:"#0277bd", iconBg:"#080d1a", slug:"trace-sport-stars-live" },
+    { id:"tracesport", name:"Trace Sport Stars", nameEn:"Trace Sport Stars (Russian)", desc:"Sports stars", icon:"TSS", color:"#0277bd", iconBg:"#080d1a", slug:"trace-sport-stars-live", logo:'/assets/logos/trim/logo-trace-sport-stars.png' },
   ]},
 ];
 
