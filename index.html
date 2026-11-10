@@ -951,7 +951,7 @@ function openChannel(ch) {
   var pw0 = document.getElementById('player-wrap');
   if (pw0) pw0.classList.remove('grid-mode');
   setTimeout(function() {
-    var el = document.getElementById('player-wrap');
+    var el = document.querySelector('.tg-banner-desk') || document.getElementById('player-wrap');   // до баннера над плеером, а не до плеера
     var headerH = (document.querySelector('header') || {}).offsetHeight || 60;
     var y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 8;
     window.scrollTo({ top: y, behavior: 'smooth' });
@@ -963,7 +963,7 @@ function openChannel(ch) {
   ciTitle.textContent = ch.name; ciDesc.textContent = ch.desc;
   ciTags.innerHTML = ch.tags.map(function(t) { return '<span class="ci-tag">' + t + '</span>'; }).join('');
   const activeItem = sidebar.querySelector('.ch-item.active');
-  if (activeItem) activeItem.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  if (activeItem) sidebar.scrollTo({ top: Math.max(0, activeItem.getBoundingClientRect().top - sidebar.getBoundingClientRect().top + sidebar.scrollTop - sidebar.clientHeight / 2 + activeItem.offsetHeight / 2), behavior: 'smooth' });
   // Overlay: 1st show — 2min after stream start
   addRecent(ch);
   loadStream(ch);

@@ -898,8 +898,8 @@ if (chSearch) {
 }
 
 (function() {
-  var active = document.querySelector('.ch-item-s.active');
-  if (active) active.scrollIntoView({block:'center', behavior:'auto'});
+  var active = document.querySelector('.ch-item-s.active'), box = document.querySelector('.ch-list-scroll');
+  if (active && box) box.scrollTop = Math.max(0, active.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop - box.clientHeight / 2 + active.offsetHeight / 2);
 })();
 </script>
 
