@@ -831,7 +831,8 @@ setInterval(function() {
     if (_vpq.totalVideoFrames > _lastFrameCount) {
       _lastFrameCount = _vpq.totalVideoFrames;
       _lastFrameProgressTime = Date.now();
-    } else if (!video.paused && Date.now() - _lastFrameProgressTime > 9000) {
+    } else if (document.hidden) { _lastFrameProgressTime = Date.now(); /*playfix2*/
+    } else if (_lastFrameCount > 0 && !video.paused && Date.now() - _lastFrameProgressTime > 9000) {
       // currentTime can keep ticking (audio/system clock) while the actual
       // video frame stops updating — the picture visually freezes/blacks out
       // even though the stream looks "live" by time alone.

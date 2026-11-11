@@ -6,7 +6,8 @@
 2) У медленных источников (НТВ: сегменты по 1-4 с, иногда 10 с) первый кадр приходит на 8-12-й секунде. Пока сегменты
    реально загружаются (FRAG_LOADED не старше 6 с), таймер продлевается шагами по 3 с, но не дольше 30 с с начала подключения.
 3) (также на главных) Сторож зависания считал время от последнего прогресса, которое с момента загрузки страницы до нажатия «Смотреть»
-   успевало устареть (> 12 с) и сразу пересоздавал поток; теперь отсчёт обнуляется при каждом (пере)подключении."""
+   успевало устареть (> 12 с) и сразу пересоздавал поток; теперь отсчёт обнуляется при каждом (пере)подключении.
+4) playfix2 (Safari): сторож «замирание кадра» срабатывал, если счётчик кадров браузера не растёт; см. ниже."""
 import sys, os, re, glob
 ROOT = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else '.')
 MARK = '/*playfix1*/'
@@ -44,4 +45,18 @@ for rel in ('index.html', 'en/index.html'):
     if MARK in s or 'function loadStream' not in s: continue
     s2 = re.sub(r'(\n  _sessionStart = _nowTs;)', r'\n  _lastProgressTime = _nowTs; ' + MARK + r'\1', s, count=1)
     if s2 != s: open(f, 'w', encoding='utf-8').write(s2); n += 1
+# --- playfix2: сторож «замирание кадра» (RU-страницы каналов и обе главные) -------------------------------------------------
+# Safari (и WebView iOS) могут не обновлять счётчик getVideoPlaybackQuality().totalVideoFrames у потока через MSE/MMS:
+# он остаётся 0, и через 9 с «зависание кадра» пересоздаёт рабочий поток снова и снова. Теперь проверка включается только
+# если счётчик хоть раз вырос (_lastFrameCount > 0), и не срабатывает в фоновой вкладке (там кадры не считаются).
+MARK2 = '/*playfix2*/'
+OLD2 = "} else if (!video.paused && Date.now() - _lastFrameProgressTime > 9000) {"
+NEW2 = ("} else if (document.hidden) { _lastFrameProgressTime = Date.now(); " + MARK2 + "\n"
+        "    } else if (_lastFrameCount > 0 && !video.paused && Date.now() - _lastFrameProgressTime > 9000) {")
+n2 = 0
+for f in glob.glob(os.path.join(ROOT, '*/index.html')) + glob.glob(os.path.join(ROOT, 'en/*/index.html')) + [os.path.join(ROOT, 'index.html'), os.path.join(ROOT, 'en/index.html')]:
+    s = open(f, encoding='utf-8').read()
+    if MARK2 in s or s.count(OLD2) != 1: continue
+    open(f, 'w', encoding='utf-8').write(s.replace(OLD2, NEW2)); n2 += 1
+print('gen_playfix: playfix2, страниц исправлено', n2)
 print('gen_playfix: страниц исправлено', n)
