@@ -90,3 +90,38 @@
   }
   if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
 })();
+
+/* Adsterra Social Bar — computers and tablets (not phones), channel pages and home pages. Added 11.11.2026.
+   Ad unit: Adsterra site 6187633, unit 32210618 (SocialBar_1). Loads only after the visitor accepted cookies, 30s after page load
+   (Monetag In-Page Push starts at 20s, so the two never appear together).
+   Device test: a mouse (hover:hover) = computer; no mouse and the short side of the screen >= 600 px = tablet; phones are skipped.
+   Kill switch: SOCIALBAR_ENABLED=false (or ?noads=1). */
+(function () {
+  var SOCIALBAR_ENABLED = true;
+  var SRC = 'https://bancadeltempoidea.org/14/9c2fe622f1cae087085580e782928d0c';
+  var DELAY_MS = 30000;
+  if (!SOCIALBAR_ENABLED) return;
+  var path = location.pathname.replace(/index\.html$/, '');
+  var isChannel = /-live\/?$/.test(path);
+  var isHome = path === '/' || path === '/en/' || path === '/en';
+  if (!isChannel && !isHome) return;
+  if (/[?&]noads=1/.test(location.search)) return;
+  var mouse = !!(window.matchMedia && matchMedia('(hover:hover)').matches);
+  var tablet = Math.min(screen.width || 0, screen.height || 0) >= 600;
+  if (!mouse && !tablet) return;
+  var armed = false;
+  function load() {
+    try {
+      var s = document.createElement('script');
+      s.setAttribute('data-cfasync', 'false');
+      s.src = SRC;
+      (document.body || document.documentElement).appendChild(s);
+    } catch (e) {}
+  }
+  function arm() { if (armed) return; armed = true; setTimeout(load, DELAY_MS); }
+  function start() {
+    if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
+    else window.addEventListener('rtv-consent-granted', arm);
+  }
+  if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
+})();

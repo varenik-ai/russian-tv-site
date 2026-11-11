@@ -7,14 +7,14 @@ TAG = '<script defer src="/assets/pop.js?v=4"></script>'
 POLICY = {
     'privacy/index.html': ('  <h2>5. Ваши права</h2>',
         '  <h2 id="ads">4.3. Реклама</h2>\n'
-        '  <p>На сайте показывается реклама сетей Monetag и Adsterra: баннеры (в том числе блок 300×250 рядом с плеером на широких экранах компьютеров) и рекламная страница, которая может открываться в новой вкладке или окне после клика по сайту. '
+        '  <p>На сайте показывается реклама сетей Monetag и Adsterra: баннеры (в том числе блок 300×250 рядом с плеером на широких экранах компьютеров), всплывающие уведомления (In-Page Push и Social Bar; Social Bar только на компьютерах и планшетах) и рекламная страница, которая может открываться в новой вкладке или окне после клика по сайту. '
         'Рекламные скрипты загружаются с серверов этих сетей, которые могут получать ваш IP-адрес, сведения о браузере и устройстве и использовать cookies. '
         'Сайт запоминает в браузере (sessionStorage), что реклама в новой вкладке уже показана, чтобы не повторять её в той же вкладке. '
         'Подробнее: <a href="https://monetag.com/privacy/" rel="noopener nofollow">политика конфиденциальности Monetag</a>, '
         '<a href="https://monetag.com/opt-out/" rel="noopener nofollow">отказ от персонализации</a>, <a href="https://adsterra.com/privacy-policy/" rel="noopener nofollow">политика конфиденциальности Adsterra</a>.</p>\n\n'),
     'en/privacy/index.html': ('  <h2>5. Your rights</h2>',
         '  <h2 id="ads">4.3. Advertising</h2>\n'
-        '  <p>The site shows ads from the Monetag and Adsterra networks: banners (including a 300×250 block next to the player on wide desktop screens) and an ad page that may open in a new tab or window after a click on the site. '
+        '  <p>The site shows ads from the Monetag and Adsterra networks: banners (including a 300×250 block next to the player on wide desktop screens), pop-up notifications (In-Page Push and Social Bar; Social Bar on computers and tablets only) and an ad page that may open in a new tab or window after a click on the site. '
         'Ad scripts load from these networks\' servers, which may receive your IP address and browser and device details and may use cookies. '
         'The site stores a note in your browser (sessionStorage) that the new-tab ad has been shown, so it does not repeat in the same tab. '
         'More: <a href="https://monetag.com/privacy/" rel="noopener nofollow">Monetag privacy policy</a>, '

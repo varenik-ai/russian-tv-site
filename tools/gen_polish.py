@@ -36,9 +36,13 @@ def credit_block():
             'лицензия <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ru" target="_blank" rel="noopener">CC BY-SA 4.0</a>. '
             'Изменения: уменьшен размер, цвет буквенной части инвертирован стилем для тёмного фона.</p>\n\n  ')
 
+LEGAL_DATES = [('Last updated: November 4, 2026', 'Last updated: November 5, 2026'),
+               ('Последнее обновление: 4 ноября 2026 г.', 'Последнее обновление: 5 ноября 2026 г.')]
 for f in glob.glob(os.path.join(ROOT, '**/*.html'), recursive=True):
     s = open(f, encoding='utf-8').read(); o = s
     s = count_fix(s)
+    if f.endswith(('privacy/index.html',)):          # дата политики (раздел о рекламе добавлен 5.11.2026; в gen_audit_fixes осталось 4.11)
+        for x, y in LEGAL_DATES: s = s.replace(x, y)
     if f == os.path.join(ROOT, 'about', 'index.html') and CREDIT_MARK not in s:
         s = s.replace('<div class="contact-box">', credit_block() + '<div class="contact-box">', 1)
     if s != o:

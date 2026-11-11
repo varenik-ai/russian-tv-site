@@ -54,11 +54,15 @@ for f in glob.glob(os.path.join(ROOT, '**/*.html'), recursive=True):
     if CH_SEARCH_OLD in s: s = s.replace(CH_SEARCH_OLD, CH_SEARCH_NEW)
     if rel in ('index.html', 'en/index.html') and 'ch-empty' not in s:
         s = HOME_OLD.sub(home_new(rel.startswith('en/')), s)
-    s = re.sub(r'(\b54 (?:российских )?)телеканалов\b', r'\1телеканала', s)
-    s = re.sub(r'\b54 (русских|российских) каналов\b', r'54 \1 канала', s)
+    # именительный/винительный падеж («Смотрите 54 российских канала»); родительный («потоки 54 телеканалов», «просмотру 54 российских каналов») не трогаем
+    GEN = r'(?<!просмотру )(?<!потоки )(?<!из )(?<!для )(?<!всех )(?<!до )(?<!более )'
+    s = re.sub(GEN + r'(\b54 (?:российских )?)телеканалов\b', r'\1телеканала', s)
+    s = re.sub(GEN + r'\b54 (русских|российских) каналов\b', r'54 \1 канала', s)
     if rel == 'moskva-doverie-live/index.html':
         s = s.replace('Москва. Доверие прямой эфир — московское телевидение онлайн без VPN', 'Москва. Доверие прямой эфир — онлайн без VPN')
-    if rel in ('privacy/index.html', 'advertising/index.html', 'en/privacy/index.html', 'en/advertising/index.html') and 'og:title' not in s:
+    if rel in ('privacy/index.html', 'advertising/index.html', 'en/privacy/index.html', 'en/advertising/index.html'):
+        # страницы рекламы строятся копией политики и несут её og:* — снять всё и записать заново по title/description самой страницы
+        s = re.sub(r'[ \t]*<meta (?:property="og:(?:type|title|description|url|image)"|name="twitter:card") content="[^"]*"/>\n', '', s)
         t = re.search(r'<title>([^<]*)</title>', s).group(1); d = re.search(r'<meta name="description" content="([^"]*)"', s)
         d = d.group(1) if d else t
         url = 'https://russian-tv.com/' + rel[:-len('index.html')]
