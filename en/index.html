@@ -735,6 +735,7 @@ function loadStream(ch, isRetry) {
   if (isRetry && _nowTs - _lastLoadStreamAt < 1500) return; // guard against rapid re-create storms
   _lastLoadStreamAt = _nowTs;
   stopStream(); setStatus('Connecting...');
+  _lastProgressTime = _nowTs; /*playfix1*/
   _sessionStart = _nowTs; // restart the preemptive-reconnect countdown on every (re)connect
   _lastFrameCount = 0; _lastFrameProgressTime = _nowTs; // reset frame counter — video.load() resets the browser's totalVideoFrames
   if (!isRetry) { _netErrorCount = 0; _fullCycles = 0; }

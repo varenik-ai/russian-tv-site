@@ -971,6 +971,7 @@ async function loadStream(ch, isRetry) {
   if (isRetry && _nowTs - _lastLoadStreamAt < 1500) return; // защита от шторма повторных пересозданий подряд
   _lastLoadStreamAt = _nowTs;
   stopStream();
+  _lastProgressTime = _nowTs; /*playfix1*/
   _sessionStart = _nowTs; // отсчёт до профилактического реконнекта — заново с каждого (пере)подключения
   _lastFrameCount = 0; _lastFrameProgressTime = _nowTs; // сброс счётчика кадров — video.load() обнуляет totalVideoFrames браузера
   if (!isRetry) { _proxyRetries = 0; _fullCycles = 0; } // сброс счётчиков при ручном переключении канала

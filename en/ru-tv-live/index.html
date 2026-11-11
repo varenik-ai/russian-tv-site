@@ -638,6 +638,7 @@ setInterval(function() {
 // ── Real playback start (not to be confused with manifest parsing —
 // the manifest can parse fine and segments still never arrive).
 var _playTimeout = null;
+var _lastFragAt = 0;
 function _tryNudgeGap() {
   // Перескакиваем через микро-разрыв в буфере (характерно для fs.uplink.kz
   // и подобных источников с мелкими паузами в PTS между сегментами) —
@@ -655,6 +656,7 @@ function _tryNudgeGap() {
 }
 video.addEventListener('playing', function() {
   clearTimeout(_playTimeout);
+  clearTimeout(_retryTimer); // frame is playing: cancel a reconnect scheduled just before it
   setStatus('▶ Stream started');
   _lastProgressTime = Date.now();
 });
@@ -707,6 +709,7 @@ function createHls() {
   var _nowTs = Date.now();
   if (_nowTs - _lastCreateHlsAt < 1500) return; // guard against rapid re-create storms
   _lastCreateHlsAt = _nowTs;
+  _lastProgressTime = _nowTs; /*playfix1*/
   _sessionStart = _nowTs; // restart the preemptive-reconnect countdown on every (re)connect
   clearTimeout(_retryTimer);
   const url = _currentProxy() + '/stream?channel=' + CH_ID;
@@ -716,6 +719,7 @@ function createHls() {
     manifestLoadingMaxRetry:2, fragLoadingMaxRetry:3, levelLoadingMaxRetry:2});
   hls.loadSource(url);
   hls.attachMedia(video);
+  hls.on(Hls.Events.FRAG_LOADED, function() { _lastFragAt = Date.now(); });
   try { window.rtvQuality && rtvQuality.attach(hls, video); } catch (e) {}
   hls.on(Hls.Events.MANIFEST_PARSED, function() {
     video.play().catch(function(){});
@@ -725,8 +729,9 @@ function createHls() {
     // Manifest parsed OK, but that doesn't mean playback actually started —
     // if no real frame arrives within 8s (segments never came), treat as a failed attempt.
     clearTimeout(_playTimeout);
-    _playTimeout = setTimeout(function() {
+    _playTimeout = setTimeout(function _chk() {
       if (_hlsStopped || video.readyState >= 3) return;
+      if (Date.now() - _lastFragAt < 6000 && Date.now() - _sessionStart < 30000) { _playTimeout = setTimeout(_chk, 3000); return; } /*playfix1*/
       if (_tryNudgeGap()) {
         _playTimeout = setTimeout(function() {
           if (_hlsStopped || video.readyState >= 3) return;
