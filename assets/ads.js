@@ -33,15 +33,20 @@
    Wide screens (a mouse and room for 300px + gap between the left-aligned player column and the window edge, about ≥1760px):
    shown to the right of the player. All other screens (phones, tablets, laptops): shown centered right under the player
    status line, hidden until the ad actually loads (no empty gap). No ad (no fill / blocked) = the block is removed after 10s.
+   DESKTOP_ONLY (since 11.11.2026): shown only where a mouse exists (hover:hover). Adsterra stats 9-11.11: desktop CPM $0.40,
+   mobile $0.13, tablet $0.04, TV $0 — mobile gave 5 of 10 clicks (CTR 2.1%, likely accidental taps under the player) for $0.03.
+   Set DESKTOP_ONLY=false to bring it back on touch screens.
    Kill switch: BANNER_ENABLED=false (or ?noads=1). Ad unit: Adsterra site 6187633, unit 32178193. */
 (function () {
   var BANNER_ENABLED = true;
+  var DESKTOP_ONLY = true;
   var KEY = '825d215f35b6e7c6a1f929819767001a';
   var DELAY_MS = 3000;
   if (!BANNER_ENABLED) return;
   var path = location.pathname.replace(/index\.html$/, '');
   if (!/-live\/?$/.test(path)) return;
   if (/[?&]noads=1/.test(location.search)) return;
+  if (DESKTOP_ONLY && !(window.matchMedia && matchMedia('(hover:hover)').matches)) return;
   var armed = false;
   function show() {
     try {
