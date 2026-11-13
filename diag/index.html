@@ -140,6 +140,14 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
     var ok = first !== null && v.currentTime > 5;
     log('  ' + (ok ? 'ИДЁТ' : 'НЕ ИДЁТ') + ': картинка через ' + (first === null ? '—' : first + ' мс') + ', currentTime ' + v.currentTime.toFixed(1) + ', сегментов ' + frags + ', кадров ' + (q ? q.totalVideoFrames : '?'), ok ? 'ok' : 'bad');
     errs.slice(0, 4).forEach(function (x) { log('  ошибка: ' + x, 'bad'); });
+    if (!ok) {
+      var pl = await get(W + '/stream?channel=' + id, {}, true, 15000), seg = (pl.body || '').split('\n').filter(function (l) { return l && l[0] !== '#'; })[0] || '';
+      log('  воркер отдал плейлист: ' + (pl.ok ? 'OK' : 'ОШИБКА ' + pl.info) + ' · первый сегмент: ' + hostOf(seg), 'warn');
+      if (/^https?:/.test(seg)) {
+        var sg = await get(seg, {}, false, 15000);
+        log('  этот сегмент напрямую: ' + fmt(sg) + (sg.redirected ? ' · ПЕРЕАДРЕСАЦИЯ на ' + sg.url : ''), sg.ok && !sg.redirected ? 'ok' : 'bad');
+      }
+    }
     try { h.destroy(); } catch (e) {} v.remove();
   }
   async function workerDiag(id, name) {
