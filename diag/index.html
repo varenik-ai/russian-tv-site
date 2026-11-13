@@ -19,7 +19,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
 <body>
 <h1>Проверка потоков</h1>
 <p>Страница проверяет из вашего браузера, достижимы ли источники каналов. Данные никуда не отправляются: результат показан ниже. Нажмите «Проверить», подождите около минуты и пришлите скриншот или скопированный отчёт.</p>
-<button id="go">Проверить</button><button id="go2">Проверить запасные источники</button><button id="go3">Зеркала cinerama</button><button id="go4">Проверить воспроизведение</button><button id="cp" disabled>Скопировать отчёт</button>
+<button id="go">Проверить</button><button id="go2">Проверить запасные источники</button><button id="go3">Зеркала cinerama</button><button id="go4">Проверить воспроизведение</button><button id="go5">Диагностика воркера</button><button id="cp" disabled>Скопировать отчёт</button>
 <pre id="out">Нажмите «Проверить».</pre>
 <script>
 (function () {
@@ -28,14 +28,14 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
             ['moskva24', 'Москва 24'], ['soyuz', 'Союз'], ['pyatyy', 'Пятый канал']];
   var out = document.getElementById('out'), go = document.getElementById('go'), cp = document.getElementById('cp'), text = [];
   function log(s, cls) { text.push(s); var d = document.createElement('div'); if (cls) d.className = cls; d.textContent = s; if (!out.firstChild || out.firstChild.nodeType === 3) out.textContent = ''; out.appendChild(d); }
-  function busy(on) { ['go', 'go2', 'go3', 'go4'].forEach(function (id) { var e = document.getElementById(id); if (e) e.disabled = on; }); }
+  function busy(on) { ['go', 'go2', 'go3', 'go4', 'go5'].forEach(function (id) { var e = document.getElementById(id); if (e) e.disabled = on; }); }
   function t() { return performance.now(); }
   function tmo(ms) { var c = new AbortController(); setTimeout(function () { c.abort(); }, ms); return c.signal; }
   function fmt(r) { return (r.ok ? 'OK' : 'ОШИБКА') + ' ' + r.info + ' · ' + r.ms + ' мс'; }
-  async function get(url, opt, readAll) {
+  async function get(url, opt, readAll, ms) {
     var t0 = t(), res = {ok: false, info: '', ms: 0, body: ''};
     try {
-      var r = await fetch(url, Object.assign({signal: tmo(12000), cache: 'no-store'}, opt || {}));
+      var r = await fetch(url, Object.assign({signal: tmo(ms || 12000), cache: 'no-store'}, opt || {}));
       if (r.type === 'opaque') { res.ok = true; res.info = 'ответ получен (без CORS)'; }
       else {
         res.info = 'HTTP ' + r.status; res.url = r.url; res.redirected = r.redirected;
@@ -43,7 +43,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
         else { var rd = r.body.getReader(), c = await rd.read(); res.info += ', ' + (c.value ? c.value.length : 0) + ' байт'; try { rd.cancel(); } catch (e) {} }
         res.ok = r.ok;
       }
-    } catch (e) { res.info = (e && e.name === 'AbortError') ? 'нет ответа за 12 с' : 'сетевая ошибка (' + (e && e.message) + ')'; }
+    } catch (e) { res.info = (e && e.name === 'AbortError') ? 'нет ответа за ' + Math.round((ms || 12000) / 1000) + ' с' : 'сетевая ошибка (' + (e && e.message) + ')'; }
     res.ms = Math.round(t() - t0); return res;
   }
   function firstUri(txt) { var l = txt.split('\n'); for (var i = 0; i < l.length; i++) { var s = l[i].trim(); if (s && s[0] !== '#') return s; } return ''; }
@@ -142,6 +142,27 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
     errs.slice(0, 4).forEach(function (x) { log('  ошибка: ' + x, 'bad'); });
     try { h.destroy(); } catch (e) {} v.remove();
   }
+  async function workerDiag(id, name) {
+    log('— ' + name + ' (' + id + ')');
+    var t0 = t(), r = await get(W + '/stream?channel=' + id, {}, true, 30000);
+    var head = (r.body || '').split('\n').filter(function (l) { return l && l[0] !== '#'; })[0] || '';
+    log('  /stream: ' + fmt(r) + ' · первый адрес: ' + hostOf(head), r.ok ? 'ok' : 'bad');
+    var d = await get(W + '/eu-debug?channel=' + id, {}, true, 30000);
+    if (!d.ok) { log('  /eu-debug: ' + fmt(d), 'bad'); return; }
+    try {
+      var j = JSON.parse(d.body);
+      log('  воркер видит: страна ' + j.country + ', дата-центр ' + j.colo + ', версия ' + j.version + ', запасной путь ' + (j.euRule ? 'ВКЛ' : 'выкл'));
+      (j.mirrors || []).forEach(function (m) { log('    ' + m.host + ': ' + m.state + ' · ' + m.ms + ' мс' + (m.err ? ' · ' + (m.err.error || ('HTTP ' + m.err.status)) : ''), m.state === 'good' ? 'ok' : 'warn'); });
+    } catch (e) { log('  /eu-debug: не разобрать ответ: ' + (d.body || '').slice(0, 80), 'bad'); }
+  }
+  document.getElementById('go5').onclick = async function () {
+    busy(true); cp.disabled = true; text = []; out.textContent = '';
+    log('Диагностика воркера. Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
+    log('Браузер: ' + navigator.userAgent);
+    var L = [['rossiya1', 'Россия 1'], ['ntv', 'НТВ'], ['rossiya24', 'Россия 24'], ['tvc', 'ТВЦ'], ['kultura', 'Россия Культура'], ['perviy', 'контроль: Первый']];
+    for (var i = 0; i < L.length; i++) { try { await workerDiag(L[i][0], L[i][1]); } catch (e) { log('  сбой: ' + e.message, 'bad'); } }
+    log('Готово.'); busy(false); cp.disabled = false;
+  };
   document.getElementById('go4').onclick = async function () {
     busy(true); cp.disabled = true; text = []; out.textContent = '';
     log('Воспроизведение через воркер. Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
