@@ -85,6 +85,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
              ['Россия 24 · cinerama 1021', 'https://stream8.cinerama.uz/1021/tracks-v1a1/mono.m3u8'],
              ['ТВЦ · cinerama 1025', 'https://stream8.cinerama.uz/1025/tracks-v1a1/mono.m3u8'],
              ['ТВЦ · ngenix', 'https://zabava-htlive.cdn.ngenix.net/hls/CH_TVC/variant.m3u8'],
+             ['Россия Культура · cinerama 1048', 'https://stream8.cinerama.uz/1048/tracks-v1a1/mono.m3u8'],
              ['контроль: кино · cinerama 1055', 'https://stream8.cinerama.uz/1055/tracks-v1a1/mono.m3u8'],
              ['контроль: Россия 1 · smotrim', 'https://stream.smotrim.ru/hls2/russia_hd/playlist_1.m3u8']];
   async function alt(name, url) {
