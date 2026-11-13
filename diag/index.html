@@ -28,6 +28,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
             ['moskva24', 'Москва 24'], ['soyuz', 'Союз'], ['pyatyy', 'Пятый канал']];
   var out = document.getElementById('out'), go = document.getElementById('go'), cp = document.getElementById('cp'), text = [];
   function log(s, cls) { text.push(s); var d = document.createElement('div'); if (cls) d.className = cls; d.textContent = s; if (!out.firstChild || out.firstChild.nodeType === 3) out.textContent = ''; out.appendChild(d); }
+  function busy(on) { ['go', 'go2', 'go3', 'go4'].forEach(function (id) { var e = document.getElementById(id); if (e) e.disabled = on; }); }
   function t() { return performance.now(); }
   function tmo(ms) { var c = new AbortController(); setTimeout(function () { c.abort(); }, ms); return c.signal; }
   function fmt(r) { return (r.ok ? 'OK' : 'ОШИБКА') + ' ' + r.info + ' · ' + r.ms + ' мс'; }
@@ -142,35 +143,35 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
     try { h.destroy(); } catch (e) {} v.remove();
   }
   document.getElementById('go4').onclick = async function () {
-    go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
+    busy(true); cp.disabled = true; text = []; out.textContent = '';
     log('Воспроизведение через воркер. Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
     log('Браузер: ' + navigator.userAgent);
-    if (!(await loadHls()) || !Hls.isSupported()) { log('hls.js не загрузился или нет поддержки MSE в этом браузере', 'bad'); go.disabled = false; cp.disabled = false; return; }
+    if (!(await loadHls()) || !Hls.isSupported()) { log('hls.js не загрузился или нет поддержки MSE в этом браузере', 'bad'); busy(false); cp.disabled = false; return; }
     var L = [['rossiya1', 'Россия 1'], ['ntv', 'НТВ'], ['rossiya24', 'Россия 24'], ['tvc', 'ТВЦ'], ['kultura', 'Россия Культура'], ['perviy', 'контроль: Первый']];
     for (var i = 0; i < L.length; i++) { try { await playTest(L[i][0], L[i][1]); } catch (e) { log('  сбой: ' + e.message, 'bad'); } }
-    log('Готово.'); go.disabled = false; cp.disabled = false;
+    log('Готово.'); busy(false); cp.disabled = false;
   };
   document.getElementById('go3').onclick = async function () {
-    go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
+    busy(true); cp.disabled = true; text = []; out.textContent = '';
     log('Зеркала cinerama. Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
     log('Браузер: ' + navigator.userAgent);
     try { await mirrors(); await mirrors(); } catch (e) { log('сбой: ' + e.message, 'bad'); }
-    log('Готово.'); go.disabled = false; cp.disabled = false;
+    log('Готово.'); busy(false); cp.disabled = false;
   };
   document.getElementById('go2').onclick = async function () {
-    go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
+    busy(true); cp.disabled = true; text = []; out.textContent = '';
     log('Запасные источники. Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
     log('Браузер: ' + navigator.userAgent);
     for (var i = 0; i < ALT.length; i++) { try { await alt(ALT[i][0], ALT[i][1]); } catch (e) { log('  сбой проверки: ' + e.message, 'bad'); } }
-    log('Готово.'); go.disabled = false; cp.disabled = false;
+    log('Готово.'); busy(false); cp.disabled = false;
   };
   go.onclick = async function () {
-    go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
+    busy(true); cp.disabled = true; text = []; out.textContent = '';
     log('Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
     log('Браузер: ' + navigator.userAgent);
     log('Язык: ' + navigator.language + ' · сеть: ' + ((navigator.connection && (navigator.connection.effectiveType + ', ' + navigator.connection.type)) || 'н/д'));
     for (var i = 0; i < CH.length; i++) { try { await one(CH[i][0], CH[i][1]); } catch (e) { log('  сбой проверки: ' + e.message, 'bad'); } }
-    log('Готово.'); go.disabled = false; cp.disabled = false;
+    log('Готово.'); busy(false); cp.disabled = false;
   };
   cp.onclick = function () { var s = text.join('\n'); try { navigator.clipboard.writeText(s).then(function () { cp.textContent = 'Скопировано'; }, function () { window.prompt('Скопируйте отчёт', s); }); } catch (e) { window.prompt('Скопируйте отчёт', s); } };
 })();
