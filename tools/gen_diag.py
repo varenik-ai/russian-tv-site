@@ -26,7 +26,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
 <body>
 <h1>Проверка потоков</h1>
 <p>Страница проверяет из вашего браузера, достижимы ли источники каналов. Данные никуда не отправляются: результат показан ниже. Нажмите «Проверить», подождите около минуты и пришлите скриншот или скопированный отчёт.</p>
-<button id="go">Проверить</button><button id="go2">Проверить запасные источники</button><button id="go3">Зеркала cinerama</button><button id="cp" disabled>Скопировать отчёт</button>
+<button id="go">Проверить</button><button id="go2">Проверить запасные источники</button><button id="go3">Зеркала cinerama</button><button id="go4">Проверить воспроизведение</button><button id="cp" disabled>Скопировать отчёт</button>
 <pre id="out">Нажмите «Проверить».</pre>
 <script>
 (function () {
@@ -122,6 +122,41 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
       log(ids[i][0] + ' (' + ids[i][1] + ') → ' + row.join(' · '), row.join('').indexOf('ok') >= 0 ? 'ok' : 'bad');
     }
   }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function loadHls() {
+    return new Promise(function (res) {
+      if (window.Hls) return res(true);
+      var sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js';
+      sc.onload = function () { res(true); }; sc.onerror = function () { res(false); }; document.head.appendChild(sc);
+    });
+  }
+  function hostOf(u) { return ((/^https?:\/\/([^\/]+)/.exec(u || '') || [])[1]) || '?'; }
+  async function playTest(id, name) {
+    log('— ' + name + ' (' + id + '), 20 с');
+    var v = document.createElement('video'); v.muted = true; v.setAttribute('playsinline', ''); v.style.cssText = 'position:absolute;width:2px;height:2px;opacity:0';
+    document.body.appendChild(v);
+    var h = new Hls({startLevel: 0, liveSyncDurationCount: 3}), frags = 0, errs = [], t0 = t(), first = null;
+    h.on(Hls.Events.FRAG_LOADED, function (e, d) { frags++; if (frags === 1) log('  первый сегмент: ' + hostOf(d.frag && d.frag.url) + ' за ' + Math.round(t() - t0) + ' мс'); });
+    h.on(Hls.Events.ERROR, function (e, d) { errs.push((d.fatal ? 'ФАТАЛЬНО ' : '') + d.details + (d.response ? ' код ' + d.response.code : '') + ' · ' + hostOf((d.frag && d.frag.url) || d.url || (d.context && d.context.url))); });
+    v.addEventListener('playing', function () { if (first === null) first = Math.round(t() - t0); });
+    h.loadSource(W + '/stream?channel=' + id); h.attachMedia(v);
+    try { var pp = v.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {}
+    await sleep(20000);
+    var q = v.getVideoPlaybackQuality ? v.getVideoPlaybackQuality() : null;
+    var ok = first !== null && v.currentTime > 5;
+    log('  ' + (ok ? 'ИДЁТ' : 'НЕ ИДЁТ') + ': картинка через ' + (first === null ? '—' : first + ' мс') + ', currentTime ' + v.currentTime.toFixed(1) + ', сегментов ' + frags + ', кадров ' + (q ? q.totalVideoFrames : '?'), ok ? 'ok' : 'bad');
+    errs.slice(0, 4).forEach(function (x) { log('  ошибка: ' + x, 'bad'); });
+    try { h.destroy(); } catch (e) {} v.remove();
+  }
+  document.getElementById('go4').onclick = async function () {
+    go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
+    log('Воспроизведение через воркер. Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
+    log('Браузер: ' + navigator.userAgent);
+    if (!(await loadHls()) || !Hls.isSupported()) { log('hls.js не загрузился или нет поддержки MSE в этом браузере', 'bad'); go.disabled = false; cp.disabled = false; return; }
+    var L = [['rossiya1', 'Россия 1'], ['ntv', 'НТВ'], ['rossiya24', 'Россия 24'], ['tvc', 'ТВЦ'], ['kultura', 'Россия Культура'], ['perviy', 'контроль: Первый']];
+    for (var i = 0; i < L.length; i++) { try { await playTest(L[i][0], L[i][1]); } catch (e) { log('  сбой: ' + e.message, 'bad'); } }
+    log('Готово.'); go.disabled = false; cp.disabled = false;
+  };
   document.getElementById('go3').onclick = async function () {
     go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
     log('Зеркала cinerama. Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
