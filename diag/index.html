@@ -37,7 +37,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
       var r = await fetch(url, Object.assign({signal: tmo(12000), cache: 'no-store'}, opt || {}));
       if (r.type === 'opaque') { res.ok = true; res.info = 'ответ получен (без CORS)'; }
       else {
-        res.info = 'HTTP ' + r.status;
+        res.info = 'HTTP ' + r.status; res.url = r.url; res.redirected = r.redirected;
         if (readAll) res.body = await r.text();
         else { var rd = r.body.getReader(), c = await rd.read(); res.info += ', ' + (c.value ? c.value.length : 0) + ' байт'; try { rd.cancel(); } catch (e) {} }
         res.ok = r.ok;
@@ -87,8 +87,10 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
     log('  плейлист (' + host + '): ' + fmt(m), m.ok ? 'ok' : 'bad');
     if (!m.ok) return;
     var body = m.body, cur = url;
+    if (m.redirected || /\/blocked\//.test(m.url || '')) log('  !!! источник перенаправил на: ' + m.url, 'bad');
+    log('  начало ответа: ' + body.split('\n').slice(0, 3).join(' | ').slice(0, 160), /#EXT-X-STREAM-INF/.test(body) ? 'warn' : '');
     if (/#EXT-X-STREAM-INF/.test(body)) {
-      cur = new URL(firstUri(body), url).href; var v = await get(cur, {}, true);
+      cur = new URL(firstUri(body), url).href; log('  адрес плейлиста потока: ' + cur); var v = await get(cur, {}, true);
       log('  плейлист потока: ' + fmt(v), v.ok ? 'ok' : 'bad'); if (!v.ok) return; body = v.body;
     }
     var seg = new URL(firstUri(body), cur).href, sh = (/^https?:\/\/([^\/]+)/.exec(seg) || [])[1];
