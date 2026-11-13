@@ -100,7 +100,13 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
     var seg = new URL(firstUri(body), cur).href, sh = (/^https?:\/\/([^\/]+)/.exec(seg) || [])[1];
     var s = await get(seg);
     log('  сегмент (' + sh + '): ' + fmt(s), s.ok ? 'ok' : 'bad');
-    if (!s.ok) { var s2 = await get(seg, {mode: 'no-cors'}); log('    без CORS: ' + fmt(s2), s2.ok ? 'warn' : 'bad'); }
+    if (!s.ok) { var s2 = await get(seg, {mode: 'no-cors'}); log('    без CORS: ' + fmt(s2), s2.ok ? 'warn' : 'bad'); return; }
+    var t0 = t(), n = 0;
+    try { var r = await fetch(seg, {signal: tmo(25000), cache: 'no-store'}), rd = r.body.getReader(), c;
+      while (!(c = await rd.read()).done) n += c.value.length;
+      var sec = (t() - t0) / 1000, kb = Math.round(n / 1024 / sec);
+      log('  скорость полного сегмента: ' + Math.round(n / 1024) + ' КБ за ' + sec.toFixed(1) + ' с = ' + kb + ' КБ/с' + (kb < 300 ? ' (МЕДЛЕННО для HD)' : ''), kb < 300 ? 'warn' : 'ok');
+    } catch (e) { log('  скорость полного сегмента: не удалось загрузить за 25 с (получено ' + Math.round(n / 1024) + ' КБ)', 'bad'); }
   }
   document.getElementById('go2').onclick = async function () {
     go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
