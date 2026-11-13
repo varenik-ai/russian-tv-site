@@ -26,7 +26,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
 <body>
 <h1>Проверка потоков</h1>
 <p>Страница проверяет из вашего браузера, достижимы ли источники каналов. Данные никуда не отправляются: результат показан ниже. Нажмите «Проверить», подождите около минуты и пришлите скриншот или скопированный отчёт.</p>
-<button id="go">Проверить</button><button id="cp" disabled>Скопировать отчёт</button>
+<button id="go">Проверить</button><button id="go2">Проверить запасные источники</button><button id="cp" disabled>Скопировать отчёт</button>
 <pre id="out">Нажмите «Проверить».</pre>
 <script>
 (function () {
@@ -80,6 +80,35 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
     log('  сегмент (' + sh + '): ' + fmt(s), s.ok ? 'ok' : 'bad');
     if (!s.ok) { var s2 = await get(seg, {mode: 'no-cors'}); log('    без CORS: ' + fmt(s2), s2.ok ? 'warn' : 'bad'); }
   }
+  var ALT = [['НТВ · cinerama 1023', 'https://stream8.cinerama.uz/1023/tracks-v1a1/mono.m3u8'],
+             ['Россия 1 · cinerama 1020', 'https://stream8.cinerama.uz/1020/tracks-v1a1/mono.m3u8'],
+             ['Россия 24 · cinerama 1021', 'https://stream8.cinerama.uz/1021/tracks-v1a1/mono.m3u8'],
+             ['ТВЦ · cinerama 1025', 'https://stream8.cinerama.uz/1025/tracks-v1a1/mono.m3u8'],
+             ['ТВЦ · ngenix', 'https://zabava-htlive.cdn.ngenix.net/hls/CH_TVC/variant.m3u8'],
+             ['контроль: кино · cinerama 1055', 'https://stream8.cinerama.uz/1055/tracks-v1a1/mono.m3u8'],
+             ['контроль: Россия 1 · smotrim', 'https://stream.smotrim.ru/hls2/russia_hd/playlist_1.m3u8']];
+  async function alt(name, url) {
+    log('— ' + name);
+    var m = await get(url, {}, true), host = (/^https?:\/\/([^\/]+)/.exec(url) || [])[1];
+    log('  плейлист (' + host + '): ' + fmt(m), m.ok ? 'ok' : 'bad');
+    if (!m.ok) return;
+    var body = m.body, cur = url;
+    if (/#EXT-X-STREAM-INF/.test(body)) {
+      cur = new URL(firstUri(body), url).href; var v = await get(cur, {}, true);
+      log('  плейлист потока: ' + fmt(v), v.ok ? 'ok' : 'bad'); if (!v.ok) return; body = v.body;
+    }
+    var seg = new URL(firstUri(body), cur).href, sh = (/^https?:\/\/([^\/]+)/.exec(seg) || [])[1];
+    var s = await get(seg);
+    log('  сегмент (' + sh + '): ' + fmt(s), s.ok ? 'ok' : 'bad');
+    if (!s.ok) { var s2 = await get(seg, {mode: 'no-cors'}); log('    без CORS: ' + fmt(s2), s2.ok ? 'warn' : 'bad'); }
+  }
+  document.getElementById('go2').onclick = async function () {
+    go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
+    log('Запасные источники. Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
+    log('Браузер: ' + navigator.userAgent);
+    for (var i = 0; i < ALT.length; i++) { try { await alt(ALT[i][0], ALT[i][1]); } catch (e) { log('  сбой проверки: ' + e.message, 'bad'); } }
+    log('Готово.'); go.disabled = false; cp.disabled = false;
+  };
   go.onclick = async function () {
     go.disabled = true; cp.disabled = true; text = []; out.textContent = '';
     log('Время: ' + new Date().toISOString() + ' · пояс: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?'));
