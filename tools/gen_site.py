@@ -21,6 +21,8 @@ CATS = {
 # id, slug, cat, ru, en, ru_desc, en_desc, icon, color, bg, ru_kw, en_kw
 CH = [
  ('spb','sankt-peterburg-live','news','Санкт-Петербург','Saint Petersburg TV','Телеканал Санкт-Петербурга','Saint Petersburg city channel','СПБ','#1565c0','#080d1a','новости Петербурга','news of St. Petersburg'),
+ ('rtrEuro','rossiya-rtr-evropa-live','news','Россия РТР — Европа','Russia RTR — Europe','Международная версия канала «Россия» для Европы','International version of the Russia channel for Europe','РТР','#D52B1E','#1a0808','международная версия канала Россия','Russia RTR international'),
+ ('rtrUsa','rossiya-rtr-usa-live','news','Россия РТР — США','Russia RTR — USA','Международная версия канала «Россия» для США','International version of the Russia channel for the USA','РТР','#1565c0','#0a0f1a','международная версия канала Россия','Russia RTR international'),
  ('moskva24','moskva-24-live','news','Москва 24','Moskva 24','Новости и жизнь столицы','News and city life of Moscow','М24','#e53935','#1a0808','новости Москвы','Moscow news'),
  ('soyuz','soyuz-live','ent','Союз','Soyuz TV','Семейное телевидение','Family television','СОЮ','#8d6e63','#120e0a','семейное ТВ','family television'),
  ('prima','prima-live','ent','Прима','Prima','Развлекательный канал','Entertainment channel','ПРИ','#ad1457','#180810','развлекательное ТВ','entertainment'),
@@ -47,6 +49,8 @@ CHANNELS = [dict(zip(KEYS, t)) for t in CH]
 
 
 MORE = {
+ 'rtrEuro': ('Международная версия канала «Россия» для зрителей в Европе: информационные программы, ток-шоу, фильмы и сериалы. Официальный поток ВГТРК.','International version of the Russia channel for viewers in Europe: news, talk shows, films and series. Official VGTRK stream.'),
+ 'rtrUsa': ('Международная версия канала «Россия» для зрителей в США: информационные программы, ток-шоу, фильмы и сериалы. Официальный поток ВГТРК.','International version of the Russia channel for viewers in the USA: news, talk shows, films and series. Official VGTRK stream.'),
  'doverie': ('Городской телеканал Москвы: фильмы, передачи о столице и программы для всей семьи.','A Moscow city channel: films, programmes about the capital and shows for the whole family.'),
  'news360': ('Новости Подмосковья и России, интервью и повторы эфирных программ.','News from the Moscow region and Russia, interviews and repeats of on-air programmes.'),
  'moskva24': ('Новости, события и жизнь Москвы в прямом эфире.','News, events and daily life in Moscow, live.'),
