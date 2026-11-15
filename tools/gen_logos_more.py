@@ -14,6 +14,7 @@ MAP = {
  'viju-sport-live': 'logo-viju-sport.svg', 'vesti-fm-live': 'logo-vesti-fm.svg', 'fon-music-live': 'logo-fon-music.png',
  'flosports-hockey-live': 'logo-flosports.png', 'flosports-racing-live': 'logo-flosports.png',
  'trace-sport-stars-live': 'logo-trace-sport-stars.png',
+ 'rossiya-rtr-evropa-live': 'logo-rtr-planeta.svg', 'rossiya-rtr-usa-live': 'logo-rtr-planeta.svg',   # 15.11.2026
 }
 src = os.path.join(ROOT, 'assets/logos'); out = os.path.join(src, 'trim'); os.makedirs(out, exist_ok=True)
 for f in sorted(set(MAP.values())):
