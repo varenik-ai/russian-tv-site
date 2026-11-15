@@ -26,7 +26,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
 <body>
 <h1>Проверка потоков</h1>
 <p>Страница проверяет из вашего браузера, достижимы ли источники каналов. Данные никуда не отправляются: результат показан ниже. Нажмите «Проверить», подождите около минуты и пришлите скриншот или скопированный отчёт.</p>
-<button id="go">Проверить</button><button id="go2">Проверить запасные источники</button><button id="go3">Зеркала cinerama</button><button id="go4">Проверить воспроизведение</button><button id="go5">Диагностика воркера</button><button id="cp" disabled>Скопировать отчёт</button>
+<button id="go">Проверить</button><button id="go2">Проверить запасные источники</button><button id="go3">Зеркала cinerama</button><button id="go4">Проверить воспроизведение</button><button id="go5">Диагностика воркера</button><button id="go6">Встроенный плеер: live.smotrim.ru</button><button id="cp" disabled>Скопировать отчёт</button>
 <pre id="out">Нажмите «Проверить».</pre>
 <script>
 (function () {
@@ -35,7 +35,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
             ['moskva24', 'Москва 24'], ['soyuz', 'Союз'], ['pyatyy', 'Пятый канал']];
   var out = document.getElementById('out'), go = document.getElementById('go'), cp = document.getElementById('cp'), text = [];
   function log(s, cls) { text.push(s); var d = document.createElement('div'); if (cls) d.className = cls; d.textContent = s; if (!out.firstChild || out.firstChild.nodeType === 3) out.textContent = ''; out.appendChild(d); }
-  function busy(on) { ['go', 'go2', 'go3', 'go4', 'go5'].forEach(function (id) { var e = document.getElementById(id); if (e) e.disabled = on; }); }
+  function busy(on) { ['go', 'go2', 'go3', 'go4', 'go5', 'go6'].forEach(function (id) { var e = document.getElementById(id); if (e) e.disabled = on; }); }
   function t() { return performance.now(); }
   function tmo(ms) { var c = new AbortController(); setTimeout(function () { c.abort(); }, ms); return c.signal; }
   function fmt(r) { return (r.ok ? 'OK' : 'ОШИБКА') + ' ' + r.info + ' · ' + r.ms + ' мс'; }
@@ -207,6 +207,34 @@ pre{white-space:pre-wrap;word-break:break-word;background:#14141f;border-radius:
     log('Браузер: ' + navigator.userAgent);
     log('Язык: ' + navigator.language + ' · сеть: ' + ((navigator.connection && (navigator.connection.effectiveType + ', ' + navigator.connection.type)) || 'н/д'));
     for (var i = 0; i < CH.length; i++) { try { await one(CH[i][0], CH[i][1]); } catch (e) { log('  сбой проверки: ' + e.message, 'bad'); } }
+    log('Готово.'); busy(false); cp.disabled = false;
+  };
+  var NATIVE = [
+    ['Россия 1 — live.smotrim.ru (запасной хост ВГТРК, без CORS)', 'https://live.smotrim.ru/vgtrk/0/russia1-hd/index.m3u8'],
+    ['Россия 24 — live.smotrim.ru', 'https://live.smotrim.ru/vgtrk/0/russia24-hd/index.m3u8'],
+    ['Россия К — live.smotrim.ru', 'https://live.smotrim.ru/vgtrk/0/kultura-hd/index.m3u8'],
+    ['Россия 1 — stream.smotrim.ru (основной, для сравнения)', 'https://stream.smotrim.ru/hls2/russia_hd/playlist_2.m3u8']
+  ];
+  function nativeTest(name, url) {
+    return new Promise(function (resolve) {
+      var v = document.createElement('video'); v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.style.cssText = 'width:2px;height:2px;position:fixed;left:0;top:0;opacity:.01';
+      document.body.appendChild(v);
+      var t0 = t(), done = false, first = null;
+      function fin(msg, cls) { if (done) return; done = true; try { v.pause(); v.removeAttribute('src'); v.load(); } catch (e) {} v.remove(); log(name + ': ' + msg, cls); resolve(); }
+      v.addEventListener('error', function () { fin('ОШИБКА встроенного плеера, код ' + (v.error ? v.error.code : '?') + ' · ' + Math.round(t() - t0) + ' мс', 'bad'); });
+      v.addEventListener('timeupdate', function () { if (v.currentTime > 0 && first === null) first = Math.round(t() - t0); if (first !== null && v.currentTime > 3) fin('OK, пошло видео, первый кадр за ' + first + ' мс, currentTime ' + v.currentTime.toFixed(1), 'ok'); });
+      setTimeout(function () { fin('нет видео за 20 с (readyState ' + v.readyState + ', networkState ' + v.networkState + ', currentTime ' + v.currentTime.toFixed(1) + ')', 'bad'); }, 20000);
+      v.src = url; var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+    });
+  }
+  document.getElementById('go6').onclick = async function () {
+    busy(true); cp.disabled = true; text = []; out.textContent = '';
+    log('Встроенный HLS-плеер (нужен iPhone/iPad/Safari; CORS не нужен). Время: ' + new Date().toISOString());
+    log('Браузер: ' + navigator.userAgent);
+    var cpt = document.createElement('video').canPlayType('application/vnd.apple.mpegurl');
+    log('Встроенный HLS: ' + (cpt || 'нет'), cpt ? 'ok' : 'bad');
+    if (!cpt) { log('В этом браузере встроенного HLS нет: проверку надо делать на iPhone/iPad.', 'bad'); busy(false); cp.disabled = false; return; }
+    for (var i = 0; i < NATIVE.length; i++) { try { await nativeTest(NATIVE[i][0], NATIVE[i][1]); } catch (e) { log('  сбой проверки: ' + e.message, 'bad'); } }
     log('Готово.'); busy(false); cp.disabled = false;
   };
   cp.onclick = function () { var s = text.join('\n'); try { navigator.clipboard.writeText(s).then(function () { cp.textContent = 'Скопировано'; }, function () { window.prompt('Скопируйте отчёт', s); }); } catch (e) { window.prompt('Скопируйте отчёт', s); } };
