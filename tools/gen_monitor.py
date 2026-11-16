@@ -3,7 +3,7 @@
 конфиденциальности (RU/EN). Скрипт шлёт на rtv-monitor результат запуска канала без cookie, IP и идентификаторов. Идемпотентен."""
 import sys, os, re, glob
 ROOT = sys.argv[1]
-TAG = '<script defer src="/assets/monitor.js?v=2"></script>'
+TAG = '<script defer src="/assets/monitor.js?v=3"></script>'
 n = 0
 for f in glob.glob(os.path.join(ROOT, '**/index.html'), recursive=True):
     s = open(f, encoding='utf-8').read(); o = s
