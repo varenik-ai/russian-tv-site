@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """18.11.2026: окно согласия (assets/consent.js) и новая реклама (assets/ads.js v2). Приводит версии скриптов на всех страницах
-(consent.js?v=4, ads.js?v=2) и дополняет раздел «Cookies» политики конфиденциальности (RU/EN): окно согласия, хранение в localStorage, отзыв. Идемпотентен."""
+(consent.js?v=4, ads.js?v=3) и дополняет раздел «Cookies» политики конфиденциальности (RU/EN): окно согласия, хранение в localStorage, отзыв. Идемпотентен."""
 import sys, os, re, glob
 ROOT = sys.argv[1]
 n = 0
@@ -9,12 +9,12 @@ for f in glob.glob(os.path.join(ROOT, '**/*.html'), recursive=True):
     if rel.startswith(('node_modules', 'tools')): continue
     s = open(f, encoding='utf-8').read(); o = s
     s = re.sub(r'/assets/consent\.js(\?v=\d+)?"', '/assets/consent.js?v=6"', s)
-    s = re.sub(r'/assets/ads\.js(\?v=\d+)?"', '/assets/ads.js?v=2"', s)
+    s = re.sub(r'/assets/ads\.js(\?v=\d+)?"', '/assets/ads.js?v=3"', s)
     s = re.sub(r'/assets/monitor\.js(\?v=\d+)?"', '/assets/monitor.js?v=4"', s)
     # ads.js нужен и на страницах без плеера (категории, страны, блог): баннер и Native Banner Adsterra
     legal = re.match(r'(en/)?(privacy|advertising|about|tv|diag)/index\.html$', rel) or rel in ('404.html',) or 'noindex' in s
     if 'assets/consent.js' in s and 'assets/ads.js' not in s and not legal and '</head>' in s:
-        s = s.replace('</head>', '  <script defer src="/assets/ads.js?v=2"></script>\n</head>', 1)
+        s = s.replace('</head>', '  <script defer src="/assets/ads.js?v=3"></script>\n</head>', 1)
     if s != o: open(f, 'w', encoding='utf-8').write(s); n += 1
 RU = ('  <p><strong>Окно согласия.</strong> При первом посещении сайт показывает окно с кнопками «Согласен» и «Отказаться». «Согласен» разрешает cookie и похожие технологии для аналитики (Google Analytics, Яндекс.Метрика, Microsoft Clarity) и показа рекламы, а также передачу технических данных о воспроизведении (раздел 2а). '
       '«Отказаться»: сайт работает как обычно, но эти сервисы и реклама не загружаются, а данные о воспроизведении не передаются. Отказ действует на один заход: если вы вернётесь на сайт после перерыва более 30 минут, окно покажется снова, и так до тех пор, пока вы не нажмёте «Согласен». Пока выбор не сделан, сайтом пользоваться нельзя. '

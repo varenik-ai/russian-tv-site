@@ -2,7 +2,7 @@
    Loads ONLY after the visitor accepted cookies (see /assets/consent.js).
    Kill switch: set ADS_ENABLED=false (or add ?noads=1 to a URL to test without ads). */
 (function () {
-  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|Android.*TV|AFT[A-Z]|CrKey/i.test(navigator.userAgent || '')) return;   // на телевизорах рекламы нет (с 18.11.2026)
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(navigator.userAgent || '') || /Android.*\bTV\b|AFT[A-Z]/.test(navigator.userAgent || '')) return;   // на телевизорах рекламы нет (с 18.11.2026)
   var ADS_ENABLED = true;
   var ZONE = '11593818';              // In-Page Push "Lucky tag"
   var DELAY_MS = 20000;               // wait 20s after page load so playback starts first
@@ -38,7 +38,7 @@
    Set DESKTOP_ONLY=false to bring it back on touch screens.
    Kill switch: BANNER_ENABLED=false (or ?noads=1). Ad unit: Adsterra site 6187633, unit 32178193. */
 (function () {
-  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|Android.*TV|AFT[A-Z]|CrKey/i.test(navigator.userAgent || '')) return;   // на телевизорах рекламы нет (с 18.11.2026)
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(navigator.userAgent || '') || /Android.*\bTV\b|AFT[A-Z]/.test(navigator.userAgent || '')) return;   // на телевизорах рекламы нет (с 18.11.2026)
   var BANNER_ENABLED = true;
   var DESKTOP_ONLY = true;
   var KEY = '825d215f35b6e7c6a1f929819767001a';
@@ -127,18 +127,24 @@
   if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
 })();
 
-/* ===== 18.11.2026: новые места рекламы Adsterra (цель — компенсировать выключенный Social Bar и поднять доход) =====
+/* ===== Реклама Adsterra: новые места (18.11.2026) и «по странам» (19.11.2026) =====
    Все блоки грузятся только после согласия (assets/consent.js) и не показываются на телевизорах (CPM около $0.005 за 1661 показ).
    Устройства: компьютер = есть мышь (hover:hover); планшет = нет мыши, короткая сторона экрана >= 600 px; телефон = остальное.
-   1) Баннер 300x250 (тот же блок 32178193) на страницах БЕЗ плеера: главная (правая колонка), категории, страницы стран, блог — компьютеры и планшеты.
-   2) Native Banner (блок 32348558) в конце страницы — компьютеры и планшеты, страницы каналов, главные, категории, страны, блог.
-   3) Баннер 320x50 (блок 32348559) в конце страницы — только телефоны, далеко от плеера (случайные нажатия, как у баннера под плеером).
-   Отключить: ADS2_ENABLED=false или ?noads=1. */
+   Страна посетителя берётся у воркера мониторинга (GET /geo, кэш в sessionStorage). Слои по CPM Adsterra за 14-18.11.2026:
+     A (дорогие: США $2.52, Великобритания $1.57, Канада $0.97, Швеция $0.53, Польша $0.27, Германия $0.22, Франция $0.24, Болгария $0.15 ...):
+       полный набор — баннер 300x250, второй баннер 300x250 внизу, Native Banner, Popunder (раз в 24 ч);
+     B (остальные): баннер 300x250 и Native Banner;
+     C (дешёвые: Литва $0.034, Казахстан $0.02, Эстония $0.018, Молдова $0.01 ...): только баннер 300x250 (остальное денег не приносит).
+   Места: 1) баннер 300x250 (блок 32178193) на страницах БЕЗ плеера (главная — правая колонка, категории, страны, блог): компьютеры и планшеты;
+   2) второй баннер 300x250 (тот же блок) внизу страницы: слой A, компьютеры и планшеты; 3) Native Banner (блок 32348558) внизу: слои A и B;
+   4) баннер 320x50 (блок 32348559) внизу: только телефоны, все слои; 5) Popunder (блок 32349106): слой A, компьютеры и планшеты, раз в 24 часа,
+   на страницах каналов после 3 минут на странице, на остальных через 15 секунд (скрипт открывает рекламу при следующем клике посетителя).
+   Отключить: ADS2_ENABLED=false (всё), POPUNDER_ENABLED=false (только Popunder) или ?noads=1. */
 (function () {
-  var ADS2_ENABLED = true;
+  var ADS2_ENABLED = true, POPUNDER_ENABLED = true;
   var UA = navigator.userAgent || '';
   if (!ADS2_ENABLED || /[?&]noads=1/.test(location.search)) return;
-  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|Android.*TV|AFT[A-Z]|CrKey/i.test(UA)) return;
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(UA) || /Android.*\bTV\b|AFT[A-Z]/.test(UA)) return;
   var path = location.pathname.replace(/index\.html$/, '');
   var en = /^\/en(\/|$)/.test(path);
   var isChannel = /-live\/?$/.test(path);
@@ -149,6 +155,19 @@
   var tablet = !mouse && Math.min(screen.width || 0, screen.height || 0) >= 600;
   var phone = !mouse && !tablet;
   var label = en ? 'Advertisement' : 'Реклама';
+  var TIER_A = 'US CA GB IE AU NZ DE AT CH FR NL SE NO DK PL ES IT BG'.split(' ');
+  var TIER_C = 'LT LV EE KZ MD GE AM AZ BY UZ KG TJ RU'.split(' ');
+  function tierOf(cc) { return TIER_A.indexOf(cc) >= 0 ? 'A' : TIER_C.indexOf(cc) >= 0 ? 'C' : 'B'; }
+  function getCC(cb) {
+    var cc = null; try { cc = sessionStorage.getItem('rtv_cc'); } catch (e) {}
+    if (cc) return cb(cc);
+    var done = false, t = setTimeout(function () { if (!done) { done = true; cb('XX'); } }, 2500);
+    try {
+      fetch('https://rtv-monitor.dyaltd.workers.dev/geo').then(function (r) { return r.json(); }).then(function (j) {
+        if (done) return; done = true; clearTimeout(t); cc = (j && j.cc) || 'XX'; try { sessionStorage.setItem('rtv_cc', cc); } catch (e) {} cb(cc);
+      }).catch(function () { if (!done) { done = true; clearTimeout(t); cb('XX'); } });
+    } catch (e) { if (!done) { done = true; clearTimeout(t); cb('XX'); } }
+  }
   function wrap(id, inner) {
     var d = document.createElement('div'); d.id = id;
     d.style.cssText = 'display:none;margin:16px auto;text-align:center;max-width:100%;font:11px/1.2 sans-serif;color:#8b8ba0';
@@ -169,20 +188,25 @@
       var s = document.createElement('script'); s.async = true; s.src = host; d.querySelector('.b').appendChild(s); reveal(d, 10000);
     } };
   }
+  var K300 = '825d215f35b6e7c6a1f929819767001a', H300 = 'https://www.highrevenueformat.com/' + K300 + '/invoke.js';
   var ready = false;
-  function go() {
-    if (ready) return; ready = true;
-    // 1) баннер 300x250 на страницах без плеера
+  function go(cc) {
+    var tier = tierOf(cc);
+    // 1) баннер 300x250 на страницах без плеера (все слои)
     if (!isChannel && (mouse || tablet)) setTimeout(function () {
       try {
-        var b = banner('825d215f35b6e7c6a1f929819767001a', 300, 250, 'https://www.highrevenueformat.com/825d215f35b6e7c6a1f929819767001a/invoke.js', 'rtv-ban-page');
+        var b = banner(K300, 300, 250, H300, 'rtv-ban-page');
         var side = isHome ? document.querySelector('aside.right-sidebar') : null, box = document.querySelector('.seo-box');
         if (side) side.appendChild(b.el); else if (box && box.parentNode) box.parentNode.insertBefore(b.el, box); else beforeFooter(b.el);
         b.run();
       } catch (e) {}
     }, 3000);
-    // 2) Native Banner
-    if (mouse || tablet) setTimeout(function () {
+    // 2) второй баннер 300x250 внизу страницы (слой A)
+    if (tier === 'A' && (mouse || tablet)) setTimeout(function () {
+      try { var b = banner(K300, 300, 250, H300, 'rtv-ban-bottom'); beforeFooter(b.el); b.run(); } catch (e) {}
+    }, 8000);
+    // 3) Native Banner (слои A и B)
+    if (tier !== 'C' && (mouse || tablet)) setTimeout(function () {
       try {
         var key = '38aed55c67286ad1a2b32153e5337ddb';
         var d = wrap('rtv-native', '<div id="container-' + key + '"></div>'); d.style.width = '100%'; d.style.maxWidth = '728px';
@@ -190,18 +214,30 @@
         var s = document.createElement('script'); s.async = true; s.setAttribute('data-cfasync', 'false'); s.src = 'https://bancadeltempoidea.org/21/' + key;
         document.body.appendChild(s); reveal(d, 12000);
       } catch (e) {}
-    }, 6000);
-    // 3) телефоны: баннер 320x50 в конце страницы
+    }, 10000);
+    // 4) телефоны: баннер 320x50 в конце страницы (все слои)
     if (phone) setTimeout(function () {
       try {
         var b = banner('9b2a79adb0850bb0ed0eb4fa77cb79dd', 320, 50, 'https://bancadeltempoidea.org/22/9b2a79adb0850bb0ed0eb4fa77cb79dd', 'rtv-ban-mobile');
         beforeFooter(b.el); b.run();
       } catch (e) {}
     }, 6000);
+    // 5) Popunder (слой A, компьютеры и планшеты, раз в 24 часа)
+    if (POPUNDER_ENABLED && tier === 'A' && (mouse || tablet)) setTimeout(function () {
+      try {
+        var last = 0; try { last = parseInt(localStorage.getItem('rtv_pop_ts') || '0', 10); } catch (e) {}
+        if (last && Date.now() - last < 24 * 3600 * 1000) return;
+        if (document.hidden) return;
+        try { localStorage.setItem('rtv_pop_ts', String(Date.now())); } catch (e) {}
+        var s = document.createElement('script'); s.setAttribute('data-cfasync', 'false'); s.src = 'https://aarems.org/1/12110736e4d0def0bbede4c70cb28a15';
+        (document.head || document.documentElement).appendChild(s);
+      } catch (e) {}
+    }, isChannel ? 180000 : 15000);
   }
+  function arm() { if (ready) return; ready = true; getCC(go); }
   function start() {
-    if (window.rtvConsentGranted && window.rtvConsentGranted()) go();
-    else window.addEventListener('rtv-consent-granted', go);
+    if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
+    else window.addEventListener('rtv-consent-granted', arm);
   }
   if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
 })();
