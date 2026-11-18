@@ -16,10 +16,18 @@
   try { choice = localStorage.getItem(KEY); granted = choice === '1'; if (choice === '0') { localStorage.removeItem(KEY); choice = null; } } catch (e) {}   // прежний постоянный отказ ('0') больше не действует
   window.rtvConsentGranted = function () { return granted; };
 
+  // Google Consent Mode v2 (с 18.11.2026, решение владельца): Google Analytics загружается сразу, но без согласия analytics_storage = denied
+  // (без cookie и идентификаторов, только обезличенные сигналы для модели Google); рекламные разрешения Google всегда denied (рекламу Google на сайте мы не показываем).
+  // «Согласен» (или США без отказа) -> analytics_storage = granted. Яндекс.Метрика и Clarity по-прежнему грузятся только после согласия.
+  var BOT = /bot|crawl|spider|slurp|bingpreview|lighthouse|pagespeed|facebookexternalhit|twitterbot|telegrambot|whatsapp|applebot|duckduckbot|baiduspider|headlesschrome|gtmetrix/i.test(navigator.userAgent || '');
+  gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: granted ? 'granted' : 'denied' });
+  if (!BOT) {
+    gtag('js', new Date()); gtag('config', 'G-XLSJE8NKJE', { allow_google_signals: false, allow_ad_personalization_signals: false });
+    var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-XLSJE8NKJE'; document.head.appendChild(g);
+  }
   function loadTrackers() {
     if (loaded) return; loaded = true;
-    gtag('js', new Date()); gtag('config', 'G-XLSJE8NKJE');
-    var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-XLSJE8NKJE'; document.head.appendChild(g);
+    gtag('consent', 'update', { analytics_storage: 'granted' });
     (function (c, l, a, r, i, t, y) { c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); }; t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i; y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y); })(window, document, 'clarity', 'script', 'xkhl4v4ft0');
     (function (m, e, t, r, i, k, a) { m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); }; m[i].l = 1 * new Date(); k = e.createElement(t); a = e.getElementsByTagName(t)[0]; k.async = 1; k.src = r; a.parentNode.insertBefore(k, a); })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
     ym(110584472, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: false });
