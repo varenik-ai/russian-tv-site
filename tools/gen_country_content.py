@@ -40,6 +40,15 @@ def faq_linkify(text, lang):
         text = text.replace('«Российское ТВ в новогоднюю ночь за границей»', '<a href="/blog/novogodnyaya-noch-russkoe-tv-za-granicey/">«Российское ТВ в новогоднюю ночь за границей»</a>')
     return text
 
+CONV = {
+  'usa': [["New York","America/New_York"],["Chicago","America/Chicago"],["Denver","America/Denver"],["Phoenix","America/Phoenix"],["Los Angeles","America/Los_Angeles"],["Anchorage","America/Anchorage"],["Honolulu","Pacific/Honolulu"]],
+  'uk': [["London","Europe/London"]],
+  'canada': [["St. John's","America/St_Johns"],["Halifax","America/Halifax"],["Toronto / Montreal","America/Toronto"],["Winnipeg","America/Winnipeg"],["Edmonton","America/Edmonton"],["Vancouver","America/Vancouver"]],
+}
+def conv(key, lang):
+    z = json.dumps(CONV[key], ensure_ascii=False).replace("'", '&#39;')
+    return f'<div class="rtv-conv" data-lang="{lang}" data-default="21:00" data-zones=\'{z}\'></div><script defer src="/assets/moscow-time.js?v=1"></script>'
+
 def build(key, lang):
     c = COUNTRIES[key]; n = NAMES[key]; en = lang == 'en'
     name = n['en'] if en else n['ru']
@@ -76,6 +85,8 @@ def build(key, lang):
     <h2>{h['b']}</h2>
     {c[P + 'when']}
     {table(zones, moments, lang)}
+    <h3 style="margin-top:18px">{'Moscow time converter (today\'s date, with daylight saving)' if en else 'Конвертер московского времени (на сегодня, с летним временем)'}</h3>
+    {conv(key, lang)}
   </div>
 
   <div class="seo-box" style="margin-top:16px">

@@ -13,7 +13,7 @@ NY_EN = dict(
   alt=('https://russian-tv.com/blog/novogodnyaya-noch-russkoe-tv-za-granicey/', 'https://russian-tv.com/en/blog/russian-tv-new-years-eve-usa-uk-canada/'),
   body='''  <p>For millions of Russian-speaking families abroad, New Year's Eve is still watched on Russian television: the countdown to Moscow midnight, the festive concerts, the classic New Year films. The problem for viewers in North America and the UK is the clock: Russia celebrates when it is still afternoon or early evening where you live. This guide gives you the exact times for every time zone, explains what these evenings usually look like on air, and shows how to watch the live channels for free on any device, without a VPN.</p>
 
-  <p><strong>Short answer:</strong> open <a href="/en/">russian-tv.com</a>, choose a channel and press ▶. On December 31, <strong>midnight in Moscow is 4:00 pm in New York and Toronto, 1:00 pm in Los Angeles and Vancouver, and 9:00 pm in London</strong>. Details and a table for every time zone are below.</p>
+  <p><strong>Short answer:</strong> open <a href="/en/">russian-tv.com</a>, choose a channel and press ▶. On December 31, <strong>midnight in Moscow is 4:00 pm in New York and Toronto, 1:00 pm in Los Angeles, 2:00 pm in Vancouver, and 9:00 pm in London</strong>. Details and a table for every time zone are below.</p>
 
   <div class="cta-box">
     <p>🎄 Watch the New Year's Eve broadcast live — free, no VPN</p>
@@ -31,9 +31,12 @@ NY_EN = dict(
     <tbody>
       <tr><td>London, Manchester, Edinburgh</td><td>GMT (UTC+0)</td><td><strong>9:00 pm</strong></td><td>6:00 pm</td></tr>
       <tr><td>New York, Boston, Miami, Toronto, Montreal</td><td>Eastern (UTC−5)</td><td><strong>4:00 pm</strong></td><td>1:00 pm</td></tr>
-      <tr><td>Chicago, Houston, Winnipeg</td><td>Central (UTC−6)</td><td><strong>3:00 pm</strong></td><td>12:00 pm</td></tr>
-      <tr><td>Denver, Phoenix, Edmonton, Calgary</td><td>Mountain (UTC−7)</td><td><strong>2:00 pm</strong></td><td>11:00 am</td></tr>
-      <tr><td>Los Angeles, San Francisco, Seattle, Vancouver</td><td>Pacific (UTC−8)</td><td><strong>1:00 pm</strong></td><td>10:00 am</td></tr>
+      <tr><td>Chicago, Houston</td><td>Central (UTC−6)</td><td><strong>3:00 pm</strong></td><td>12:00 pm</td></tr>
+      <tr><td>Denver, Phoenix</td><td>Mountain (UTC−7)</td><td><strong>2:00 pm</strong></td><td>11:00 am</td></tr>
+      <tr><td>Winnipeg (Manitoba, permanent daylight time)</td><td>UTC−5</td><td><strong>4:00 pm</strong></td><td>1:00 pm</td></tr>
+      <tr><td>Edmonton, Calgary (Alberta, permanent daylight time)</td><td>UTC−6</td><td><strong>3:00 pm</strong></td><td>12:00 pm</td></tr>
+      <tr><td>Vancouver (British Columbia, permanent daylight time)</td><td>UTC−7</td><td><strong>2:00 pm</strong></td><td>11:00 am</td></tr>
+      <tr><td>Los Angeles, San Francisco, Seattle</td><td>Pacific (UTC−8)</td><td><strong>1:00 pm</strong></td><td>10:00 am</td></tr>
       <tr><td>Halifax, Moncton</td><td>Atlantic (UTC−4)</td><td><strong>5:00 pm</strong></td><td>2:00 pm</td></tr>
       <tr><td>St. John's</td><td>Newfoundland (UTC−3:30)</td><td><strong>5:30 pm</strong></td><td>2:30 pm</td></tr>
       <tr><td>Anchorage</td><td>Alaska (UTC−9)</td><td><strong>12:00 pm</strong></td><td>9:00 am</td></tr>
@@ -94,7 +97,7 @@ NY_EN = dict(
 
   <p><em>The channels' schedules are set by the broadcasters and can change. The information here describes the usual New Year's Eve pattern and is updated when the festive programme is announced.</em></p>
 ''',
-  faq=[("What time is Moscow midnight on December 31 in my time zone?", "Midnight in Moscow (UTC+3) is 21:00 UTC. That is 9:00 pm in London, 4:00 pm in New York and Toronto, 3:00 pm in Chicago, 2:00 pm in Denver and Edmonton, and 1:00 pm in Los Angeles and Vancouver."),
+  faq=[("What time is Moscow midnight on December 31 in my time zone?", "Midnight in Moscow (UTC+3) is 21:00 UTC. That is 9:00 pm in London, 4:00 pm in New York and Toronto, 3:00 pm in Chicago, 2:00 pm in Denver, 4:00 pm in Winnipeg, 3:00 pm in Edmonton, 2:00 pm in Vancouver (these three Canadian provinces stopped changing clocks in 2026), and 1:00 pm in Los Angeles."),
        ("Is it free, and do I need a VPN?", "Yes, it is free, with no registration and no VPN. Open russian-tv.com, pick a channel and press play. If you use a VPN and the picture lags, try turning it off."),
        ("Will the New Year address be on air?", "By tradition the national channels air the New Year address shortly before midnight Moscow time, followed by the Kremlin chimes. The exact festive schedule is announced by the channels in late December, so check the programme closer to the date."),
        ("Can I watch on my TV?", "Yes. Open russian-tv.com/tv in the TV's browser, or send the stream from your phone or computer to the TV with AirPlay (iPhone) or Cast (Chrome)."),
@@ -114,7 +117,7 @@ NY_RU = dict(
   alt=('https://russian-tv.com/blog/novogodnyaya-noch-russkoe-tv-za-granicey/', 'https://russian-tv.com/en/blog/russian-tv-new-years-eve-usa-uk-canada/'),
   body='''  <p>Для миллионов русскоязычных семей за рубежом Новый год по-прежнему начинается с российского телевизора: обращение, куранты, праздничные концерты, любимые фильмы. Главная трудность в США, Канаде и Великобритании — часовые пояса: в Москве полночь наступает, когда у вас ещё день или вечер. Здесь собрано точное время для каждого пояса, обычная картина эфира в эту ночь и способы смотреть прямой эфир бесплатно, без VPN, на любом устройстве.</p>
 
-  <p><strong>Коротко:</strong> откройте <a href="/">russian-tv.com</a>, выберите канал и нажмите ▶. <strong>Полночь по Москве 31 декабря — это 16:00 в Нью-Йорке и Торонто, 13:00 в Лос-Анджелесе и Ванкувере, 21:00 в Лондоне и 22:00 в Берлине и Париже.</strong></p>
+  <p><strong>Коротко:</strong> откройте <a href="/">russian-tv.com</a>, выберите канал и нажмите ▶. <strong>Полночь по Москве 31 декабря — это 16:00 в Нью-Йорке и Торонто, 13:00 в Лос-Анджелесе, 14:00 в Ванкувере, 21:00 в Лондоне и 22:00 в Берлине и Париже.</strong></p>
 
   <h2>Когда полночь по Москве там, где вы живёте</h2>
 
@@ -126,9 +129,12 @@ NY_RU = dict(
       <tr><td>Берлин, Париж, Рим, Варшава</td><td>CET (UTC+1)</td><td><strong>22:00</strong></td><td>19:00</td></tr>
       <tr><td>Лондон, Манчестер</td><td>GMT (UTC+0)</td><td><strong>21:00</strong></td><td>18:00</td></tr>
       <tr><td>Нью-Йорк, Бостон, Майами, Торонто, Монреаль</td><td>Eastern (UTC−5)</td><td><strong>16:00</strong></td><td>13:00</td></tr>
-      <tr><td>Чикаго, Хьюстон, Виннипег</td><td>Central (UTC−6)</td><td><strong>15:00</strong></td><td>12:00</td></tr>
-      <tr><td>Денвер, Эдмонтон, Калгари</td><td>Mountain (UTC−7)</td><td><strong>14:00</strong></td><td>11:00</td></tr>
-      <tr><td>Лос-Анджелес, Сан-Франциско, Сиэтл, Ванкувер</td><td>Pacific (UTC−8)</td><td><strong>13:00</strong></td><td>10:00</td></tr>
+      <tr><td>Чикаго, Хьюстон</td><td>Central (UTC−6)</td><td><strong>15:00</strong></td><td>12:00</td></tr>
+      <tr><td>Денвер, Финикс</td><td>Mountain (UTC−7)</td><td><strong>14:00</strong></td><td>11:00</td></tr>
+      <tr><td>Виннипег (Манитоба, постоянное летнее время)</td><td>UTC−5</td><td><strong>16:00</strong></td><td>13:00</td></tr>
+      <tr><td>Эдмонтон, Калгари (Альберта, постоянное летнее время)</td><td>UTC−6</td><td><strong>15:00</strong></td><td>12:00</td></tr>
+      <tr><td>Ванкувер (Британская Колумбия, постоянное летнее время)</td><td>UTC−7</td><td><strong>14:00</strong></td><td>11:00</td></tr>
+      <tr><td>Лос-Анджелес, Сан-Франциско, Сиэтл</td><td>Pacific (UTC−8)</td><td><strong>13:00</strong></td><td>10:00</td></tr>
       <tr><td>Галифакс</td><td>Atlantic (UTC−4)</td><td><strong>17:00</strong></td><td>14:00</td></tr>
       <tr><td>Сент-Джонс</td><td>Newfoundland (UTC−3:30)</td><td><strong>17:30</strong></td><td>14:30</td></tr>
     </tbody>
@@ -184,7 +190,7 @@ NY_RU = dict(
 
   <p><em>Программу определяют сами каналы, и она может измениться. Здесь описана обычная новогодняя картина; материал будет обновлён, когда праздничная сетка будет объявлена.</em></p>
 ''',
-  faq=[('Во сколько полночь по Москве 31 декабря в моём часовом поясе?', 'Полночь по Москве (UTC+3) — 21:00 UTC. Это 22:00 в Берлине и Париже, 21:00 в Лондоне, 16:00 в Нью-Йорке и Торонто, 15:00 в Чикаго, 14:00 в Денвере и Эдмонтоне, 13:00 в Лос-Анджелесе и Ванкувере.'),
+  faq=[('Во сколько полночь по Москве 31 декабря в моём часовом поясе?', 'Полночь по Москве (UTC+3) — 21:00 UTC. Это 22:00 в Берлине и Париже, 21:00 в Лондоне, 16:00 в Нью-Йорке и Торонто, 15:00 в Чикаго, 14:00 в Денвере, 16:00 в Виннипеге, 15:00 в Эдмонтоне, 14:00 в Ванкувере (эти провинции в 2026 году перестали переводить часы), 13:00 в Лос-Анджелесе.'),
        ('Это бесплатно, нужен ли VPN?', 'Бесплатно, без регистрации и без VPN: откройте russian-tv.com, выберите канал и нажмите ▶. Если включён VPN и картинка тормозит, попробуйте его отключить.'),
        ('Покажут ли новогоднее обращение?', 'По традиции федеральные каналы показывают новогоднее обращение незадолго до полуночи по Москве, затем бьют куранты. Точную праздничную сетку каналы объявляют в конце декабря, поэтому проверьте программу ближе к дате.'),
        ('Можно ли смотреть на телевизоре?', 'Да. Откройте russian-tv.com/tv в браузере телевизора или отправьте эфир с телефона или компьютера на телевизор через AirPlay (iPhone) или Cast (Chrome).'),
