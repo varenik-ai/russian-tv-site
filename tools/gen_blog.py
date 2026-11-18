@@ -13,7 +13,7 @@ TOTAL = 60
 RU_T = rd('blog/kak-smotret-russkoe-tv-na-smart-tv/index.html')
 EN_T = rd('en/blog/how-to-watch-russian-tv-in-usa/index.html')
 
-def head(tpl, lang, slug_path, title, desc, headline, crumbs, faq, alt=None):
+def head(tpl, lang, slug_path, title, desc, headline, crumbs, faq, alt=None, date=None):
     h = tpl[:tpl.find('</head>')]
     url = f'https://russian-tv.com/{slug_path}/'
     h = re.sub(r'<title>.*?</title>', f'<title>{esc(title)}</title>', h, 1, flags=re.S)
@@ -27,7 +27,7 @@ def head(tpl, lang, slug_path, title, desc, headline, crumbs, faq, alt=None):
         {"@type": "Article", "headline": headline, "description": desc,
          "author": {"@type": "Organization", "name": "Русское ТВ" if lang == 'ru' else "Russian TV", "url": "https://russian-tv.com"},
          "publisher": {"@type": "Organization", "name": "Русское ТВ" if lang == 'ru' else "Russian TV", "url": "https://russian-tv.com"},
-         "mainEntityOfPage": url, "datePublished": DATE, "dateModified": DATE, "inLanguage": inl,
+         "mainEntityOfPage": url, "datePublished": date or DATE, "dateModified": date or DATE, "inLanguage": inl,
          "image": "https://russian-tv.com/og-image.jpg"},
         {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": u} for i, (n, u) in enumerate(crumbs)]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub(r'<[^>]+>', '', a)}} for q, a in faq]},
@@ -47,10 +47,10 @@ def faq_html(faq, lang):
     return ''.join(f'\n    <details{" open" if i == 0 else ""}>\n      <summary>{esc(q)} <span>▾</span></summary>\n      <p>{a}</p>\n    </details>' for i, (q, a) in enumerate(faq))
 
 # ================= RU =================
-def ru_article(slug, title, desc, headline, crumb_name, meta, h1, body, faq, related, alt=None):
+def ru_article(slug, title, desc, headline, crumb_name, meta, h1, body, faq, related, alt=None, date=None):
     tpl = RU_T
     hd = head(tpl, 'ru', f'blog/{slug}', title, desc, headline,
-              [('Главная', 'https://russian-tv.com/'), ('Блог', 'https://russian-tv.com/blog/'), (crumb_name, f'https://russian-tv.com/blog/{slug}/')], faq, alt)
+              [('Главная', 'https://russian-tv.com/'), ('Блог', 'https://russian-tv.com/blog/'), (crumb_name, f'https://russian-tv.com/blog/{slug}/')], faq, alt, date)
     b = tpl[tpl.find('<body'):]
     i = b.find('<div class="breadcrumb">'); j = b.find('<div class="wrap">')
     pre = b[:i]
@@ -198,14 +198,17 @@ RU_ARTICLES = [
        ('Какая скорость интернета нужна?', 'Для комфортного просмотра в HD рекомендуем от 5 Мбит/с.')],
   related=[('Российское ТВ на iPhone и Android', '/blog/kak-smotret-russkoe-tv-na-iphone-i-android/'), ('Как смотреть российское ТВ на Smart TV', '/blog/kak-smotret-russkoe-tv-na-smart-tv/'), ('Какие каналы смотреть по темам', '/blog/kakie-kanaly-smotret-po-temam/')]),
 ]
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from articles_ny import NY_RU, NY_EN   # новогодняя статья (18.11.2026)
+RU_ARTICLES.append(NY_RU)
 for a in RU_ARTICLES:
-    ru_article(a['slug'], a['title'], a['desc'], a['headline'], a['crumb'], a['meta'], a['h1'], a['body'], a['faq'], a['related'], a.get('alt'))
+    ru_article(a['slug'], a['title'], a['desc'], a['headline'], a['crumb'], a['meta'], a['h1'], a['body'], a['faq'], a['related'], a.get('alt'), a.get('date'))
 
 # ================= EN =================
-def en_article(slug, title, desc, headline, crumb_name, meta, h1, body, faq, related, alt=None):
+def en_article(slug, title, desc, headline, crumb_name, meta, h1, body, faq, related, alt=None, date=None):
     tpl = EN_T
     hd = head(tpl, 'en', f'en/blog/{slug}', title, desc, headline,
-              [('Home', 'https://russian-tv.com/en/'), ('Blog', 'https://russian-tv.com/en/blog/'), (crumb_name, f'https://russian-tv.com/en/blog/{slug}/')], faq, alt)
+              [('Home', 'https://russian-tv.com/en/'), ('Blog', 'https://russian-tv.com/en/blog/'), (crumb_name, f'https://russian-tv.com/en/blog/{slug}/')], faq, alt, date)
     b = tpl[tpl.find('<body'):]
     i = b.find('<div class="breadcrumb">')
     pre = b[:i]; foot = b[b.find('<footer>'):]
@@ -309,8 +312,9 @@ EN_ARTICLES = [
        ('What internet speed do I need?', 'We recommend at least 5 Mbit/s for comfortable HD viewing.')],
   related=[('Russian TV on iPhone and Android', '/en/blog/russian-tv-on-iphone-and-android/'), ('How to Watch Russian TV in the USA', '/en/blog/how-to-watch-russian-tv-in-usa/'), ('All channels', '/en/')]),
 ]
+EN_ARTICLES.append(NY_EN)
 for a in EN_ARTICLES:
-    en_article(a['slug'], a['title'], a['desc'], a['headline'], a['crumb'], a['meta'], a['h1'], a['body'], a['faq'], a['related'], a.get('alt'))
+    en_article(a['slug'], a['title'], a['desc'], a['headline'], a['crumb'], a['meta'], a['h1'], a['body'], a['faq'], a['related'], a.get('alt'), a.get('date'))
 
 # ================= индексы блога =================
 idx = rd('blog/index.html')
@@ -321,12 +325,20 @@ if 'kakie-kanaly-smotret-po-temam' not in idx:
     idx = idx.replace('<div class="post-list">\n', '<div class="post-list">\n' + cards, 1)
     wr('blog/index.html', idx)
 
+# карточка новой статьи (18.11.2026) вверху RU-индекса, если её ещё нет
+if NY_RU['slug'] not in idx:
+    card = (f'    <a href="/blog/{NY_RU["slug"]}/" class="post-card">\n      <div class="post-date">{NY_RU["date_label"]}</div>\n'
+            f'      <div class="post-title">{esc(NY_RU["h1"])}</div>\n      <div class="post-excerpt">{esc(NY_RU["desc"])}</div>\n    </a>\n')
+    idx = idx.replace('<div class="post-list">\n', '<div class="post-list">\n' + card, 1)
+    wr('blog/index.html', idx)
+
 # EN индекс блога на базе RU индекса
 en_idx = idx
 en_idx = re.sub(r'<html lang="ru"', '<html lang="en"', en_idx)
 body_start = en_idx.find('<body')
 posts = [('how-to-watch-russian-tv-in-usa', 'September 2026', 'How to Watch Russian TV in the USA for Free in 2026', 'Step-by-step guide to watching Russian TV channels online in the USA for free. No VPN, no subscription.')] + \
-        [(a['slug'], 'October 2026', a['h1'], a['desc']) for a in EN_ARTICLES]
+        [(a['slug'], a.get('date_label', 'October 2026'), a['h1'], a['desc']) for a in sorted(EN_ARTICLES, key=lambda a: a.get('date', '2026-10-09'))]
+posts = [x for x in posts if x[0] == NY_EN['slug']] + [x for x in posts if x[0] != NY_EN['slug']]   # новая статья первой
 cards = ''.join(f'    <a href="/en/blog/{s}/" class="post-card">\n      <div class="post-date">{d}</div>\n      <div class="post-title">{esc(t)}</div>\n      <div class="post-excerpt">{esc(x)}</div>\n    </a>\n' for s, d, t, x in posts)
 head_part = en_idx[:body_start]
 head_part = re.sub(r'<title>.*?</title>', '<title>Russian TV Blog — Guides and Tips | Russian-TV.com</title>', head_part, 1, flags=re.S)
