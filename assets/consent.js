@@ -1,14 +1,15 @@
-/* Согласие на cookie/рекламу и загрузчик счётчиков russian-tv.com (с 18.11.2026).
-   При первом посещении поверх страницы по центру показывается окно с одной кнопкой «Согласен» (остальной экран размыт и недоступен).
-   Без согласия сайтом пользоваться нельзя, счётчики (GA4, Яндекс.Метрика, Clarity) и реклама не загружаются.
-   Согласие хранится в localStorage (ключ rtv_consent). Исключения, где окна нет: страницы политики конфиденциальности (RU/EN, чтобы её можно было прочитать),
-   /tv/ (браузер телевизора), /404.html, поисковые и служебные роботы (в том числе Lighthouse), адрес с ?nowall=1 (проверка; счётчики и реклама всё равно ждут согласия).
-   Отзыв согласия: кнопка на странице политики (удаляет rtv_consent). */
+/* Выбор по cookie и рекламе + загрузчик счётчиков russian-tv.com (с 18.11.2026, кнопка «Отказаться» с 19.11.2026).
+   При первом посещении по центру экрана окно с кнопками «Согласен» и «Отказаться»; остальная страница размыта и недоступна, пока выбор не сделан.
+   «Согласен»: загружаются счётчики (GA4, Яндекс.Метрика, Clarity) и реклама, передаются технические данные о воспроизведении (rtv-monitor).
+   «Отказаться»: сайт работает как обычно, но счётчики, реклама и передача данных о воспроизведении выключены. Состав сервисов описан в политике конфиденциальности, окно только ссылается на неё.
+   Выбор хранится в localStorage: rtv_consent = '1' (согласен) или '0' (отказался). Окна нет: на странице политики (RU/EN), /tv/, /404.html, для поисковых и служебных роботов
+   (включая Lighthouse) и при ?nowall=1 (счётчики и реклама всё равно ждут согласия). Изменить выбор — кнопка на странице политики. */
 (function () {
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };
   var KEY = 'rtv_consent', granted = false, loaded = false;
-  try { granted = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  var choice = null;
+  try { choice = localStorage.getItem(KEY); granted = choice === '1'; } catch (e) {}
   window.rtvConsentGranted = function () { return granted; };
 
   function loadTrackers() {
@@ -23,6 +24,7 @@
   function grant() { granted = true; try { localStorage.setItem(KEY, '1'); } catch (e) {} loadTrackers(); }
 
   if (granted) { loadTrackers(); return; }
+  if (choice === '0') return;   // отказался: окно больше не показываем, счётчиков и рекламы нет
 
   var path = location.pathname.replace(/index\.html$/, '');
   var UA = navigator.userAgent || '';
@@ -33,8 +35,8 @@
 
   var en = /^\/en(\/|$)/.test(path) || /^en/i.test(document.documentElement.lang || '');
   var T = en
-    ? { h: 'Cookies and advertising', p: 'This site is free and is paid for by advertising. We use cookies and similar technologies to run the site, measure traffic and show ads. By clicking “I agree” you consent to this. Without consent the site cannot be used.', a: 'Privacy Policy', b: 'I agree', href: '/en/privacy/' }
-    : { h: 'Файлы cookie и реклама', p: 'Сайт бесплатный и существует за счёт рекламы. Мы используем cookie и похожие технологии для работы сайта, подсчёта посетителей и показа рекламы. Нажимая «Согласен», вы соглашаетесь на их использование. Без согласия пользоваться сайтом нельзя.', a: 'Политика конфиденциальности', b: 'Согласен', href: '/privacy/' };
+    ? { h: 'Cookies and advertising', p: 'We use cookies and similar technologies to run the site, count visitors and show ads. Click “I agree” to allow this, or “Decline”: the site will work without analytics and ads.', a: 'Full rules and the list of services — Privacy Policy', b: 'I agree', n: 'Decline', href: '/en/privacy/' }
+    : { h: 'Файлы cookie и реклама', p: 'Мы используем cookie и похожие технологии для работы сайта, подсчёта посетителей и показа рекламы. Нажмите «Согласен», чтобы разрешить это, или «Отказаться»: сайт будет работать без аналитики и рекламы.', a: 'Подробные правила и перечень сервисов — Политика конфиденциальности', b: 'Согласен', n: 'Отказаться', href: '/privacy/' };
 
   var locked = [];
   function show() {
@@ -44,21 +46,20 @@
     d.innerHTML = '<div style="width:100%;max-width:440px;background:#14141f;border:1px solid #2a2a40;border-radius:16px;padding:24px 22px;color:#f1f1f7;text-align:center;font:15px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.6)">' +
       '<div style="font-size:34px;line-height:1;margin-bottom:8px">🍪</div><h2 id="rtv-cw-h" style="font-size:19px;margin:0 0 10px;font-weight:800"></h2>' +
       '<p style="margin:0 0 14px;color:#c4c4d6;font-size:14px"></p><p style="margin:0 0 18px;font-size:13px"><a target="_blank" rel="noopener" style="color:#7db4ff"></a></p>' +
-      '<button type="button" id="rtv-cw-ok" style="width:100%;border:0;border-radius:12px;padding:14px;background:#d52b1e;color:#fff;font:700 16px/1 inherit;cursor:pointer"></button></div>';
+      '<button type="button" id="rtv-cw-ok" style="width:100%;border:0;border-radius:12px;padding:14px;background:#d52b1e;color:#fff;font:700 16px/1 inherit;cursor:pointer"></button>' +
+      '<button type="button" id="rtv-cw-no" style="width:100%;margin-top:10px;border:1px solid #3a3a52;border-radius:12px;padding:13px;background:transparent;color:#c4c4d6;font:600 15px/1 inherit;cursor:pointer"></button></div>';
     var box = d.firstChild;
     box.querySelector('h2').textContent = T.h; box.querySelectorAll('p')[0].textContent = T.p;
     var a = box.querySelector('a'); a.textContent = T.a; a.href = T.href;
-    var ok = box.querySelector('button'); ok.textContent = T.b;
+    var ok = box.querySelector('#rtv-cw-ok'), no = box.querySelector('#rtv-cw-no'); ok.textContent = T.b; no.textContent = T.n;
     // страница под окном недоступна: размытие, запрет прокрутки и работы с клавиатуры
     Array.prototype.forEach.call(document.body.children, function (n) { if (n.tagName !== 'SCRIPT' && n.tagName !== 'STYLE') { locked.push(n); n.setAttribute('inert', ''); } });
     document.documentElement.style.overflow = 'hidden';
     document.body.appendChild(d);
-    ok.addEventListener('click', function () {
-      grant(); d.parentNode.removeChild(d);
-      locked.forEach(function (n) { n.removeAttribute('inert'); });
-      document.documentElement.style.overflow = '';
-    });
-    d.addEventListener('keydown', function (e) { if (e.key === 'Tab') { e.preventDefault(); ok.focus(); } });
+    function close() { d.parentNode.removeChild(d); locked.forEach(function (n) { n.removeAttribute('inert'); }); document.documentElement.style.overflow = ''; }
+    ok.addEventListener('click', function () { grant(); close(); });
+    no.addEventListener('click', function () { try { localStorage.setItem(KEY, '0'); } catch (e) {} close(); });
+    d.addEventListener('keydown', function (e) { if (e.key === 'Tab') { e.preventDefault(); (document.activeElement === ok ? no : ok).focus(); } });
     setTimeout(function () { try { ok.focus(); } catch (e) {} }, 50);
   }
   if (document.body) show(); else document.addEventListener('DOMContentLoaded', show);
