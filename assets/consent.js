@@ -1,14 +1,17 @@
-/* Выбор по cookie и рекламе + загрузчик счётчиков russian-tv.com (с 18.11.2026, кнопка «Отказаться» с 18.11.2026).
+/* Выбор по cookie и рекламе + загрузчик счётчиков russian-tv.com (регион: с 18.11.2026 США — мягкий режим с опт-аутом, остальной мир — окно «Согласен/Отказаться») (с 18.11.2026, кнопка «Отказаться» с 18.11.2026).
    При первом посещении по центру экрана окно с кнопками «Согласен» и «Отказаться»; остальная страница размыта и недоступна, пока выбор не сделан.
    «Согласен»: загружаются счётчики (GA4, Яндекс.Метрика, Clarity) и реклама, передаются технические данные о воспроизведении (rtv-monitor).
    «Отказаться»: сайт работает как обычно, но счётчики, реклама и передача данных о воспроизведении выключены. Состав сервисов описан в политике конфиденциальности, окно только ссылается на неё.
+   РЕГИОН: страна определяется воркером мониторинга (GET /geo, кэш sessionStorage rtv_cc). США — без блокирующего окна: счётчики и реклама включены по умолчанию (опт-аут, как принято в США),
+   внизу уведомление «ОК / Отказаться» и в подвале ссылка «Do Not Sell or Share My Personal Information»; «Отказаться» запоминается (localStorage rtv_optout=1). ЕС, Великобритания, Швейцария,
+   Канада и все остальные (в том числе пока страна неизвестна) — блокирующее окно ниже. Юридическую корректность подтверждают юристы владельца.
    Отказ действует на один заход (с 18.11.2026): время отказа хранится в localStorage (rtv_decl), пока посетитель ходит по сайту с перерывами не дольше 30 минут окно не показывается (отметка продлевается на каждой странице),
    а при следующем заходе после перерыва окно показывается снова, и так до согласия. Согласие хранится постоянно: rtv_consent = '1'. Окна нет: на странице политики (RU/EN), /tv/, /404.html, для поисковых и служебных роботов
    (включая Lighthouse) и при ?nowall=1 (счётчики и реклама всё равно ждут согласия). Изменить выбор — кнопка на странице политики. */
 (function () {
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };
-  var KEY = 'rtv_consent', granted = false, loaded = false;
+  var KEY = 'rtv_consent', granted = false, loaded = false, OKEY = 'rtv_optout', AKEY = 'rtv_us_ack';
   var choice = null, VISIT_MS = 30 * 60 * 1000, DKEY = 'rtv_decl';
   try { choice = localStorage.getItem(KEY); granted = choice === '1'; if (choice === '0') { localStorage.removeItem(KEY); choice = null; } } catch (e) {}   // прежний постоянный отказ ('0') больше не действует
   window.rtvConsentGranted = function () { return granted; };
@@ -64,5 +67,43 @@
     d.addEventListener('keydown', function (e) { if (e.key === 'Tab') { e.preventDefault(); (document.activeElement === ok ? no : ok).focus(); } });
     setTimeout(function () { try { ok.focus(); } catch (e) {} }, 50);
   }
-  if (document.body) show(); else document.addEventListener('DOMContentLoaded', show);
+  // --- США: мягкий режим (опт-аут) ---
+  var tUS = en
+    ? { p: 'We use cookies, analytics and advertising to run this site.', ok: 'OK', no: 'Opt out', a: 'Privacy Policy', ds: 'Do Not Sell or Share My Personal Information', href: '/en/privacy/' }
+    : { p: 'Мы используем cookie, аналитику и рекламу для работы сайта.', ok: 'ОК', no: 'Отказаться', a: 'Политика конфиденциальности', ds: 'Do Not Sell or Share My Personal Information', href: '/privacy/' };
+  function softUS() {
+    try { if (localStorage.getItem(OKEY) === '1') return; } catch (e) {}   // отказался от отслеживания: ничего не грузим
+    granted = true; loadTrackers();
+    var ack = false; try { ack = localStorage.getItem(AKEY) === '1'; } catch (e) {}
+    function foot() {
+      var f = document.querySelector('footer'); if (!f || f.querySelector('#rtv-ds')) return;
+      var d = document.createElement('div'); d.id = 'rtv-ds'; d.style.cssText = 'margin-top:8px;font-size:12px';
+      d.innerHTML = '<a style="color:inherit;text-decoration:underline"></a>'; var a = d.firstChild; a.textContent = tUS.ds; a.href = tUS.href; f.appendChild(d);
+    }
+    function bar() {
+      if (ack) return;
+      var b = document.createElement('div'); b.id = 'rtv-us';
+      b.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483000;max-width:640px;margin:0 auto;background:#14141f;color:#f1f1f7;border:1px solid #2a2a40;border-radius:12px;padding:12px 14px;font:13px/1.45 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,.5)';
+      b.innerHTML = '<span style="flex:1 1 220px"></span><a target="_blank" rel="noopener" style="color:#7db4ff"></a><button type="button" id="rtv-us-ok" style="border:0;border-radius:8px;padding:8px 16px;background:#d52b1e;color:#fff;font:700 13px/1 inherit;cursor:pointer"></button><button type="button" id="rtv-us-no" style="border:1px solid #3a3a52;border-radius:8px;padding:8px 14px;background:transparent;color:#c4c4d6;font:600 13px/1 inherit;cursor:pointer"></button>';
+      var sp = b.children[0], a = b.children[1], ok = b.children[2], no = b.children[3];
+      sp.textContent = tUS.p; a.textContent = tUS.a; a.href = tUS.href; ok.textContent = tUS.ok; no.textContent = tUS.no;
+      ok.addEventListener('click', function () { try { localStorage.setItem(AKEY, '1'); } catch (e) {} b.parentNode.removeChild(b); });
+      no.addEventListener('click', function () { try { localStorage.setItem(OKEY, '1'); localStorage.setItem(AKEY, '1'); } catch (e) {} location.reload(); });
+      document.body.appendChild(b);
+    }
+    function ready() { bar(); foot(); }
+    if (document.body) ready(); else document.addEventListener('DOMContentLoaded', ready);
+  }
+  function getCC(cb) {
+    var cc = null; try { cc = sessionStorage.getItem('rtv_cc'); } catch (e) {}
+    if (cc) return cb(cc);
+    var done = false, t = setTimeout(function () { if (!done) { done = true; cb('XX'); } }, 1500);
+    try {
+      fetch('https://rtv-monitor.dyaltd.workers.dev/geo').then(function (r) { return r.json(); }).then(function (j) {
+        if (done) return; done = true; clearTimeout(t); var c = (j && j.cc) || 'XX'; try { sessionStorage.setItem('rtv_cc', c); } catch (e) {} cb(c);
+      }).catch(function () { if (!done) { done = true; clearTimeout(t); cb('XX'); } });
+    } catch (e) { if (!done) { done = true; clearTimeout(t); cb('XX'); } }
+  }
+  function decide() { getCC(function (cc) { if (cc === 'US') softUS(); else show(); }); }
+  if (document.body) decide(); else document.addEventListener('DOMContentLoaded', decide);
 })();
