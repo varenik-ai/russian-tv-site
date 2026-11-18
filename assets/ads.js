@@ -1,4 +1,4 @@
-/* Monetag In-Page Push — channel pages (/…-live/) and the home pages (/, /en/), loaded late so it never delays the player.
+/* Monetag In-Page Push — only the home pages (/, /en/) since 18.11.2026 (was: channel pages too), loaded late so it never delays the player.
    Loads ONLY after the visitor accepted cookies (see /assets/consent.js).
    Kill switch: set ADS_ENABLED=false (or add ?noads=1 to a URL to test without ads). */
 (function () {
@@ -7,9 +7,8 @@
   var DELAY_MS = 20000;               // wait 20s after page load so playback starts first
   if (!ADS_ENABLED) return;
   var path = location.pathname.replace(/index\.html$/, '');
-  var isChannel = /-live\/?$/.test(path);
   var isHome = path === '/' || path === '/en/' || path === '/en';
-  if (!isChannel && !isHome) return;
+  if (!isHome) return;   // с 18.11.2026 только главные: на страницах каналов остаётся баннер Adsterra (у Monetag за 14-18.11 $0,095 против $2,00 у Adsterra)
   if (/[?&]noads=1/.test(location.search)) return;
   var armed = false;
   function load() {
@@ -97,7 +96,7 @@
    Device test: a mouse (hover:hover) = computer; no mouse and the short side of the screen >= 600 px = tablet; phones are skipped.
    Kill switch: SOCIALBAR_ENABLED=false (or ?noads=1). */
 (function () {
-  var SOCIALBAR_ENABLED = true;
+  var SOCIALBAR_ENABLED = false;   // выключен 18.11.2026: CTR 27,6% (случайные клики по бару) — риск блокировки аккаунта Adsterra за недействительный трафик; давал 44% дохода Adsterra ($0,87 из $2,00 за 14-18.11)
   var SRC = 'https://bancadeltempoidea.org/14/9c2fe622f1cae087085580e782928d0c';
   var DELAY_MS = 30000;
   if (!SOCIALBAR_ENABLED) return;
