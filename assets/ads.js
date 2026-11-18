@@ -2,6 +2,7 @@
    Loads ONLY after the visitor accepted cookies (see /assets/consent.js).
    Kill switch: set ADS_ENABLED=false (or add ?noads=1 to a URL to test without ads). */
 (function () {
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|Android.*TV|AFT[A-Z]|CrKey/i.test(navigator.userAgent || '')) return;   // на телевизорах рекламы нет (с 18.11.2026)
   var ADS_ENABLED = true;
   var ZONE = '11593818';              // In-Page Push "Lucky tag"
   var DELAY_MS = 20000;               // wait 20s after page load so playback starts first
@@ -37,6 +38,7 @@
    Set DESKTOP_ONLY=false to bring it back on touch screens.
    Kill switch: BANNER_ENABLED=false (or ?noads=1). Ad unit: Adsterra site 6187633, unit 32178193. */
 (function () {
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|Android.*TV|AFT[A-Z]|CrKey/i.test(navigator.userAgent || '')) return;   // на телевизорах рекламы нет (с 18.11.2026)
   var BANNER_ENABLED = true;
   var DESKTOP_ONLY = true;
   var KEY = '825d215f35b6e7c6a1f929819767001a';
@@ -121,6 +123,85 @@
   function start() {
     if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
     else window.addEventListener('rtv-consent-granted', arm);
+  }
+  if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
+})();
+
+/* ===== 18.11.2026: новые места рекламы Adsterra (цель — компенсировать выключенный Social Bar и поднять доход) =====
+   Все блоки грузятся только после согласия (assets/consent.js) и не показываются на телевизорах (CPM около $0.005 за 1661 показ).
+   Устройства: компьютер = есть мышь (hover:hover); планшет = нет мыши, короткая сторона экрана >= 600 px; телефон = остальное.
+   1) Баннер 300x250 (тот же блок 32178193) на страницах БЕЗ плеера: главная (правая колонка), категории, страницы стран, блог — компьютеры и планшеты.
+   2) Native Banner (блок 32348558) в конце страницы — компьютеры и планшеты, страницы каналов, главные, категории, страны, блог.
+   3) Баннер 320x50 (блок 32348559) в конце страницы — только телефоны, далеко от плеера (случайные нажатия, как у баннера под плеером).
+   Отключить: ADS2_ENABLED=false или ?noads=1. */
+(function () {
+  var ADS2_ENABLED = true;
+  var UA = navigator.userAgent || '';
+  if (!ADS2_ENABLED || /[?&]noads=1/.test(location.search)) return;
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|Android.*TV|AFT[A-Z]|CrKey/i.test(UA)) return;
+  var path = location.pathname.replace(/index\.html$/, '');
+  var en = /^\/en(\/|$)/.test(path);
+  var isChannel = /-live\/?$/.test(path);
+  var isHome = path === '/' || path === '/en/' || path === '/en';
+  var isLegal = /^\/(en\/)?(privacy|advertising|about)\/?$/.test(path) || /^\/(tv|diag)\/?$/.test(path);
+  if (isLegal) return;
+  var mouse = !!(window.matchMedia && matchMedia('(hover:hover)').matches);
+  var tablet = !mouse && Math.min(screen.width || 0, screen.height || 0) >= 600;
+  var phone = !mouse && !tablet;
+  var label = en ? 'Advertisement' : 'Реклама';
+  function wrap(id, inner) {
+    var d = document.createElement('div'); d.id = id;
+    d.style.cssText = 'display:none;margin:16px auto;text-align:center;max-width:100%;font:11px/1.2 sans-serif;color:#8b8ba0';
+    d.innerHTML = '<small style="display:block;margin:0 0 4px">' + label + '</small>' + inner;
+    return d;
+  }
+  function beforeFooter(d) { var f = document.querySelector('footer'); if (f && f.parentNode) f.parentNode.insertBefore(d, f); else document.body.appendChild(d); }
+  function reveal(d, ms) {   // показать блок, когда реклама загрузилась; нет рекламы за ms — убрать блок
+    var t0 = Date.now(), iv = setInterval(function () {
+      if (d.querySelector('iframe') || (d.querySelector('div[id^=container-]') && d.querySelector('div[id^=container-]').children.length)) { d.style.display = ''; clearInterval(iv); }
+      else if (Date.now() - t0 > ms) { clearInterval(iv); d.parentNode && d.parentNode.removeChild(d); }
+    }, 500);
+  }
+  function banner(key, w, h, host, id) {
+    var d = wrap(id, '<div class="b" style="width:' + w + 'px;max-width:100%;height:' + h + 'px;overflow:hidden;margin:0 auto"></div>');
+    return { el: d, run: function () {
+      window.atOptions = { key: key, format: 'iframe', height: h, width: w, params: {} };
+      var s = document.createElement('script'); s.async = true; s.src = host; d.querySelector('.b').appendChild(s); reveal(d, 10000);
+    } };
+  }
+  var ready = false;
+  function go() {
+    if (ready) return; ready = true;
+    // 1) баннер 300x250 на страницах без плеера
+    if (!isChannel && (mouse || tablet)) setTimeout(function () {
+      try {
+        var b = banner('825d215f35b6e7c6a1f929819767001a', 300, 250, 'https://www.highrevenueformat.com/825d215f35b6e7c6a1f929819767001a/invoke.js', 'rtv-ban-page');
+        var side = isHome ? document.querySelector('aside.right-sidebar') : null, box = document.querySelector('.seo-box');
+        if (side) side.appendChild(b.el); else if (box && box.parentNode) box.parentNode.insertBefore(b.el, box); else beforeFooter(b.el);
+        b.run();
+      } catch (e) {}
+    }, 3000);
+    // 2) Native Banner
+    if (mouse || tablet) setTimeout(function () {
+      try {
+        var key = '38aed55c67286ad1a2b32153e5337ddb';
+        var d = wrap('rtv-native', '<div id="container-' + key + '"></div>'); d.style.width = '100%'; d.style.maxWidth = '728px';
+        beforeFooter(d);
+        var s = document.createElement('script'); s.async = true; s.setAttribute('data-cfasync', 'false'); s.src = 'https://bancadeltempoidea.org/21/' + key;
+        document.body.appendChild(s); reveal(d, 12000);
+      } catch (e) {}
+    }, 6000);
+    // 3) телефоны: баннер 320x50 в конце страницы
+    if (phone) setTimeout(function () {
+      try {
+        var b = banner('9b2a79adb0850bb0ed0eb4fa77cb79dd', 320, 50, 'https://bancadeltempoidea.org/22/9b2a79adb0850bb0ed0eb4fa77cb79dd', 'rtv-ban-mobile');
+        beforeFooter(b.el); b.run();
+      } catch (e) {}
+    }, 6000);
+  }
+  function start() {
+    if (window.rtvConsentGranted && window.rtvConsentGranted()) go();
+    else window.addEventListener('rtv-consent-granted', go);
   }
   if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
 })();
