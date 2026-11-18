@@ -2,14 +2,15 @@
    При первом посещении по центру экрана окно с кнопками «Согласен» и «Отказаться»; остальная страница размыта и недоступна, пока выбор не сделан.
    «Согласен»: загружаются счётчики (GA4, Яндекс.Метрика, Clarity) и реклама, передаются технические данные о воспроизведении (rtv-monitor).
    «Отказаться»: сайт работает как обычно, но счётчики, реклама и передача данных о воспроизведении выключены. Состав сервисов описан в политике конфиденциальности, окно только ссылается на неё.
-   Выбор хранится в localStorage: rtv_consent = '1' (согласен) или '0' (отказался). Окна нет: на странице политики (RU/EN), /tv/, /404.html, для поисковых и служебных роботов
+   Отказ действует на один заход (с 19.11.2026): время отказа хранится в localStorage (rtv_decl), пока посетитель ходит по сайту с перерывами не дольше 30 минут окно не показывается (отметка продлевается на каждой странице),
+   а при следующем заходе после перерыва окно показывается снова, и так до согласия. Согласие хранится постоянно: rtv_consent = '1'. Окна нет: на странице политики (RU/EN), /tv/, /404.html, для поисковых и служебных роботов
    (включая Lighthouse) и при ?nowall=1 (счётчики и реклама всё равно ждут согласия). Изменить выбор — кнопка на странице политики. */
 (function () {
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };
   var KEY = 'rtv_consent', granted = false, loaded = false;
-  var choice = null;
-  try { choice = localStorage.getItem(KEY); granted = choice === '1'; } catch (e) {}
+  var choice = null, VISIT_MS = 30 * 60 * 1000, DKEY = 'rtv_decl';
+  try { choice = localStorage.getItem(KEY); granted = choice === '1'; if (choice === '0') { localStorage.removeItem(KEY); choice = null; } } catch (e) {}   // прежний постоянный отказ ('0') больше не действует
   window.rtvConsentGranted = function () { return granted; };
 
   function loadTrackers() {
@@ -21,10 +22,11 @@
     ym(110584472, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: false });
     try { window.dispatchEvent(new Event('rtv-consent-granted')); } catch (e) {}
   }
-  function grant() { granted = true; try { localStorage.setItem(KEY, '1'); } catch (e) {} loadTrackers(); }
+  function grant() { granted = true; try { localStorage.setItem(KEY, '1'); localStorage.removeItem(DKEY); } catch (e) {} loadTrackers(); }
 
   if (granted) { loadTrackers(); return; }
-  if (choice === '0') return;   // отказался: окно больше не показываем, счётчиков и рекламы нет
+  // отказался недавно (заход продолжается): окна нет, счётчиков и рекламы нет; отметка продлевается
+  try { var dt = parseInt(localStorage.getItem(DKEY) || '0', 10); if (dt && Date.now() - dt < VISIT_MS) { localStorage.setItem(DKEY, String(Date.now())); return; } } catch (e) {}
 
   var path = location.pathname.replace(/index\.html$/, '');
   var UA = navigator.userAgent || '';
@@ -58,7 +60,7 @@
     document.body.appendChild(d);
     function close() { d.parentNode.removeChild(d); locked.forEach(function (n) { n.removeAttribute('inert'); }); document.documentElement.style.overflow = ''; }
     ok.addEventListener('click', function () { grant(); close(); });
-    no.addEventListener('click', function () { try { localStorage.setItem(KEY, '0'); } catch (e) {} close(); });
+    no.addEventListener('click', function () { try { localStorage.setItem(DKEY, String(Date.now())); } catch (e) {} close(); });
     d.addEventListener('keydown', function (e) { if (e.key === 'Tab') { e.preventDefault(); (document.activeElement === ok ? no : ok).focus(); } });
     setTimeout(function () { try { ok.focus(); } catch (e) {} }, 50);
   }
