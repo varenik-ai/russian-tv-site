@@ -28,15 +28,12 @@ for path, txt, marker in (('privacy/index.html', RU, 'Окно согласия.
     p = os.path.join(ROOT, path)
     if not os.path.exists(p): continue
     s = open(p, encoding='utf-8').read()
-    blk = re.compile(r'  <p><strong>(?:Окно согласия|Consent window)\.</strong>.*?</button></p>\n', re.S)
-    if blk.search(s):
-        s2 = blk.sub(lambda _m: txt, s, count=1)
-        if s2 != s: open(p, 'w', encoding='utf-8').write(s2); n += 1
-        continue
-    m = re.search(r'\n[ \t]*<h2>4\.', s)
+    blk = re.compile(r'  <p><strong>(?:Окно согласия|Уведомление о cookie|Consent window|Cookie notice)\.</strong>.*?</button></p>\n', re.S)
+    s2 = blk.sub('', s)                       # убрать все прежние блоки (в том числе дубли), затем вставить один актуальный
+    m = re.search(r'\n[ \t]*<h2>4\.', s2)
     if not m: print('нет раздела 4 в', path); continue
-    s = s[:m.start() + 1] + txt + '\n' + s[m.start() + 1:]
-    open(p, 'w', encoding='utf-8').write(s); n += 1
+    s2 = s2[:m.start() + 1] + txt + '\n' + s2[m.start() + 1:]
+    if s2 != s: open(p, 'w', encoding='utf-8').write(s2); n += 1
 print('gen_consent_wall: файлов изменено', n)
 
 # раздел 2а: данные о воспроизведении передаются на сайте только после «Согласен»
