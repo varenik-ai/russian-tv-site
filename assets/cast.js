@@ -5,6 +5,11 @@
    - Остальные браузеры: кнопки нет.
    Скрипт Google Cast (gstatic.com) подгружается лениво и только в Chromium. Требует player-ui.js (панель .rtvp-bar). */
 (function () {
+  /* Свой приёмник Google Cast (19.11.2026): на ТВ открывается страница stream.russian-tv.com/receiver, она сама играет поток и держит соотношение сторон
+     (стандартный приёмник Chromecast игнорирует SAR, и СТС, РЕН ТВ, Пятница! выглядят как 4:3). Пока App ID пустой, используется стандартный приёмник.
+     После регистрации приложения в Google Cast SDK Console (CAST_GUIDE.md, раздел «Свой приёмник») впишите сюда App ID (8 символов) во всех трёх файлах:
+     site assets/cast.js, hub player-ui.js (в мини-аппе тот же код). */
+  var RTV_CAST_APP = '', RTV_CAST_NS = 'urn:x-cast:com.russian-tv.cast';
   var EN = (document.documentElement.lang || '').toLowerCase().indexOf('en') === 0;
   var T = EN
     ? { cast: 'Cast to TV', air: 'AirPlay', on: 'Casting to', stop: 'Stop casting', fail: 'Could not send this channel to the TV. Try again or pick another channel.', tv: 'TV', next: 'Tap again to choose a TV', noTv: 'No Google Cast TV found', help: 'Keep the phone and TV on the same Wi-Fi. Most Samsung and LG TVs have no built-in Google Cast. Turn on screen mirroring on the phone (Smart View or Screen Cast), or open this address in the TV browser:', ok: 'OK' }
@@ -89,7 +94,7 @@
   }
   function initCast() {
     var ctx = cast.framework.CastContext.getInstance();
-    ctx.setOptions({ receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED });
+    ctx.setOptions({ receiverApplicationId: RTV_CAST_APP || chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED });
     castCtx = ctx;
     if (!btn) castButton();
     function vis() { var st = ctx.getCastState(); btn.style.display = (isAndroid || (st && st !== 'NO_DEVICES_AVAILABLE')) ? 'inline-flex' : 'none'; btn.classList.toggle('on', st === 'CONNECTED'); }
@@ -118,6 +123,13 @@
     if (!s || !id) return;
     lastId = id;
     var url = proxy() + '/stream?channel=' + encodeURIComponent(id);
+    if (RTV_CAST_APP) {   // свой приёмник: сообщение вместо loadMedia; приёмник может ещё грузиться, поэтому шлём трижды (повтор того же адреса он игнорирует)
+      showOverlay(deviceName(), false);
+      var msg = { cmd: 'play', url: url, name: chName() };
+      var send = function (last) { s.sendMessage(RTV_CAST_NS, msg).catch(function () { if (last) showOverlay(deviceName(), true); }); };
+      send(false); setTimeout(function () { send(false); }, 2500); setTimeout(function () { send(true); }, 6000);
+      return;
+    }
     var mi = new chrome.cast.media.MediaInfo(url, 'application/x-mpegURL');
     mi.streamType = chrome.cast.media.StreamType.LIVE;
     var md = new chrome.cast.media.GenericMediaMetadata(); md.title = chName(); md.images = [new chrome.cast.Image(chImage())]; mi.metadata = md;
