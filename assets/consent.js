@@ -109,7 +109,13 @@
       }).catch(function () { if (!done) { done = true; clearTimeout(t); cb('XX'); } });
     } catch (e) { if (!done) { done = true; clearTimeout(t); cb('XX'); } }
   }
-  var STRICT = ' AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE IS LI NO GB CH CA XX ';
-  function decide() { getCC(function (cc) { if (cc === 'US') softUS(true); else if (STRICT.indexOf(' ' + cc + ' ') >= 0) show(); else softUS(false); }); }
+  var STRICT = ' AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE IS LI NO GB CH CA ';
+  // страна не определилась (XX): с 19.11.2026 мягкий режим «остального мира»; исключение — часовой пояс браузера в Европе (кроме России, Беларуси, Украины, Турции) или Канаде: там осторожная карточка
+  function tzStrict() {
+    var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    if (/^Europe\/(Moscow|Kaliningrad|Samara|Volgograd|Saratov|Astrakhan|Ulyanovsk|Kirov|Simferopol|Minsk|Kiev|Kyiv|Uzhgorod|Zaporozhye|Istanbul|Chisinau|Tiraspol)$/.test(tz)) return false;
+    return /^Europe\//.test(tz) || /^Atlantic\/Reykjavik$/.test(tz) || /^America\/(Toronto|Montreal|Vancouver|Edmonton|Winnipeg|Halifax|St_Johns|Regina|Moncton|Glace_Bay|Iqaluit|Yellowknife|Whitehorse|Dawson|Thunder_Bay|Nipigon|Rainy_River|Swift_Current|Goose_Bay|Cambridge_Bay|Inuvik|Rankin_Inlet|Resolute|Pangnirtung|Atikokan|Blanc-Sablon|Creston|Dawson_Creek|Fort_Nelson)$/.test(tz);
+  }
+  function decide() { getCC(function (cc) { if (cc === 'US') softUS(true); else if (STRICT.indexOf(' ' + cc + ' ') >= 0 || (cc === 'XX' && tzStrict())) show(); else softUS(false); }); }
   if (document.body) decide(); else document.addEventListener('DOMContentLoaded', decide);
 })();
