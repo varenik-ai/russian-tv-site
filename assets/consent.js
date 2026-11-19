@@ -25,12 +25,17 @@
     gtag('js', new Date()); gtag('config', 'G-XLSJE8NKJE', { allow_google_signals: false, allow_ad_personalization_signals: false });
     var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-XLSJE8NKJE'; document.head.appendChild(g);
   }
-  function loadTrackers() {
-    if (loaded) return; loaded = true;
+  var anal = false;
+  window.rtvAnalyticsAllowed = function () { return anal || granted; };   // счётчики и мониторинг (отдельно от рекламы: rtvConsentGranted)
+  function loadAnalytics() {
+    if (anal) return; anal = true;
     gtag('consent', 'update', { analytics_storage: 'granted' });
     (function (c, l, a, r, i, t, y) { c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); }; t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i; y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y); })(window, document, 'clarity', 'script', 'xkhl4v4ft0');
     (function (m, e, t, r, i, k, a) { m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); }; m[i].l = 1 * new Date(); k = e.createElement(t); a = e.getElementsByTagName(t)[0]; k.async = 1; k.src = r; a.parentNode.insertBefore(k, a); })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
     ym(110584472, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: false });
+  }
+  function loadTrackers() {
+    if (loaded) return; loaded = true; loadAnalytics();
     try { window.dispatchEvent(new Event('rtv-consent-granted')); } catch (e) {}
   }
   function grant() { granted = true; try { localStorage.setItem(KEY, '1'); localStorage.removeItem(DKEY); } catch (e) {} loadTrackers(); }
@@ -76,7 +81,7 @@
   var tOW = { p: tUS.p, ok: en ? 'I agree' : 'Согласен', no: en ? 'Decline' : 'Отказаться', a: tUS.a, ds: tUS.ds, href: tUS.href };
   function softUS(isUS) {
     if (!isUS) tUS = tOW;
-    try { if (localStorage.getItem(OKEY) === '1') return; } catch (e) {}   // отказался от отслеживания: ничего не грузим
+    try { if (localStorage.getItem(OKEY) === '1') { loadAnalytics(); return; } } catch (e) {}   // «Отказаться» (с 19.11.2026): счётчики и мониторинг работают, рекламы нет
     granted = true; loadTrackers();
     var ack = false; try { ack = localStorage.getItem(AKEY) === '1'; } catch (e) {}
     function foot() {
