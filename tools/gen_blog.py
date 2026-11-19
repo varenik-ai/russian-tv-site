@@ -205,9 +205,10 @@ from articles_sched import SCHED_EN, SCHED_RU
 from articles_compare import CMP_EN   # Channel One vs Rossiya 1 vs NTV (19.11.2026)
 from articles_list import LIST_EN   # список каналов (19.11.2026)
 from articles_tg import TG_EN, TG_RU   # мини-апп Telegram (19.11.2026)
+from articles_victory import VD_EN, VD_RU   # парад Победы (19.11.2026)
 from articles_tv import TV_EN   # Smart TV, Roku, Chromecast (20.11.2026)   # часовые пояса США (19.11.2026)   # Канада и Великобритания (19.11.2026)
 RU_ARTICLES.append(NY_RU)
-RU_ARTICLES.extend([CA_RU, UK_RU, SCHED_RU, TG_RU])
+RU_ARTICLES.extend([CA_RU, UK_RU, SCHED_RU, TG_RU, VD_RU])
 for a in RU_ARTICLES:
     ru_article(a['slug'], a['title'], a['desc'], a['headline'], a['crumb'], a['meta'], a['h1'], a['body'], a['faq'], a['related'], a.get('alt'), a.get('date'))
 
@@ -320,7 +321,7 @@ EN_ARTICLES = [
   related=[('Russian TV on iPhone and Android', '/en/blog/russian-tv-on-iphone-and-android/'), ('How to Watch Russian TV in the USA', '/en/blog/how-to-watch-russian-tv-in-usa/'), ('All channels', '/en/')]),
 ]
 EN_ARTICLES.append(NY_EN)
-EN_ARTICLES.extend([CA_EN, UK_EN, SCHED_EN, TV_EN, CMP_EN, LIST_EN, TG_EN])
+EN_ARTICLES.extend([CA_EN, UK_EN, SCHED_EN, TV_EN, CMP_EN, LIST_EN, TG_EN, VD_EN])
 for a in EN_ARTICLES:
     en_article(a['slug'], a['title'], a['desc'], a['headline'], a['crumb'], a['meta'], a['h1'], a['body'], a['faq'], a['related'], a.get('alt'), a.get('date'))
 
@@ -341,7 +342,7 @@ if NY_RU['slug'] not in idx:
     wr('blog/index.html', idx)
 
 # карточки статей про Канаду и Великобританию (19.11.2026) вверху RU-индекса, если их ещё нет
-for _a in (TG_RU, SCHED_RU, UK_RU, CA_RU):
+for _a in (VD_RU, TG_RU, SCHED_RU, UK_RU, CA_RU):
     if _a['slug'] not in idx:
         card = (f'    <a href="/blog/{_a["slug"]}/" class="post-card">\n      <div class="post-date">{_a["date_label"]}</div>\n'
                 f'      <div class="post-title">{esc(_a["h1"])}</div>\n      <div class="post-excerpt">{esc(_a["desc"])}</div>\n    </a>\n')
@@ -354,7 +355,7 @@ en_idx = re.sub(r'<html lang="ru"', '<html lang="en"', en_idx)
 body_start = en_idx.find('<body')
 posts = [('how-to-watch-russian-tv-in-usa', 'September 2026', 'How to Watch Russian TV in the USA for Free in 2026', 'Step-by-step guide to watching Russian TV channels online in the USA for free. No VPN, no subscription.')] + \
         [(a['slug'], a.get('date_label', 'October 2026'), a['h1'], a['desc']) for a in sorted(EN_ARTICLES, key=lambda a: a.get('date', '2026-10-09'))]
-_new = [TG_EN['slug'], LIST_EN['slug'], CMP_EN['slug'], TV_EN['slug'], SCHED_EN['slug'], UK_EN['slug'], CA_EN['slug'], NY_EN['slug']]   # новые статьи первыми (сначала самые свежие)
+_new = [VD_EN['slug'], TG_EN['slug'], LIST_EN['slug'], CMP_EN['slug'], TV_EN['slug'], SCHED_EN['slug'], UK_EN['slug'], CA_EN['slug'], NY_EN['slug']]   # новые статьи первыми (сначала самые свежие)
 posts = [x for s_ in _new for x in posts if x[0] == s_] + [x for x in posts if x[0] not in _new]
 cards = ''.join(f'    <a href="/en/blog/{s}/" class="post-card">\n      <div class="post-date">{d}</div>\n      <div class="post-title">{esc(t)}</div>\n      <div class="post-excerpt">{esc(x)}</div>\n    </a>\n' for s, d, t, x in posts)
 head_part = en_idx[:body_start]
