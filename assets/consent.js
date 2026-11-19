@@ -21,18 +21,23 @@
   // «Согласен» (или США без отказа) -> analytics_storage = granted. Яндекс.Метрика и Clarity по-прежнему грузятся только после согласия.
   var BOT = /bot|crawl|spider|slurp|bingpreview|lighthouse|pagespeed|facebookexternalhit|twitterbot|telegrambot|whatsapp|applebot|duckduckbot|baiduspider|headlesschrome|gtmetrix/i.test(navigator.userAgent || '');
   gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: granted ? 'granted' : 'denied' });
-  if (!BOT) {
+  var DECL = false; try { DECL = localStorage.getItem(OKEY) === '1'; } catch (e) {}
+  if (!BOT && !DECL) {
     gtag('js', new Date()); gtag('config', 'G-XLSJE8NKJE', { allow_google_signals: false, allow_ad_personalization_signals: false });
     var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-XLSJE8NKJE'; document.head.appendChild(g);
   }
   var anal = false;
-  window.rtvAnalyticsAllowed = function () { return anal || granted; };   // счётчики и мониторинг (отдельно от рекламы: rtvConsentGranted)
+  window.rtvAnalyticsAllowed = function () { return anal; };   // счётчики и мониторинг (отдельно от рекламы: rtvConsentGranted)
   function loadAnalytics() {
     if (anal) return; anal = true;
     gtag('consent', 'update', { analytics_storage: 'granted' });
     (function (c, l, a, r, i, t, y) { c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); }; t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i; y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y); })(window, document, 'clarity', 'script', 'xkhl4v4ft0');
     (function (m, e, t, r, i, k, a) { m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); }; m[i].l = 1 * new Date(); k = e.createElement(t); a = e.getElementsByTagName(t)[0]; k.async = 1; k.src = r; a.parentNode.insertBefore(k, a); })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
     ym(110584472, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: false });
+  }
+  function loadAdsOnly() {   // «Отказаться» (с 19.11.2026): счётчики выключены, реклама работает
+    if (loaded) return; loaded = true;
+    try { window.dispatchEvent(new Event('rtv-consent-granted')); } catch (e) {}
   }
   function loadTrackers() {
     if (loaded) return; loaded = true; loadAnalytics();
@@ -81,7 +86,7 @@
   var tOW = { p: tUS.p, ok: en ? 'I agree' : 'Согласен', no: en ? 'Decline' : 'Отказаться', a: tUS.a, ds: tUS.ds, href: tUS.href };
   function softUS(isUS) {
     if (!isUS) tUS = tOW;
-    try { if (localStorage.getItem(OKEY) === '1') { loadAnalytics(); return; } } catch (e) {}   // «Отказаться» (с 19.11.2026): счётчики и мониторинг работают, рекламы нет
+    try { if (localStorage.getItem(OKEY) === '1') { granted = true; loadAdsOnly(); return; } } catch (e) {}   // «Отказаться» (с 19.11.2026): счётчики и мониторинг выключены, реклама работает
     granted = true; loadTrackers();
     var ack = false; try { ack = localStorage.getItem(AKEY) === '1'; } catch (e) {}
     function foot() {
