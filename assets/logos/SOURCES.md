@@ -36,3 +36,12 @@
 | Канал | Файл в assets/logos/ | Файл в Commons | Метка в Commons | Примечание |
 |---|---|---|---|---|
 | Россия РТР — Европа, Россия РТР — США | logo-rtr-planeta.svg | File:RTR-Planeta Logo.svg | Public domain | один знак «РТР-Планета» для обоих каналов |
+
+## Добавлено 19.11.2026
+
+| Канал | Файл в assets/logos/ | Файл в Commons | Метка в Commons | Примечание |
+|---|---|---|---|---|
+| СТС | logo-sts.svg | File:Logo СТС 23-10-2017.svg | Public domain (PD textlogo) | |
+| РЕН ТВ | logo-ren-tv.svg | File:REN TV logo 2017.svg | Public domain (PD textlogo) | |
+| Матч ТВ | logo-match-tv.svg | File:MatchTV Logo.svg | Public domain (PD textlogo) | |
+| Пятница! | logo-pyatnica.svg | File:Пятница (с 2013).svg | Public domain (PD textlogo) | |

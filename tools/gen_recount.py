@@ -5,20 +5,20 @@
 Не трогает CSS-проценты (54%) и числа вне контекста «каналы»."""
 import sys, os, re, glob
 ROOT = sys.argv[1]
-OLD, NEW = 54, 56
+OLD, NEW = 54, 60   # 19.11.2026: +СТС, РЕН ТВ, Матч ТВ, Пятница! (было 56)
 NOUN = r'(?:канал(?:а|ов)?|телеканал(?:а|ов|ам)?|русск\w+|российск\w+|channels?|Channels?|Russian|live|TV|ТВ)'
 rep = [
-    (re.compile(r'\b54 (русских|российских) (канала|телеканала)\b'), r'56 \1 \2'.replace('канала', 'каналов')),
+    (re.compile(r'\b(?:54|56) (русских|российских) (канала|телеканала)\b'), r'56 \1 \2'.replace('канала', 'каналов')),
 ]
 def fix(s):
     o = s
-    s = re.sub(r'\b54 (русских|российских) канала\b', r'56 \1 каналов', s)
-    s = re.sub(r'\b54 (русских|российских) телеканала\b', r'56 \1 телеканалов', s)
-    s = re.sub(r'\b54 канала\b', '56 каналов', s)
-    s = re.sub(r'\b54 телеканала\b', '56 телеканалов', s)
-    s = re.sub(r'(?<![\d%.#:\-])\b54 (?=(?:русск|российск|телеканал|каналов|channels|Channels|Russian|Live|live|TV|ТВ))', '56 ', s)
-    s = re.sub(r'(?<![\d%.#:\-])\b54 (?=Channels)', '56 ', s)
-    s = s.replace('"numberOfItems": 54', '"numberOfItems": 56').replace('"numberOfItems":54', '"numberOfItems":56')
+    s = re.sub(r'\b(?:54|56) (русских|российских) канала\b', r'60 \1 каналов', s)
+    s = re.sub(r'\b(?:54|56) (русских|российских) телеканала\b', r'60 \1 телеканалов', s)
+    s = re.sub(r'\b(?:54|56) канала\b', '60 каналов', s)
+    s = re.sub(r'\b(?:54|56) телеканала\b', '60 телеканалов', s)
+    s = re.sub(r'(?<![\d%.#:\-])\b(?:54|56) (?=(?:русск|российск|телеканал|каналов|channels|Channels|Russian|Live|live|TV|ТВ))', '60 ', s)
+    s = re.sub(r'(?<![\d%.#:\-])\b(?:54|56) (?=Channels)', '60 ', s)
+    s = s.replace('"numberOfItems": 54', '"numberOfItems": 60').replace('"numberOfItems":54', '"numberOfItems":60').replace('"numberOfItems": 56', '"numberOfItems": 60').replace('"numberOfItems":56', '"numberOfItems":60')
     return s
 n = 0
 for f in glob.glob(os.path.join(ROOT, '**/*'), recursive=True):

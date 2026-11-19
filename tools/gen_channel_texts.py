@@ -22,6 +22,26 @@ def wr(p, s):
 
 # slug: (RU вступление, RU уточнение, EN вступление, EN уточнение). {n} — название канала на странице
 T = {
+    'sts-live': (
+        '«{n}» — семейный развлекательный канал: сериалы, фильмы, шоу и мультфильмы для зрителей разного возраста.',
+        'Здесь показывают международную версию канала для зрителей за пределами России: сетка и рекламные блоки могут отличаться от российского эфира.',
+        '{n} is a family entertainment channel with series, films, shows and cartoons for all ages.',
+        'This is the international version of the channel for viewers outside Russia: the schedule and ad breaks can differ from the domestic broadcast.'),
+    'ren-tv-live': (
+        '«{n}» — телеканал с развлекательными и познавательными программами, документальными проектами, фильмами и сериалами.',
+        'Это международная версия канала для зрителей за пределами России; программа может отличаться от российской сетки.',
+        '{n} is a channel of entertainment and factual programmes, documentary projects, films and series.',
+        'This is the international version of the channel for viewers outside Russia; the programme can differ from the domestic schedule.'),
+    'match-tv-live': (
+        '«{n}» — спортивный телеканал: футбол, хоккей, единоборства и другие виды спорта, прямые трансляции и студийные программы.',
+        'Это международная версия канала: состав трансляций зависит от прав на показ в вашей стране и может отличаться от российского эфира.',
+        '{n} is a sports channel with football, hockey, combat sports and more, live broadcasts and studio programmes.',
+        'This is the international version of the channel: the line-up depends on broadcasting rights in your country and can differ from the Russian broadcast.'),
+    'pyatnica-live': (
+        '«{n}» — развлекательный канал: шоу о путешествиях, реалити и документальные программы.',
+        'Это международная версия канала для зрителей за пределами России; сетка и рекламные блоки могут отличаться от российского эфира.',
+        '{n} is an entertainment channel with travel shows, reality and documentary programmes.',
+        'This is the international version of the channel for viewers outside Russia: the schedule and ad breaks can differ from the domestic broadcast.'),
     'moskva-doverie-live': (
         '«{n}» — городской телеканал Москвы: художественные фильмы, передачи о столице и программы для всей семьи.',
         'В эфире бывают и фильмы прошлых лет, поэтому канал подойдёт для спокойного просмотра вечером.',

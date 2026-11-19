@@ -43,12 +43,20 @@ CH = [
  ('tracesport','trace-sport-stars-live','sport','Trace Sport Stars','Trace Sport Stars (Russian)','Звёзды спорта','Sports stars','TSS','#0277bd','#080d1a','звёзды спорта','sports stars'),
  ('doverie','moskva-doverie-live','news','Москва. Доверие','Moskva Doverie','Городской канал Москвы','Moscow city channel','МД','#d81b60','#1a0810','московское телевидение','Moscow television'),
  ('news360','360-novosti-live','news','360 Новости','360 News','Новости Подмосковья и России','Moscow region and Russian news','360Н','#c62828','#180808','новости Подмосковья','Moscow region news'),
+ ('sts','sts-live','ent','СТС','STS','Семейный развлекательный канал','Family entertainment channel','СТС','#fdd835','#18150a','сериалы и шоу СТС','STS series and shows'),
+ ('rentv','ren-tv-live','ent','РЕН ТВ','REN TV','Развлекательный и познавательный канал','Entertainment and factual channel','РЕН','#f9a03c','#1a1008','познавательные программы','factual programmes'),
+ ('matchtv','match-tv-live','sport','Матч ТВ','Match TV','Спортивный телеканал','Sports channel','МАТЧ','#e64a2e','#1a0c08','спорт в прямом эфире','live sport'),
+ ('pyatnica','pyatnica-live','ent','Пятница!','Pyatnitsa!','Развлекательный канал','Entertainment channel','ПЯТ','#e53935','#1a0808','шоу о путешествиях','travel shows'),
 ]
 KEYS = ['id','slug','cat','ru','en','ru_desc','en_desc','icon','color','bg','ru_kw','en_kw']
 CHANNELS = [dict(zip(KEYS, t)) for t in CH]
 
 
 MORE = {
+ 'sts': ('Семейный развлекательный канал: сериалы, фильмы, шоу и мультфильмы. Международная версия для зрителей за пределами России.','A family entertainment channel: series, films, shows and cartoons. An international version for viewers outside Russia.'),
+ 'rentv': ('Телеканал РЕН ТВ: развлекательные и познавательные программы, документальные проекты, фильмы и сериалы. Международная версия для зрителей за пределами России.','REN TV: entertainment and factual programmes, documentary projects, films and series. An international version for viewers outside Russia.'),
+ 'matchtv': ('Спортивный телеканал: футбол, хоккей, единоборства и другие виды спорта, трансляции и студийные программы. Международная версия; состав трансляций зависит от прав.','A sports channel: football, hockey, combat sports and more, with live broadcasts and studio programmes. An international version; the line-up of broadcasts depends on rights.'),
+ 'pyatnica': ('Развлекательный канал: шоу о путешествиях, реалити и документальные программы. Международная версия для зрителей за пределами России.','An entertainment channel: travel shows, reality and documentary programmes. An international version for viewers outside Russia.'),
  'rtrEuro': ('Международная версия канала «Россия» для зрителей в Европе: информационные программы, ток-шоу, фильмы и сериалы. Официальный поток ВГТРК.','International version of the Russia channel for viewers in Europe: news, talk shows, films and series. Official VGTRK stream.'),
  'rtrUsa': ('Международная версия канала «Россия» для зрителей в США: информационные программы, ток-шоу, фильмы и сериалы. Официальный поток ВГТРК.','International version of the Russia channel for viewers in the USA: news, talk shows, films and series. Official VGTRK stream.'),
  'doverie': ('Городской телеканал Москвы: фильмы, передачи о столице и программы для всей семьи.','A Moscow city channel: films, programmes about the capital and shows for the whole family.'),
@@ -222,7 +230,8 @@ def patch_home(path, lang):
         lab = HOME_RU[cat] if lang == 'ru' else HOME_EN[cat]
         m = re.search(r'\n  \{ label:[\'"][^\'"\n]*' + re.escape(lab) + r'[^\'"\n]*[\'"], channels:\[\n', s)
         if not m: print('home group not found', path, lab); continue
-        end = s.find('\n  ]},', m.end())
+        mm = re.compile(r'\n  \]\}(?:,|\n\];)').search(s, m.end()); end = mm.start() if mm else -1   # последняя группа заканчивается «]}» без запятой
+        if end < 0: print('home group end not found', path, lab); continue
         block = s[m.end():end]
         add = ''
         for ch in CHANNELS:
