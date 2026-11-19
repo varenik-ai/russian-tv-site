@@ -10,7 +10,7 @@ for f in glob.glob(os.path.join(ROOT, '**/*.html'), recursive=True):
     s = open(f, encoding='utf-8').read(); o = s
     s = re.sub(r'/assets/consent\.js(\?v=\d+)?"', '/assets/consent.js?v=11"', s)
     s = re.sub(r'/assets/ads\.js(\?v=\d+)?"', '/assets/ads.js?v=3"', s)
-    s = re.sub(r'/assets/monitor\.js(\?v=\d+)?"', '/assets/monitor.js?v=5"', s)
+    s = re.sub(r'/assets/monitor\.js(\?v=\d+)?"', '/assets/monitor.js?v=6"', s)
     # ads.js нужен и на страницах без плеера (категории, страны, блог): баннер и Native Banner Adsterra
     legal = re.match(r'(en/)?(privacy|advertising|about|tv|diag)/index\.html$', rel) or rel in ('404.html',) or 'noindex' in s
     if 'assets/consent.js' in s and 'assets/ads.js' not in s and not legal and '</head>' in s:
