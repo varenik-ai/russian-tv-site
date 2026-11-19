@@ -13,12 +13,12 @@ RU_G = [('/blog/kak-smotret-russkoe-tv-za-granicey/', 'Как смотреть �
         ('/blog/pervyy-kanal-rossiya-1-ntv-v-chem-raznica/', 'Первый канал, Россия 1 и НТВ: в чём разница'), ('/blog/kak-smotret-russkoe-tv-na-iphone-i-android/', 'Российское ТВ на iPhone и Android'),
         ('/blog/kak-smotret-russkoe-tv-v-kanade/', 'Как смотреть российское ТВ в Канаде'), ('/blog/kak-smotret-russkoe-tv-v-velikobritanii/', 'Как смотреть российское ТВ в Великобритании'),
         ('/blog/novogodnyaya-noch-russkoe-tv-za-granicey/', 'Российское ТВ в новогоднюю ночь за границей'), ('/blog/kakie-kanaly-smotret-po-temam/', 'Какие каналы смотреть: по темам'),
-        ('/blog/gde-smotret-futbol-i-sport-na-russkih-kanalah/', 'Где смотреть футбол и спорт на русских каналах'), ('/blog/vesti-onlajn-poslednie-vypuski/', 'Вести онлайн: последние выпуски')]
+        ('/blog/gde-smotret-futbol-i-sport-na-russkih-kanalah/', 'Где смотреть футбол и спорт на русских каналах'), ('/blog/vesti-onlajn-poslednie-vypuski/', 'Вести онлайн: последние выпуски'), ('/blog/russkoe-tv-v-telegram-mini-app/', 'Российское ТВ в Telegram')]
 EN_G = [('/en/blog/how-to-watch-russian-tv-in-usa/', 'How to Watch Russian TV in the USA'), ('/en/blog/channel-not-loading-fix/', 'Channel not loading: 8 fixes'),
         ('/en/blog/moscow-time-to-us-time-zones-russian-tv-schedule/', 'Moscow time in US time zones'), ('/en/blog/russian-tv-on-smart-tv-roku-chromecast-apple-tv/', 'Russian TV on Smart TV'),
         ('/en/blog/channel-one-vs-rossiya-1-vs-ntv/', 'Channel One vs Rossiya 1 vs NTV'), ('/en/blog/russian-tv-on-iphone-and-android/', 'Russian TV on iPhone and Android'),
         ('/en/blog/how-to-watch-russian-tv-in-canada/', 'How to Watch Russian TV in Canada'), ('/en/blog/how-to-watch-russian-tv-in-uk/', 'How to Watch Russian TV in the UK'),
-        ('/en/blog/russian-tv-new-years-eve-usa-uk-canada/', "Russian TV on New Year's Eve"), ('/en/blog/russian-tv-channels-list-live/', 'List of Russian TV channels')]
+        ('/en/blog/russian-tv-new-years-eve-usa-uk-canada/', "Russian TV on New Year's Eve"), ('/en/blog/russian-tv-channels-list-live/', 'List of Russian TV channels'), ('/en/blog/russian-tv-in-telegram-mini-app/', 'Russian TV in Telegram')]
 changed = 0
 # --- A) похожие каналы
 chan = {}

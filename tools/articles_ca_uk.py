@@ -59,7 +59,7 @@ CA_EN = dict(
   <ul>
     <li><strong>Computer (Windows, Mac).</strong> Use a current Chrome, Edge, Firefox or Safari. Open <a href="/en/">russian-tv.com</a>, choose a channel and press ▶. The ⛶ button gives full screen.</li>
     <li><strong>iPhone, iPad and Android.</strong> Open the same site in Safari or Chrome; nothing to install. See <a href="/en/blog/russian-tv-on-iphone-and-android/">Russian TV on iPhone and Android</a>. Telegram users can also open the mini-app from <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" rel="noopener">@RussiaTV_Hub_Live</a>.</li>
-    <li><strong>Smart TV.</strong> Open <strong>russian-tv.com/tv</strong> in the TV's web browser. The page is made for a remote control, and you can link your phone with a short code. You can also cast: Chrome has a Cast button for Chromecast and compatible TVs, and iPhone has AirPlay for Apple TV and many newer TVs.</li>
+    <li><strong>Smart TV.</strong> Open <strong>russian-tv.com/tv</strong> in the TV's web browser. The page is made for a remote control. You can also cast: Chrome has a Cast button for Chromecast and compatible TVs, and iPhone has AirPlay for Apple TV and many newer TVs.</li>
   </ul>
 
   <h2>Internet speed and mobile data</h2>
@@ -133,7 +133,7 @@ UK_EN = dict(
   <ul>
     <li><strong>Computer.</strong> A current Chrome, Edge, Firefox or Safari. Open <a href="/en/">russian-tv.com</a>, choose a channel and press ▶; ⛶ is full screen.</li>
     <li><strong>iPhone, iPad and Android.</strong> The same site in Safari or Chrome, no app to install. See <a href="/en/blog/russian-tv-on-iphone-and-android/">Russian TV on iPhone and Android</a>. Telegram users can open the mini-app from <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" rel="noopener">@RussiaTV_Hub_Live</a>.</li>
-    <li><strong>Smart TV.</strong> Open <strong>russian-tv.com/tv</strong> in the TV's browser: the page is built for a remote control and lets you link your phone with a short code. You can also cast from Chrome to a Chromecast or compatible TV, or use AirPlay from an iPhone to an Apple TV.</li>
+    <li><strong>Smart TV.</strong> Open <strong>russian-tv.com/tv</strong> in the TV's browser: the page is built for a remote control. You can also cast from Chrome to a Chromecast or compatible TV, or use AirPlay from an iPhone to an Apple TV.</li>
   </ul>
 
   <h2>Speed and tips</h2>
@@ -211,7 +211,7 @@ CA_RU = dict(
   <ul>
     <li><strong>Компьютер (Windows, Mac).</strong> Актуальный Chrome, Edge, Firefox или Safari. Откройте <a href="/">russian-tv.com</a>, выберите канал и нажмите ▶. Кнопка ⛶ — на весь экран.</li>
     <li><strong>iPhone, iPad и Android.</strong> Тот же сайт в Safari или Chrome, ничего устанавливать не нужно. См. <a href="/blog/kak-smotret-russkoe-tv-na-iphone-i-android/">Российское ТВ на iPhone и Android</a>. В Telegram можно открыть мини-приложение из канала <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" rel="noopener">@RussiaTV_Hub_Live</a>.</li>
-    <li><strong>Smart TV.</strong> Откройте <strong>russian-tv.com/tv</strong> в браузере телевизора: страница сделана под пульт, телефон подключается коротким кодом. Можно и транслировать: в Chrome кнопка Cast для Chromecast и совместимых телевизоров, на iPhone — AirPlay для Apple TV и многих новых телевизоров.</li>
+    <li><strong>Smart TV.</strong> Откройте <strong>russian-tv.com/tv</strong> в браузере телевизора: страница сделана под пульт. Можно и транслировать: в Chrome кнопка Cast для Chromecast и совместимых телевизоров, на iPhone — AirPlay для Apple TV и многих новых телевизоров.</li>
   </ul>
 
   <h2>Скорость интернета и мобильный трафик</h2>
@@ -285,7 +285,7 @@ UK_RU = dict(
   <ul>
     <li><strong>Компьютер.</strong> Актуальный Chrome, Edge, Firefox или Safari. Откройте <a href="/">russian-tv.com</a>, выберите канал и нажмите ▶; ⛶ — на весь экран.</li>
     <li><strong>iPhone, iPad и Android.</strong> Тот же сайт в Safari или Chrome, приложение не нужно. См. <a href="/blog/kak-smotret-russkoe-tv-na-iphone-i-android/">Российское ТВ на iPhone и Android</a>. В Telegram можно открыть мини-приложение из канала <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" rel="noopener">@RussiaTV_Hub_Live</a>.</li>
-    <li><strong>Smart TV.</strong> Откройте <strong>russian-tv.com/tv</strong> в браузере телевизора: страница сделана под пульт, телефон подключается коротким кодом. Можно транслировать из Chrome на Chromecast или совместимый телевизор либо с iPhone на Apple TV через AirPlay.</li>
+    <li><strong>Smart TV.</strong> Откройте <strong>russian-tv.com/tv</strong> в браузере телевизора: страница сделана под пульт. Можно транслировать из Chrome на Chromecast или совместимый телевизор либо с iPhone на Apple TV через AirPlay.</li>
   </ul>
 
   <h2>Скорость и советы</h2>
