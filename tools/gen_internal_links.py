@@ -18,7 +18,7 @@ EN_G = [('/en/blog/how-to-watch-russian-tv-in-usa/', 'How to Watch Russian TV in
         ('/en/blog/moscow-time-to-us-time-zones-russian-tv-schedule/', 'Moscow time in US time zones'), ('/en/blog/russian-tv-on-smart-tv-roku-chromecast-apple-tv/', 'Russian TV on Smart TV'),
         ('/en/blog/channel-one-vs-rossiya-1-vs-ntv/', 'Channel One vs Rossiya 1 vs NTV'), ('/en/blog/russian-tv-on-iphone-and-android/', 'Russian TV on iPhone and Android'),
         ('/en/blog/how-to-watch-russian-tv-in-canada/', 'How to Watch Russian TV in Canada'), ('/en/blog/how-to-watch-russian-tv-in-uk/', 'How to Watch Russian TV in the UK'),
-        ('/en/blog/russian-tv-new-years-eve-usa-uk-canada/', "Russian TV on New Year's Eve")]
+        ('/en/blog/russian-tv-new-years-eve-usa-uk-canada/', "Russian TV on New Year's Eve"), ('/en/blog/russian-tv-channels-list-live/', 'List of Russian TV channels')]
 changed = 0
 # --- A) похожие каналы
 chan = {}
