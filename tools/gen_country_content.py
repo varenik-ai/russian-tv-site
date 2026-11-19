@@ -63,13 +63,15 @@ def build(key, lang):
     if en:
         others = {'usa': ('/en/russian-tv-in-usa/', 'the USA'), 'uk': ('/en/russian-tv-in-uk/', 'the UK'), 'canada': ('/en/russian-tv-in-canada/', 'Canada')}
         links = ' · '.join(f'<a href="{u}">Russian TV in {t}</a>' for k, (u, t) in others.items() if k != key)
-        reading = ('<p><strong>Read next:</strong> <a href="/en/blog/russian-tv-new-years-eve-usa-uk-canada/">Russian TV on New Year\'s Eve in the USA, UK and Canada</a> · '
+        _g = {'canada': '<a href="/en/blog/how-to-watch-russian-tv-in-canada/">How to Watch Russian TV in Canada</a> · ', 'uk': '<a href="/en/blog/how-to-watch-russian-tv-in-uk/">How to Watch Russian TV in the UK</a> · '}.get(key, '')
+        reading = ('<p><strong>Read next:</strong> ' + _g + '<a href="/en/blog/russian-tv-new-years-eve-usa-uk-canada/">Russian TV on New Year\'s Eve in the USA, UK and Canada</a> · '
                    '<a href="/en/blog/how-to-watch-russian-tv-in-usa/">How to Watch Russian TV in the USA for Free</a> · <a href="/en/blog/channel-not-loading-fix/">Channel not loading: 8 fixes</a> · ' + links + '</p>')
         h = dict(a=f'Russian TV in {name} — what you can watch', b=f'Moscow time in {name}: when to watch', c='How to watch on any device', d=f'Russian speakers in {name}', f='Frequently asked questions')
     else:
         others = {'usa': ('/russkie-kanaly-v-ssha/', 'США'), 'uk': ('/russkie-kanaly-v-velikobritanii/', 'Великобритании'), 'canada': ('/russkie-kanaly-v-kanade/', 'Канаде')}
         links = ' · '.join(f'<a href="{u}">Русское ТВ в {t}</a>' for k, (u, t) in others.items() if k != key)
-        reading = ('<p><strong>Читайте также:</strong> <a href="/blog/novogodnyaya-noch-russkoe-tv-za-granicey/">Российское ТВ в новогоднюю ночь за границей</a> · '
+        _g = {'canada': '<a href="/blog/kak-smotret-russkoe-tv-v-kanade/">Как смотреть российское ТВ в Канаде</a> · ', 'uk': '<a href="/blog/kak-smotret-russkoe-tv-v-velikobritanii/">Как смотреть российское ТВ в Великобритании</a> · '}.get(key, '')
+        reading = ('<p><strong>Читайте также:</strong> ' + _g + '<a href="/blog/novogodnyaya-noch-russkoe-tv-za-granicey/">Российское ТВ в новогоднюю ночь за границей</a> · '
                    '<a href="/blog/kak-smotret-russkoe-tv-za-granicey/">Как смотреть российское ТВ за границей</a> · <a href="/blog/kanal-ne-gruzitsya-chto-delat/">Канал не грузится: 8 способов</a> · ' + links + '</p>')
         h = dict(a=f'Русское ТВ в {name} — что можно смотреть', b=f'Московское время в {name}: когда смотреть', c='Как смотреть на любом устройстве', d=f'Русскоязычные жители в {name}', f='Частые вопросы')
     P = 'en_' if en else 'ru_'
