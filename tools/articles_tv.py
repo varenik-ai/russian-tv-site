@@ -3,7 +3,7 @@
 # после подключения ТВ запоминается); AirPlay в Safari (кнопка в плеере, на iPhone может понадобиться второе нажатие), Chrome Cast. Roku: официального браузера в гайде не обещаем.
 TV_EN = dict(
   slug='russian-tv-on-smart-tv-roku-chromecast-apple-tv',
-  date='2026-11-20', date_label='November 2026',
+  date='2026-11-19', date_label='November 2026',
   title='Russian TV on Smart TV, Roku, Chromecast, Fire TV, Apple TV',
   desc='How to watch Russian TV on Samsung, LG, Android TV, Fire TV, Apple TV, Chromecast and Roku: browser, cast and AirPlay steps. Free, no VPN, no app.',
   headline='Russian TV on Smart TV, Roku, Chromecast, Fire TV and Apple TV — setup guide',

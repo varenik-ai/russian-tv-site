@@ -65,6 +65,7 @@ def build(key, lang):
         links = ' · '.join(f'<a href="{u}">Russian TV in {t}</a>' for k, (u, t) in others.items() if k != key)
         _g = {'canada': '<a href="/en/blog/how-to-watch-russian-tv-in-canada/">How to Watch Russian TV in Canada</a> · ', 'uk': '<a href="/en/blog/how-to-watch-russian-tv-in-uk/">How to Watch Russian TV in the UK</a> · ', 'usa': '<a href="/en/blog/moscow-time-to-us-time-zones-russian-tv-schedule/">Moscow Time to US Time Zones</a> · '}.get(key, '')
         _g += '<a href="/en/blog/russian-tv-on-smart-tv-roku-chromecast-apple-tv/">Russian TV on Smart TV</a> · '
+        _g += '<a href="/en/blog/channel-one-vs-rossiya-1-vs-ntv/">Channel One vs Rossiya 1 vs NTV</a> · '
         reading = ('<p><strong>Read next:</strong> ' + _g + '<a href="/en/blog/russian-tv-new-years-eve-usa-uk-canada/">Russian TV on New Year\'s Eve in the USA, UK and Canada</a> · '
                    '<a href="/en/blog/how-to-watch-russian-tv-in-usa/">How to Watch Russian TV in the USA for Free</a> · <a href="/en/blog/channel-not-loading-fix/">Channel not loading: 8 fixes</a> · ' + links + '</p>')
         h = dict(a=f'Russian TV in {name} — what you can watch', b=f'Moscow time in {name}: when to watch', c='How to watch on any device', d=f'Russian speakers in {name}', f='Frequently asked questions')

@@ -202,6 +202,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from articles_ny import NY_RU, NY_EN   # новогодняя статья (18.11.2026)
 from articles_ca_uk import CA_EN, UK_EN, CA_RU, UK_RU
 from articles_sched import SCHED_EN, SCHED_RU
+from articles_compare import CMP_EN   # Channel One vs Rossiya 1 vs NTV (19.11.2026)
 from articles_tv import TV_EN   # Smart TV, Roku, Chromecast (20.11.2026)   # часовые пояса США (19.11.2026)   # Канада и Великобритания (19.11.2026)
 RU_ARTICLES.append(NY_RU)
 RU_ARTICLES.extend([CA_RU, UK_RU, SCHED_RU])
@@ -317,7 +318,7 @@ EN_ARTICLES = [
   related=[('Russian TV on iPhone and Android', '/en/blog/russian-tv-on-iphone-and-android/'), ('How to Watch Russian TV in the USA', '/en/blog/how-to-watch-russian-tv-in-usa/'), ('All channels', '/en/')]),
 ]
 EN_ARTICLES.append(NY_EN)
-EN_ARTICLES.extend([CA_EN, UK_EN, SCHED_EN, TV_EN])
+EN_ARTICLES.extend([CA_EN, UK_EN, SCHED_EN, TV_EN, CMP_EN])
 for a in EN_ARTICLES:
     en_article(a['slug'], a['title'], a['desc'], a['headline'], a['crumb'], a['meta'], a['h1'], a['body'], a['faq'], a['related'], a.get('alt'), a.get('date'))
 
@@ -351,7 +352,7 @@ en_idx = re.sub(r'<html lang="ru"', '<html lang="en"', en_idx)
 body_start = en_idx.find('<body')
 posts = [('how-to-watch-russian-tv-in-usa', 'September 2026', 'How to Watch Russian TV in the USA for Free in 2026', 'Step-by-step guide to watching Russian TV channels online in the USA for free. No VPN, no subscription.')] + \
         [(a['slug'], a.get('date_label', 'October 2026'), a['h1'], a['desc']) for a in sorted(EN_ARTICLES, key=lambda a: a.get('date', '2026-10-09'))]
-_new = [TV_EN['slug'], SCHED_EN['slug'], UK_EN['slug'], CA_EN['slug'], NY_EN['slug']]   # новые статьи первыми (сначала самые свежие)
+_new = [CMP_EN['slug'], TV_EN['slug'], SCHED_EN['slug'], UK_EN['slug'], CA_EN['slug'], NY_EN['slug']]   # новые статьи первыми (сначала самые свежие)
 posts = [x for s_ in _new for x in posts if x[0] == s_] + [x for x in posts if x[0] not in _new]
 cards = ''.join(f'    <a href="/en/blog/{s}/" class="post-card">\n      <div class="post-date">{d}</div>\n      <div class="post-title">{esc(t)}</div>\n      <div class="post-excerpt">{esc(x)}</div>\n    </a>\n' for s, d, t, x in posts)
 head_part = en_idx[:body_start]
