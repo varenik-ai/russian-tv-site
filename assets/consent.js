@@ -116,6 +116,8 @@
     if (/^Europe\/(Moscow|Kaliningrad|Samara|Volgograd|Saratov|Astrakhan|Ulyanovsk|Kirov|Simferopol|Minsk|Kiev|Kyiv|Uzhgorod|Zaporozhye|Istanbul|Chisinau|Tiraspol)$/.test(tz)) return false;
     return /^Europe\//.test(tz) || /^Atlantic\/Reykjavik$/.test(tz) || /^America\/(Toronto|Montreal|Vancouver|Edmonton|Winnipeg|Halifax|St_Johns|Regina|Moncton|Glace_Bay|Iqaluit|Yellowknife|Whitehorse|Dawson|Thunder_Bay|Nipigon|Rainy_River|Swift_Current|Goose_Bay|Cambridge_Bay|Inuvik|Rankin_Inlet|Resolute|Pangnirtung|Atikokan|Blanc-Sablon|Creston|Dawson_Creek|Fort_Nelson)$/.test(tz);
   }
-  function decide() { getCC(function (cc) { if (cc === 'US') softUS(true); else if (STRICT.indexOf(' ' + cc + ' ') >= 0 || (cc === 'XX' && tzStrict())) show(); else softUS(false); }); }
+  // ВРЕМЕННО (с 19.11.2026): мягкий режим во всех странах, как в «остальном мире» (решение владельца); вернуть региональную карточку — SOFT_ALL = false
+  var SOFT_ALL = true;
+  function decide() { getCC(function (cc) { if (SOFT_ALL && cc !== 'US') softUS(false); else if (cc === 'US') softUS(true); else if (STRICT.indexOf(' ' + cc + ' ') >= 0 || (cc === 'XX' && tzStrict())) show(); else softUS(false); }); }
   if (document.body) decide(); else document.addEventListener('DOMContentLoaded', decide);
 })();
