@@ -1,13 +1,17 @@
 /* Quality selector for hls.js players. Usage: rtvQuality.attach(hls, videoEl)
    Shows a "gear" button in the player when the stream offers more than one quality level.
-   Choice ("auto", a height like "720", or a bitrate tier like "b2500") is remembered in localStorage ("rtv_quality"). */
+   Choice ("auto", a height like "720", or a bitrate tier like "b2500") applies to the current channel only (not stored): every channel starts in Auto. */
 (function () {
   var KEY = 'rtv_quality';
   var EN = (document.documentElement.lang || '').toLowerCase().indexOf('en') === 0;
   var T = EN ? { quality: 'Quality', auto: 'Auto', autoHint: 'recommended', mbps: 'Mbit/s' }
              : { quality: 'Качество', auto: 'Авто', autoHint: 'рекомендуется', mbps: 'Мбит/с' };
-  function get() { try { return localStorage.getItem(KEY) || 'auto'; } catch (e) { return 'auto'; } }
-  function set(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+  // 19.11.2026: при запуске любого канала качество «Авто». Ручной выбор действует на этот канал, пока он идёт (в localStorage не сохраняется);
+  // при смене канала — снова «Авто», переподключение того же канала выбор сохраняет.
+  var prefMem = 'auto', prefCh = null;
+  function get() { return prefMem; }
+  function set(v) { prefMem = v; }
+  function chOf(u) { var m = /[?&]channel=([^&#]+)/.exec(u || ''); return m ? m[1] : String(u || ''); }
 
   var css = document.createElement('style');
   css.textContent =
@@ -39,6 +43,7 @@
   function attach(hls, video) {
     window.rtvQuality.lower = null; window.rtvQuality.canLower = null;
     if (!hls || !video) return;
+    var chId = chOf(hls.url || video.currentSrc || location.pathname); if (chId !== prefCh) { prefCh = chId; prefMem = 'auto'; }
     var wrap = video.closest ? video.closest('.player-wrap, #player-screen, body') : null;
     var host = wrap || video.parentNode;
     // убрать прошлые экземпляры (пересоздание hls при реконнекте)
