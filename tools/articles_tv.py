@@ -1,5 +1,5 @@
 # EN-гайд «Российское ТВ на Smart TV, Roku, Chromecast, Fire TV и Apple TV», 20.11.2026 (RU-версия уже есть: blog/kak-smotret-russkoe-tv-na-smart-tv).
-# Что проверено по коду проекта: страница /tv/ (под пульт, меню качества). Подключение телефона по коду убрано из статьи: кнопки «На ТВ» в новом мини-аппе (с 15.11.2026) нет; AirPlay в Safari (кнопка в плеере, на iPhone может понадобиться второе нажатие), Chrome Cast. Roku: официального браузера в гайде не обещаем.
+# Что проверено по коду проекта: страница /tv/ (под пульт, меню качества). Подключение по коду (Android) снова работает в мини-аппе с 19.11.2026; AirPlay в Safari (кнопка в плеере, на iPhone может понадобиться второе нажатие), Chrome Cast. Roku: официального браузера в гайде не обещаем.
 TV_EN = dict(
   slug='russian-tv-on-smart-tv-roku-chromecast-apple-tv',
   date='2026-11-19', date_label='November 2026',
@@ -33,7 +33,7 @@ TV_EN = dict(
   </table>
 
   <h2>The TV page: russian-tv.com/tv</h2>
-  <p>The <a href="/tv/">TV page</a> is a simplified version of the site made for a remote control: big channel tiles you can move across with the arrow buttons, and a quality menu in the player. Type the address once in your TV browser and bookmark it. If typing with a remote is awkward, bookmark the page once and it opens in one click next time.</p>
+  <p>The <a href="/tv/">TV page</a> is a simplified version of the site made for a remote control: big channel tiles you can move across with the arrow buttons, and a quality menu in the player. Type the address once in your TV browser and bookmark it. If typing with a remote is awkward, bookmark the page once and it opens in one click next time. Android users can also send a channel from the Telegram mini-app: press "Connect phone" on the TV page to get a code (valid for 10 minutes), then press "To TV" in the mini-app and enter it; the TV remembers the pairing afterwards.</p>
 
   <h2>Samsung and LG</h2>
   <ul>
@@ -73,7 +73,7 @@ TV_EN = dict(
        ('How do I watch Russian TV on Apple TV?', 'Apple TV has no browser. Open russian-tv.com in Safari on an iPhone, iPad or Mac, start a channel and use the AirPlay button to send it to the Apple TV.'),
        ('How do I watch Russian TV on Roku?', 'Roku has no general-purpose browser, so use screen mirroring from a phone or computer if your Roku model supports it. A Fire Stick or Chromecast is an alternative.'),
        ('How do I cast Russian TV to a Chromecast?', 'Open the site in Chrome, choose Cast from the browser menu and select your Chromecast. The phone or computer and the Chromecast must be on the same Wi-Fi network.'),
-       ('What is the TV page?', 'russian-tv.com/tv is a version of the site built for a remote control: large channel tiles you can move across with the arrow buttons and a quality menu in the player.'),
+       ('What is the TV page and the phone code?', 'russian-tv.com/tv is a version of the site built for a remote control. It can show a code, valid for 10 minutes, that Android users enter in the Telegram mini-app (press "To TV"); after that the TV remembers the connection.'),
        ('Do I need a VPN on my TV?', 'No. The site works without a VPN. When you cast, the TV loads the stream itself, so a VPN on your phone makes no difference.')],
   related=[('Russian TV on the TV page', '/tv/'), ('How to Watch Russian TV in the USA', '/en/blog/how-to-watch-russian-tv-in-usa/'), ('Moscow time in US time zones', '/en/blog/moscow-time-to-us-time-zones-russian-tv-schedule/'), ('Russian TV on iPhone and Android', '/en/blog/russian-tv-on-iphone-and-android/'), ('Channel not loading: how to fix it', '/en/blog/channel-not-loading-fix/')],
 )
