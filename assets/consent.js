@@ -48,8 +48,8 @@
 
   var en = /^\/en(\/|$)/.test(path) || /^en/i.test(document.documentElement.lang || '');
   var T = en
-    ? { h: 'Cookies and advertising', p: 'We use cookies and similar technologies to run the site, count visitors and show ads. Click “I agree” to allow this, or “Decline”: the site will work without ads and tracking cookies.', a: 'Full rules and the list of services — Privacy Policy', b: 'I agree', n: 'Decline', href: '/en/privacy/' }
-    : { h: 'Файлы cookie и реклама', p: 'Мы используем cookie и похожие технологии для работы сайта, подсчёта посетителей и показа рекламы. Нажмите «Согласен», чтобы разрешить это, или «Отказаться»: сайт будет работать без рекламы и отслеживающих cookie.', a: 'Подробные правила и перечень сервисов — Политика конфиденциальности', b: 'Согласен', n: 'Отказаться', href: '/privacy/' };
+    ? { h: 'Cookies', p: 'We use cookies and similar technologies to run the site, count visitors and for partner services. Click “I agree” to allow this, or “Decline”: the site will work without tracking cookies and partner services.', a: 'Full rules and the list of services — Privacy Policy', b: 'I agree', n: 'Decline', href: '/en/privacy/' }
+    : { h: 'Файлы cookie', p: 'Мы используем cookie и похожие технологии для работы сайта, подсчёта посетителей и сервисов партнёров. Нажмите «Согласен», чтобы разрешить это, или «Отказаться»: сайт будет работать без отслеживающих cookie и сервисов партнёров.', a: 'Подробные правила и перечень сервисов — Политика конфиденциальности', b: 'Согласен', n: 'Отказаться', href: '/privacy/' };
 
   // --- ЕС, Великобритания, Швейцария, Канада и страна неизвестна: карточка внизу страницы с двумя равными кнопками (с 19.11.2026; прежнее блокирующее окно убрано) ---
   function show() {
@@ -70,8 +70,8 @@
   }
   // --- США: мягкий режим (опт-аут) ---
   var tUS = en
-    ? { p: 'We use cookies, analytics and advertising to run this site.', ok: 'OK', no: 'Opt out', a: 'Privacy Policy', ds: 'Do Not Sell or Share My Personal Information', href: '/en/privacy/' }
-    : { p: 'Мы используем cookie, аналитику и рекламу для работы сайта.', ok: 'ОК', no: 'Отказаться', a: 'Политика конфиденциальности', ds: 'Do Not Sell or Share My Personal Information', href: '/privacy/' };
+    ? { p: 'We use cookies, analytics and partner services to run this site.', ok: 'OK', no: 'Opt out', a: 'Privacy Policy', ds: 'Do Not Sell or Share My Personal Information', href: '/en/privacy/' }
+    : { p: 'Мы используем cookie, аналитику и сервисы партнёров для работы сайта.', ok: 'ОК', no: 'Отказаться', a: 'Политика конфиденциальности', ds: 'Do Not Sell or Share My Personal Information', href: '/privacy/' };
   // остальной мир (не ЕС/Великобритания/Швейцария/Канада): тот же мягкий режим, кнопка «Согласен», без ссылки «Do Not Sell»
   var tOW = { p: tUS.p, ok: en ? 'I agree' : 'Согласен', no: en ? 'Decline' : 'Отказаться', a: tUS.a, ds: tUS.ds, href: tUS.href };
   function softUS(isUS) {

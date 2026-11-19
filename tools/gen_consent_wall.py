@@ -8,7 +8,7 @@ for f in glob.glob(os.path.join(ROOT, '**/*.html'), recursive=True):
     rel = os.path.relpath(f, ROOT)
     if rel.startswith(('node_modules', 'tools')): continue
     s = open(f, encoding='utf-8').read(); o = s
-    s = re.sub(r'/assets/consent\.js(\?v=\d+)?"', '/assets/consent.js?v=10"', s)
+    s = re.sub(r'/assets/consent\.js(\?v=\d+)?"', '/assets/consent.js?v=11"', s)
     s = re.sub(r'/assets/ads\.js(\?v=\d+)?"', '/assets/ads.js?v=3"', s)
     s = re.sub(r'/assets/monitor\.js(\?v=\d+)?"', '/assets/monitor.js?v=5"', s)
     # ads.js нужен и на страницах без плеера (категории, страны, блог): баннер и Native Banner Adsterra
