@@ -47,7 +47,7 @@ CHANNEL_ALIASES = {
     "domkino":       ["Дом Кино", "Дом кино"],
     "kinohit":       ["Кинохит"],
     "retro":         ["Ретро"],
-    "kinokomediya":  ["Кинокомедия"],
+    "kinokomediya":  ["viju+ Premiere", "Viju+ Premiere"],   # 19.11.2026: канал переименован из «Кинокомедия» (в эфире logo viju premiere)
     "kinopremiera":  ["Кинопремьера"],
     "viju":          ["Viju TV1000", "TV 1000", "TV1000"],
     "nasheKino":     ["Наше кино"],
