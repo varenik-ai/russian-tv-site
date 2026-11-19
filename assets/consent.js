@@ -1,5 +1,5 @@
 /* Выбор по cookie и рекламе + загрузчик счётчиков russian-tv.com (регион: с 18.11.2026 США — мягкий режим с опт-аутом, остальной мир — окно «Согласен/Отказаться») (с 18.11.2026, кнопка «Отказаться» с 18.11.2026).
-   При первом посещении по центру экрана окно с кнопками «Согласен» и «Отказаться»; остальная страница размыта и недоступна, пока выбор не сделан.
+   С 19.11.2026: внизу страницы карточка (без размытия и блокировки) с кнопками «Согласен» и «Отказаться»; остальная страница размыта и недоступна, пока выбор не сделан.
    «Согласен»: загружаются счётчики (GA4, Яндекс.Метрика, Clarity) и реклама, передаются технические данные о воспроизведении (rtv-monitor).
    «Отказаться»: сайт работает как обычно, но счётчики, реклама и передача данных о воспроизведении выключены. Состав сервисов описан в политике конфиденциальности, окно только ссылается на неё.
    РЕГИОН: страна определяется воркером мониторинга (GET /geo, кэш sessionStorage rtv_cc). США — без блокирующего окна: счётчики и реклама включены по умолчанию (опт-аут, как принято в США),
@@ -48,43 +48,40 @@
 
   var en = /^\/en(\/|$)/.test(path) || /^en/i.test(document.documentElement.lang || '');
   var T = en
-    ? { h: 'Cookies and advertising', p: 'We use cookies and similar technologies to run the site, count visitors and show ads. Click “I agree” to allow this, or “Decline”: the site will work without analytics and ads.', a: 'Full rules and the list of services — Privacy Policy', b: 'I agree', n: 'Decline', href: '/en/privacy/' }
-    : { h: 'Файлы cookie и реклама', p: 'Мы используем cookie и похожие технологии для работы сайта, подсчёта посетителей и показа рекламы. Нажмите «Согласен», чтобы разрешить это, или «Отказаться»: сайт будет работать без аналитики и рекламы.', a: 'Подробные правила и перечень сервисов — Политика конфиденциальности', b: 'Согласен', n: 'Отказаться', href: '/privacy/' };
+    ? { h: 'Cookies and advertising', p: 'We use cookies and similar technologies to run the site, count visitors and show ads. Click “I agree” to allow this, or “Decline”: the site will work without ads and tracking cookies.', a: 'Full rules and the list of services — Privacy Policy', b: 'I agree', n: 'Decline', href: '/en/privacy/' }
+    : { h: 'Файлы cookie и реклама', p: 'Мы используем cookie и похожие технологии для работы сайта, подсчёта посетителей и показа рекламы. Нажмите «Согласен», чтобы разрешить это, или «Отказаться»: сайт будет работать без рекламы и отслеживающих cookie.', a: 'Подробные правила и перечень сервисов — Политика конфиденциальности', b: 'Согласен', n: 'Отказаться', href: '/privacy/' };
 
-  var locked = [];
+  // --- ЕС, Великобритания, Швейцария, Канада и страна неизвестна: карточка внизу страницы с двумя равными кнопками (с 19.11.2026; прежнее блокирующее окно убрано) ---
   function show() {
     var d = document.createElement('div');
-    d.id = 'rtv-cw'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-labelledby', 'rtv-cw-h');
-    d.style.cssText = 'position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,5,12,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)';
-    d.innerHTML = '<div style="width:100%;max-width:440px;background:#14141f;border:1px solid #2a2a40;border-radius:16px;padding:24px 22px;color:#f1f1f7;text-align:center;font:15px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.6)">' +
-      '<div style="font-size:34px;line-height:1;margin-bottom:8px">🍪</div><h2 id="rtv-cw-h" style="font-size:19px;margin:0 0 10px;font-weight:800"></h2>' +
-      '<p style="margin:0 0 14px;color:#c4c4d6;font-size:14px"></p><p style="margin:0 0 18px;font-size:13px"><a target="_blank" rel="noopener" style="color:#7db4ff"></a></p>' +
-      '<button type="button" id="rtv-cw-ok" style="width:100%;border:0;border-radius:12px;padding:14px;background:#d52b1e;color:#fff;font:700 16px/1 inherit;cursor:pointer"></button>' +
-      '<button type="button" id="rtv-cw-no" style="width:100%;margin-top:10px;border:1px solid #3a3a52;border-radius:12px;padding:13px;background:transparent;color:#c4c4d6;font:600 15px/1 inherit;cursor:pointer"></button></div>';
-    var box = d.firstChild;
-    box.querySelector('h2').textContent = T.h; box.querySelectorAll('p')[0].textContent = T.p;
-    var a = box.querySelector('a'); a.textContent = T.a; a.href = T.href;
-    var ok = box.querySelector('#rtv-cw-ok'), no = box.querySelector('#rtv-cw-no'); ok.textContent = T.b; no.textContent = T.n;
-    // страница под окном недоступна: размытие, запрет прокрутки и работы с клавиатуры
-    Array.prototype.forEach.call(document.body.children, function (n) { if (n.tagName !== 'SCRIPT' && n.tagName !== 'STYLE') { locked.push(n); n.setAttribute('inert', ''); } });
-    document.documentElement.style.overflow = 'hidden';
+    d.id = 'rtv-cw'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-labelledby', 'rtv-cw-h');
+    d.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483600;max-width:680px;margin:0 auto;background:#14141f;color:#f1f1f7;border:1px solid #2a2a40;border-radius:12px;padding:12px 14px;font:13px/1.45 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.55)';
+    var bs = 'flex:1 1 0;min-width:110px;border:1px solid #3a3a52;border-radius:8px;padding:10px 14px;font:700 13px/1 inherit;cursor:pointer;color:#fff;';
+    d.innerHTML = '<div id="rtv-cw-h" style="font-weight:700;margin-bottom:3px"></div><div style="color:#c4c4d6;font-size:12px"></div>' +
+      '<div style="font-size:12px;margin:3px 0 10px"><a target="_blank" rel="noopener" style="color:#7db4ff"></a></div>' +
+      '<div style="display:flex;gap:10px"><button type="button" id="rtv-cw-ok" style="' + bs + 'background:#d52b1e;border-color:#d52b1e"></button><button type="button" id="rtv-cw-no" style="' + bs + 'background:#2a2a40"></button></div>';
+    d.children[0].textContent = T.h; d.children[1].textContent = T.p;
+    var a = d.querySelector('a'); a.textContent = T.a; a.href = T.href;
+    var ok = d.querySelector('#rtv-cw-ok'), no = d.querySelector('#rtv-cw-no'); ok.textContent = T.b; no.textContent = T.n;
     document.body.appendChild(d);
-    function close() { d.parentNode.removeChild(d); locked.forEach(function (n) { n.removeAttribute('inert'); }); document.documentElement.style.overflow = ''; }
+    function close() { if (d.parentNode) d.parentNode.removeChild(d); }
     ok.addEventListener('click', function () { grant(); close(); });
     no.addEventListener('click', function () { try { localStorage.setItem(DKEY, String(Date.now())); } catch (e) {} close(); });
-    d.addEventListener('keydown', function (e) { if (e.key === 'Tab') { e.preventDefault(); (document.activeElement === ok ? no : ok).focus(); } });
-    setTimeout(function () { try { ok.focus(); } catch (e) {} }, 50);
   }
   // --- США: мягкий режим (опт-аут) ---
   var tUS = en
     ? { p: 'We use cookies, analytics and advertising to run this site.', ok: 'OK', no: 'Opt out', a: 'Privacy Policy', ds: 'Do Not Sell or Share My Personal Information', href: '/en/privacy/' }
     : { p: 'Мы используем cookie, аналитику и рекламу для работы сайта.', ok: 'ОК', no: 'Отказаться', a: 'Политика конфиденциальности', ds: 'Do Not Sell or Share My Personal Information', href: '/privacy/' };
-  function softUS() {
+  // остальной мир (не ЕС/Великобритания/Швейцария/Канада): тот же мягкий режим, кнопка «Согласен», без ссылки «Do Not Sell»
+  var tOW = { p: tUS.p, ok: en ? 'I agree' : 'Согласен', no: en ? 'Decline' : 'Отказаться', a: tUS.a, ds: tUS.ds, href: tUS.href };
+  function softUS(isUS) {
+    if (!isUS) tUS = tOW;
     try { if (localStorage.getItem(OKEY) === '1') return; } catch (e) {}   // отказался от отслеживания: ничего не грузим
     granted = true; loadTrackers();
     var ack = false; try { ack = localStorage.getItem(AKEY) === '1'; } catch (e) {}
     function foot() {
       var f = document.querySelector('footer'); if (!f || f.querySelector('#rtv-ds')) return;
+      if (!isUS) return;
       var d = document.createElement('div'); d.id = 'rtv-ds'; d.style.cssText = 'margin-top:8px;font-size:12px';
       d.innerHTML = '<a style="color:inherit;text-decoration:underline"></a>'; var a = d.firstChild; a.textContent = tUS.ds; a.href = tUS.href; f.appendChild(d);
     }
@@ -112,6 +109,7 @@
       }).catch(function () { if (!done) { done = true; clearTimeout(t); cb('XX'); } });
     } catch (e) { if (!done) { done = true; clearTimeout(t); cb('XX'); } }
   }
-  function decide() { getCC(function (cc) { if (cc === 'US') softUS(); else show(); }); }
+  var STRICT = ' AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE IS LI NO GB CH CA XX ';
+  function decide() { getCC(function (cc) { if (cc === 'US') softUS(true); else if (STRICT.indexOf(' ' + cc + ' ') >= 0) show(); else softUS(false); }); }
   if (document.body) decide(); else document.addEventListener('DOMContentLoaded', decide);
 })();
