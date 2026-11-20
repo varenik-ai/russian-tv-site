@@ -44,6 +44,7 @@
   var BANNER_ENABLED = true;
   var DESKTOP_ONLY = true;
   var KEY = '825d215f35b6e7c6a1f929819767001a';
+  var KEY728 = 'c14c40e10c55ed992cbc89f1d91bd3b9';   // 21.11.2026: Adsterra Banner 728x90 (блок 32379392) — на экранах уже 1760 px прямо под плеером (там 300x250 уходил ниже первого экрана)
   var DELAY_MS = 3000;
   if (!BANNER_ENABLED) return;
   var path = location.pathname.replace(/index\.html$/, '');
@@ -66,19 +67,25 @@
       var en = /^en/i.test(document.documentElement.lang || '');
       var d = document.createElement('div'); d.id = 'rtv-ban';
       d.innerHTML = '<small>' + (en ? 'Advertisement' : 'Реклама') + '</small><div class="box"></div>';
+      var use728 = !wide && col.getBoundingClientRect().width >= 740;   // ноутбуки и обычные мониторы: широкий баннер под плеером
       if (wide) {
         col.style.position = 'relative';
         d.className = 'side'; d.style.top = pl.offsetTop + 'px'; d.style.visibility = 'hidden';
         col.appendChild(d);
         window.addEventListener('resize', function () { d.className = fits() ? 'side' : 'off'; });
+      } else if (use728) {
+        d.className = 'under'; d.style.display = 'none'; d.style.width = '728px';
+        var bx = d.querySelector('.box'); bx.style.width = '728px'; bx.style.height = '90px';
+        var a728 = col.querySelector('.tg-pulse-banner') || document.getElementById('status') || pl.nextSibling;
+        if (a728 && a728.parentNode) a728.parentNode.insertBefore(d, a728); else pl.parentNode.insertBefore(d, pl.nextSibling);
       } else {
         d.className = 'under'; d.style.display = 'none';
         var anchor = document.getElementById('status') || pl;
         anchor.parentNode.insertBefore(d, anchor.nextSibling);
       }
-      window.atOptions = { key: KEY, format: 'iframe', height: 250, width: 300, params: {} };
+      window.atOptions = use728 ? { key: KEY728, format: 'iframe', height: 90, width: 728, params: {} } : { key: KEY, format: 'iframe', height: 250, width: 300, params: {} };
       var s = document.createElement('script');
-      s.async = true; s.src = 'https://www.highrevenueformat.com/' + KEY + '/invoke.js';
+      s.async = true; s.src = use728 ? 'https://bancadeltempoidea.org/22/' + KEY728 : 'https://www.highrevenueformat.com/' + KEY + '/invoke.js';
       var t0 = Date.now(), iv = setInterval(function () {
         if (d.querySelector('iframe')) { d.style.visibility = 'visible'; d.style.display = ''; clearInterval(iv); }
         else if (Date.now() - t0 > 10000) { clearInterval(iv); d.parentNode && d.parentNode.removeChild(d); }
