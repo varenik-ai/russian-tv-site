@@ -1,4 +1,6 @@
-/* Monetag In-Page Push — only the home pages (/, /en/) since 18.11.2026 (was: channel pages too), loaded late so it never delays the player.
+/* 20.11.2026: запуск рекламы по DOMContentLoaded, а не по window.load. На главной load наступал через ~31 с из-за зависшего googletagmanager.com/gtag/js (30 с),
+   баннеры стартовали к 34–39-й секунде, Monetag к 51-й; многие посетители уходили раньше. Задержки внутри блоков (3–20 с) остались прежними.
+   Monetag In-Page Push — only the home pages (/, /en/) since 18.11.2026 (was: channel pages too), loaded late so it never delays the player.
    Loads ONLY after the visitor accepted cookies (see /assets/consent.js).
    Kill switch: set ADS_ENABLED=false (or add ?noads=1 to a URL to test without ads). */
 (function () {
@@ -26,7 +28,7 @@
     if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
     else window.addEventListener('rtv-consent-granted', arm);
   }
-  if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
+  if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);   // не ждём window.load: его держит зависший скрипт аналитики (до 30 с), и реклама показывалась бы к 35–50-й секунде
 })();
 
 /* Adsterra Banner 300x250 — test, channel pages (/…-live/).
@@ -89,7 +91,7 @@
     if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
     else window.addEventListener('rtv-consent-granted', arm);
   }
-  if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
+  if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);   // не ждём window.load: его держит зависший скрипт аналитики (до 30 с), и реклама показывалась бы к 35–50-й секунде
 })();
 
 /* Adsterra Social Bar — computers and tablets (not phones), channel pages and home pages. Added 11.11.2026.
@@ -124,7 +126,7 @@
     if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
     else window.addEventListener('rtv-consent-granted', arm);
   }
-  if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
+  if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);   // не ждём window.load: его держит зависший скрипт аналитики (до 30 с), и реклама показывалась бы к 35–50-й секунде
 })();
 
 /* ===== Реклама Adsterra: новые места (18.11.2026) и «по странам» (18.11.2026) =====
@@ -239,5 +241,5 @@
     if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
     else window.addEventListener('rtv-consent-granted', arm);
   }
-  if (document.readyState === 'complete') start(); else window.addEventListener('load', start);
+  if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);   // не ждём window.load: его держит зависший скрипт аналитики (до 30 с), и реклама показывалась бы к 35–50-й секунде
 })();
