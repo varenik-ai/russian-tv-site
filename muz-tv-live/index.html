@@ -182,8 +182,18 @@
     .player-wrap{position:relative;background:#000;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);aspect-ratio:16/9}
     video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
     .player-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg2);flex-direction:column;gap:12px;cursor:pointer}
-    .play-btn{width:70px;height:70px;background:var(--accent2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;transition:.2s}
-    .play-btn:hover{transform:scale(1.08);background:#1565c0}
+    /*playbtn2*/
+    .player-overlay{background:radial-gradient(70% 70% at 50% 42%,rgba(213,43,30,.26) 0%,rgba(213,43,30,0) 70%),linear-gradient(165deg,#171724 0%,#0a0a13 100%);gap:18px;-webkit-tap-highlight-color:transparent}
+    .play-btn{position:relative;width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0;background:linear-gradient(145deg,#ff5a4a 0%,#d52b1e 52%,#a31c13 100%);box-shadow:0 12px 34px rgba(213,43,30,.5),inset 0 0 0 1px rgba(255,255,255,.22),inset 0 -6px 14px rgba(0,0,0,.18);transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s}
+    .play-btn::before,.play-btn::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,98,82,.6);pointer-events:none;animation:rtvPlayPulse 2.6s ease-out infinite}
+    .play-btn::after{animation-delay:1.3s}
+    .play-btn svg{width:36px;height:36px;margin-left:5px;fill:#fff;filter:drop-shadow(0 2px 5px rgba(0,0,0,.35))}
+    .player-overlay:hover .play-btn{transform:scale(1.08);box-shadow:0 16px 42px rgba(213,43,30,.62),inset 0 0 0 1px rgba(255,255,255,.3),inset 0 -6px 14px rgba(0,0,0,.18)}
+    .player-overlay:active .play-btn{transform:scale(.96)}
+    .player-overlay>div:not(.play-btn){color:#c3c3d8!important;font-size:14px!important;font-weight:600;letter-spacing:.02em;text-align:center;padding:0 16px}
+    @keyframes rtvPlayPulse{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.75);opacity:0}}
+    @media (prefers-reduced-motion:reduce){.play-btn::before,.play-btn::after{animation:none;display:none}}
+    /*end-playbtn2*/
     .fs-btn{position:absolute;bottom:10px;right:10px;z-index:50;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:5px;width:34px;height:34px;font-size:17px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:background .2s;line-height:1}
     .fs-btn:hover{background:rgba(0,0,0,.9)}
     .player-wrap:hover .fs-btn{display:flex}
@@ -421,7 +431,7 @@
     <div class="player-wrap" id="player-wrap">
       <video id="video" playsinline webkit-playsinline></video>
       <div class="player-overlay" id="overlay">
-        <div class="play-btn">▶</div>
+        <div class="play-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.7v14.6a1 1 0 0 0 1.52.85l11.9-7.3a1 1 0 0 0 0-1.7L8.52 3.85A1 1 0 0 0 7 4.7z"/></svg></div>
         <div style="color:var(--muted);font-size:14px">МУЗ-ТВ — нажмите для просмотра</div>
       </div>
       <button class="fs-btn" id="fs-btn" title="Полный экран">⛶</button>
