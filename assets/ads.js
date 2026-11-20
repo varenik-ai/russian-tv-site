@@ -1,4 +1,6 @@
-/* 20.11.2026: запуск рекламы по DOMContentLoaded, а не по window.load. На главной load наступал через ~31 с из-за зависшего googletagmanager.com/gtag/js (30 с),
+/* 21.11.2026: Monetag In-Page Push отключён (MONETAG_ENABLED=false): CPM около $0,09, доход — центы, а скрипт раздражает посетителей главной и замедляет загрузку.
+   Чтобы вернуть, поставить true и поднять версию ads.js в gen_consent_wall.py.
+   20.11.2026: запуск рекламы по DOMContentLoaded, а не по window.load. На главной load наступал через ~31 с из-за зависшего googletagmanager.com/gtag/js (30 с),
    баннеры стартовали к 34–39-й секунде, Monetag к 51-й; многие посетители уходили раньше. Задержки внутри блоков (3–20 с) остались прежними.
    Monetag In-Page Push — only the home pages (/, /en/) since 18.11.2026 (was: channel pages too), loaded late so it never delays the player.
    Loads ONLY after the visitor accepted cookies (see /assets/consent.js).
@@ -6,6 +8,8 @@
 (function () {
   if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(navigator.userAgent || '') || /Android.*\bTV\b|AFT[A-Z]/.test(navigator.userAgent || '')) return;   // на телевизорах рекламы нет (с 18.11.2026)
   var ADS_ENABLED = true;
+  var MONETAG_ENABLED = false;
+  if (!MONETAG_ENABLED) return;
   var ZONE = '11593818';              // In-Page Push "Lucky tag"
   var DELAY_MS = 20000;               // wait 20s after page load so playback starts first
   if (!ADS_ENABLED) return;
