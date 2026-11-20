@@ -170,4 +170,55 @@ COUNTRIES = {
   ],
   cities=[('Toronto', 'russian-tv-in-toronto'), ('Montreal', 'russian-tv-in-montreal')],
  ),
+
+ 'germany': dict(
+  en_path='en/russian-tv-in-germany', ru_path='russkie-kanaly-v-germanii',
+  en_zones=[('Central European Time, UTC+1 (late October to late March)', 'Berlin, Hamburg, Munich, Cologne, Frankfurt', ['10:00 am', '4:00 pm', '7:00 pm', '10:00 pm (the evening before)']),
+            ('Central European Summer Time, UTC+2 (late March to late October)', 'Berlin, Hamburg, Munich, Cologne, Frankfurt', ['11:00 am', '5:00 pm', '8:00 pm', '11:00 pm (the evening before)'])],
+  ru_zones=[('Центральноевропейское время, UTC+1 (с конца октября до конца марта)', 'Берлин, Гамбург, Мюнхен, Кёльн, Франкфурт', ['10:00', '16:00', '19:00', '22:00 (накануне)']),
+            ('Центральноевропейское летнее время, UTC+2 (с конца марта до конца октября)', 'Берлин, Гамбург, Мюнхен, Кёльн, Франкфурт', ['11:00', '17:00', '20:00', '23:00 (накануне)'])],
+  en_intro='''<p>russian-tv.com streams 60 Russian-language TV channels live in your browser from anywhere in Germany: no app and no sign-up. The list includes national networks, cinema, children's television, music and documentaries, plus <a href="/en/rossiya-rtr-evropa-live/">Rossiya RTR — Europe</a>, the international version of the Rossiya channel for audiences in Europe. The site links to streams that are publicly available on the internet and does not host video itself.</p>
+    <p>Germany has a single time zone, so the schedule is easy to convert: Moscow is two hours ahead of Germany in winter and one hour ahead in summer. The table below shows the main Moscow broadcast moments in German time.</p>''',
+  en_when='''<p>Moscow stays on UTC+3 all year, while Germany switches between Central European Time (UTC+1) and Central European Summer Time (UTC+2) on the last Sundays of March and October (the next change is on 28 March 2027). So the gap is <strong>2 hours from late October to late March and 1 hour in summer</strong>. A practical rule: the Moscow evening news and prime time at 21:00 fall at 19:00 in German winter, which makes live viewing after work realistic, and the Moscow midnight is 22:00 the evening before.</p>''',
+  en_how='''<ol style="margin:8px 0 12px 20px">
+      <li><strong>On a computer:</strong> open <a href="/en/">russian-tv.com</a>, pick a channel and press ▶. Use the settings button to choose a lower or higher quality.</li>
+      <li><strong>On iPhone, iPad or Android:</strong> use Safari or Chrome with nothing to install: <a href="/en/blog/russian-tv-on-iphone-and-android/">Russian TV on iPhone and Android</a>. The Telegram mini-app from <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" rel="noopener">@RussiaTV_Hub_Live</a> offers the same channels grouped by topic.</li>
+      <li><strong>On a TV:</strong> open <strong>russian-tv.com/tv</strong> in the TV's browser, or send the stream from an iPhone with AirPlay or from Chrome with Cast. See <a href="/en/blog/russian-tv-on-smart-tv-roku-chromecast-apple-tv/">Russian TV on Smart TV, Roku, Chromecast and more</a>.</li>
+    </ol>''',
+  en_people='''<p>According to Germany's 2024 microcensus (Destatis), about 1.9 million people in Germany speak Russian at home, as reported in publications that cite the survey. Large Russian-speaking communities live in Berlin, Hamburg, Munich, Frankfurt, Cologne and Stuttgart and across the western states, many of them for decades. For many viewers Russian-language television is a link with family and news from home, and a browser is now the simplest way to watch it.</p>''',
+  en_faq=[
+   ('How can I watch Russian TV in Germany?', 'Open russian-tv.com in any browser, choose a channel and press play. The site works in Germany without an app and without registration.'),
+   ('Do I need a VPN to watch Russian TV in Germany?', 'No. russian-tv.com opens in Germany without a VPN. If you use a VPN and the picture lags, try switching it off.'),
+   ('Is it free?', 'Yes. All channels are free, with no registration or subscription. The site is supported by advertising.'),
+   ('What time is the Russian evening news in Germany?', 'The main evening news at 21:00 Moscow time is 19:00 in Germany from late October to late March and 20:00 in summer. Programme times change, so check the channel page.'),
+   ('Can I watch on my TV?', 'Yes. Open russian-tv.com/tv in the TV browser, or send the stream from an iPhone (AirPlay) or from Chrome (Cast).'),
+   ('Does it work on iPhone and Android?', 'Yes, in Safari and Chrome without installing anything. There is also an optional Telegram mini-app.'),
+   ('Why is the stream a few seconds behind cable?', 'Live video over the internet is sent in short segments, which adds a delay of a few seconds up to half a minute. This is normal.'),
+   ('A channel does not load. What should I do?', 'Wait ten to twenty seconds (the player switches to a backup source on its own), reload the page, or try another channel. More tips: Channel not loading — 8 fixes.'),
+   ('Is this site the official broadcaster?', 'No. russian-tv.com is an aggregator of publicly available live streams and does not host video. Rights holders can contact the site to request removal of a link.'),
+   ('Are there legal restrictions on Russian channels in Germany?', 'In the European Union, restrictive measures apply to the broadcasting and distribution of certain Russian media outlets (Council Regulation (EU) No 833/2014, Article 2f). russian-tv.com cannot give legal advice and cannot say which rules apply to you personally; check the current rules or ask a lawyer.'),
+  ],
+  ru_intro='''<p>russian-tv.com показывает 60 русскоязычных телеканалов в прямом эфире в браузере из любой точки Германии: без приложения и регистрации. В списке федеральные каналы, кино, детское ТВ, музыка и документальные программы, а также <a href="/rossiya-rtr-evropa-live/">Россия РТР — Европа</a> — международная версия канала «Россия» для зрителей в Европе. Сайт ссылается на общедоступные в интернете трансляции и сам видео не хранит.</p>
+    <p>В Германии один часовой пояс, поэтому программу легко пересчитать: Москва впереди Германии зимой на два часа, летом на один. В таблице ниже основные московские моменты эфира по немецкому времени.</p>''',
+  ru_when='''<p>Москва живёт по UTC+3 круглый год, а Германия в последние воскресенья марта и октября переходит между центральноевропейским временем (UTC+1) и летним (UTC+2); следующий переход 28 марта 2027 года. Поэтому разница <strong>2 часа с конца октября до конца марта и 1 час летом</strong>. Практическое правило: московские вечерние новости и прайм-тайм в 21:00 зимой приходятся на 19:00 по Германии, то есть смотреть в прямом эфире после работы вполне реально, а московская полночь — это 22:00 накануне.</p>''',
+  ru_how='''<ol style="margin:8px 0 12px 20px">
+      <li><strong>Компьютер:</strong> откройте <a href="/">russian-tv.com</a>, выберите канал и нажмите ▶; качество можно выбрать в настройках плеера.</li>
+      <li><strong>iPhone, iPad, Android:</strong> Safari или Chrome, ничего устанавливать не нужно: <a href="/blog/kak-smotret-russkoe-tv-na-iphone-i-android/">как смотреть на телефоне</a>. Мини-апп Telegram из канала <a href="https://t.me/RussiaTV_Hub_Live" target="_blank" rel="noopener">@RussiaTV_Hub_Live</a> собирает те же каналы по темам.</li>
+      <li><strong>Телевизор:</strong> откройте <strong>russian-tv.com/tv</strong> в браузере телевизора или отправьте эфир с iPhone через AirPlay, из Chrome — через Cast. Гайд: <a href="/blog/kak-smotret-russkoe-tv-na-smart-tv/">Smart TV</a>.</li>
+    </ol>''',
+  ru_people='''<p>По данным микропереписи Германии 2024 года (Destatis) около 1,9 миллиона человек в Германии говорят дома по-русски (цифра приводится по публикациям, ссылающимся на это исследование). Крупные русскоязычные общины живут в Берлине, Гамбурге, Мюнхене, Франкфурте, Кёльне и Штутгарте и по всей западной части страны, многие уже десятилетиями. Для многих российское телевидение — связь с семьёй и новости из дома, а браузер сегодня самый простой способ его смотреть.</p>''',
+  ru_faq=[
+   ('Как смотреть русское ТВ в Германии?', 'Откройте russian-tv.com в браузере, выберите канал и нажмите ▶. Сайт работает в Германии без приложения и регистрации.'),
+   ('Нужен ли VPN для русского ТВ в Германии?', 'Нет, russian-tv.com открывается в Германии без VPN. Если VPN включён и картинка тормозит, попробуйте его выключить.'),
+   ('Это бесплатно?', 'Да, все каналы бесплатны, без регистрации и подписки. Сайт существует за счёт рекламы.'),
+   ('Во сколько вечерние новости по российскому ТВ в Германии?', 'Вечерние новости в 21:00 по Москве — это 19:00 в Германии с конца октября до конца марта и 20:00 летом. Время передач меняется, проверяйте на странице канала.'),
+   ('Можно ли смотреть на телевизоре?', 'Да. Откройте russian-tv.com/tv в браузере телевизора или отправьте эфир с iPhone (AirPlay) или из Chrome (Cast).'),
+   ('Работает ли на iPhone и Android?', 'Да, в Safari и Chrome без установки приложений; есть и необязательный мини-апп Telegram.'),
+   ('Почему эфир отстаёт от кабельного на несколько секунд?', 'Прямое видео в интернете передаётся короткими фрагментами, это даёт задержку от нескольких секунд до полуминуты. Это нормально.'),
+   ('Канал не грузится, что делать?', 'Подождите 10–20 секунд (плеер сам переходит на запасной источник), перезагрузите страницу или включите другой канал. Подробнее: «Канал не грузится: 8 способов».'),
+   ('Сайт — официальный вещатель?', 'Нет. russian-tv.com — агрегатор общедоступных прямых трансляций, видео на сайте не хранится. Правообладатели могут обратиться на сайт с просьбой убрать ссылку.'),
+   ('Есть ли в Германии юридические ограничения на российские каналы?', 'В Европейском союзе действуют ограничительные меры на вещание и распространение ряда российских СМИ (регламент Совета ЕС № 833/2014, статья 2f). russian-tv.com не даёт юридических консультаций и не может сказать, какие правила относятся лично к вам; проверьте действующие правила или обратитесь к юристу.'),
+  ],
+  cities=[],
+ ),
 }

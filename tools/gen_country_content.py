@@ -13,6 +13,7 @@ NAMES = {
   'usa': dict(en='the USA', ru='США', en_h='the USA', ru_h='США'),
   'uk': dict(en='the UK', ru='Великобритании', en_h='the UK', ru_h='Великобритании'),
   'canada': dict(en='Canada', ru='Канаде', en_h='Canada', ru_h='Канаде'),
+  'germany': dict(en='Germany', ru='Германии', en_h='Germany', ru_h='Германии'),
 }
 CITY_NAMES = {'russian-tv-in-new-york': 'New York / Brooklyn', 'russian-tv-in-los-angeles': 'Los Angeles', 'russian-tv-in-chicago': 'Chicago',
               'russian-tv-in-london': 'London', 'russian-tv-in-toronto': 'Toronto', 'russian-tv-in-montreal': 'Montreal'}
@@ -43,6 +44,7 @@ def faq_linkify(text, lang):
 CONV = {
   'usa': [["New York","America/New_York"],["Chicago","America/Chicago"],["Denver","America/Denver"],["Phoenix","America/Phoenix"],["Los Angeles","America/Los_Angeles"],["Anchorage","America/Anchorage"],["Honolulu","Pacific/Honolulu"]],
   'uk': [["London","Europe/London"]],
+  'germany': [["Berlin","Europe/Berlin"]],
   'canada': [["St. John's","America/St_Johns"],["Halifax","America/Halifax"],["Toronto / Montreal","America/Toronto"],["Winnipeg","America/Winnipeg"],["Edmonton","America/Edmonton"],["Vancouver","America/Vancouver"]],
 }
 def conv(key, lang):
@@ -61,7 +63,7 @@ def build(key, lang):
         base = '/en/' if en else '/'
         city_html = f'<p>{pre}' + ', '.join(f'<a href="/en/{s}/">{nm}</a>' for s, nm in cities) + '.</p>'
     if en:
-        others = {'usa': ('/en/russian-tv-in-usa/', 'the USA'), 'uk': ('/en/russian-tv-in-uk/', 'the UK'), 'canada': ('/en/russian-tv-in-canada/', 'Canada')}
+        others = {'usa': ('/en/russian-tv-in-usa/', 'the USA'), 'uk': ('/en/russian-tv-in-uk/', 'the UK'), 'canada': ('/en/russian-tv-in-canada/', 'Canada'), 'germany': ('/en/russian-tv-in-germany/', 'Germany')}
         links = ' · '.join(f'<a href="{u}">Russian TV in {t}</a>' for k, (u, t) in others.items() if k != key)
         _g = {'canada': '<a href="/en/blog/how-to-watch-russian-tv-in-canada/">How to Watch Russian TV in Canada</a> · ', 'uk': '<a href="/en/blog/how-to-watch-russian-tv-in-uk/">How to Watch Russian TV in the UK</a> · ', 'usa': '<a href="/en/blog/moscow-time-to-us-time-zones-russian-tv-schedule/">Moscow Time to US Time Zones</a> · '}.get(key, '')
         _g += '<a href="/en/blog/russian-tv-on-smart-tv-roku-chromecast-apple-tv/">Russian TV on Smart TV</a> · '
@@ -70,7 +72,7 @@ def build(key, lang):
                    '<a href="/en/blog/how-to-watch-russian-tv-in-usa/">How to Watch Russian TV in the USA for Free</a> · <a href="/en/blog/channel-not-loading-fix/">Channel not loading: 8 fixes</a> · ' + links + '</p>')
         h = dict(a=f'Russian TV in {name} — what you can watch', b=f'Moscow time in {name}: when to watch', c='How to watch on any device', d=f'Russian speakers in {name}', f='Frequently asked questions')
     else:
-        others = {'usa': ('/russkie-kanaly-v-ssha/', 'США'), 'uk': ('/russkie-kanaly-v-velikobritanii/', 'Великобритании'), 'canada': ('/russkie-kanaly-v-kanade/', 'Канаде')}
+        others = {'usa': ('/russkie-kanaly-v-ssha/', 'США'), 'uk': ('/russkie-kanaly-v-velikobritanii/', 'Великобритании'), 'canada': ('/russkie-kanaly-v-kanade/', 'Канаде'), 'germany': ('/russkie-kanaly-v-germanii/', 'Германии')}
         links = ' · '.join(f'<a href="{u}">Русское ТВ в {t}</a>' for k, (u, t) in others.items() if k != key)
         _g = {'canada': '<a href="/blog/kak-smotret-russkoe-tv-v-kanade/">Как смотреть российское ТВ в Канаде</a> · ', 'uk': '<a href="/blog/kak-smotret-russkoe-tv-v-velikobritanii/">Как смотреть российское ТВ в Великобритании</a> · ', 'usa': '<a href="/blog/vremya-po-moskve-v-chasovyh-pojasah-ssha/">Время по Москве в США</a> · '}.get(key, '')
         reading = ('<p><strong>Читайте также:</strong> ' + _g + '<a href="/blog/novogodnyaya-noch-russkoe-tv-za-granicey/">Российское ТВ в новогоднюю ночь за границей</a> · '

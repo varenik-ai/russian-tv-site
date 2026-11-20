@@ -141,6 +141,7 @@
    2) второй баннер 300x250 (тот же блок) внизу страницы: слой A, компьютеры и планшеты; 3) Native Banner (блок 32348558) внизу: слои A и B;
    4) баннер 320x50 (блок 32348559) внизу: только телефоны, все слои; 5) Popunder (блок 32349106): слой A, компьютеры и планшеты, раз в 24 часа,
    на страницах каналов после 3 минут на странице, на остальных через 15 секунд (скрипт открывает рекламу при следующем клике посетителя).
+   20.11.2026: нижние блоки (второй баннер, Native, баннер 320x50 для телефонов) перенесены с «перед подвалом» в середину страницы (placeMid).
    Отключить: ADS2_ENABLED=false (всё), POPUNDER_ENABLED=false (только Popunder) или ?noads=1. */
 (function () {
   var ADS2_ENABLED = true, POPUNDER_ENABLED = true;
@@ -177,6 +178,29 @@
     return d;
   }
   function beforeFooter(d) { var f = document.querySelector('footer'); if (f && f.parentNode) f.parentNode.insertBefore(d, f); else document.body.appendChild(d); }
+  // 20.11.2026: реклама не в самом низу страницы (там её почти никто не видит), а между секциями на 1–2 экранах от верха.
+  // Якоря: конец блока программы передач (.epg-box) и начало секций с заголовком h2; берётся ближайший не выше k × высоты окна.
+  function docTop(e) { return e.getBoundingClientRect().top + (window.pageYOffset || 0); }
+  function anchors() {
+    var out = [], epg = document.querySelector('.epg-box');
+    if (epg && epg.getBoundingClientRect().height > 0) out.push({ y: docTop(epg) + epg.getBoundingClientRect().height, el: epg, after: true });
+    [].forEach.call(document.querySelectorAll('h2'), function (h) {
+      if (!h.getBoundingClientRect().height || h.closest('footer,aside,nav,header,#rtv-ban,#rtv-ban-page,#rtv-ban-bottom,#rtv-native,#rtv-ban-mobile')) return;
+      var box = h.closest('.seo-box,.desc-box,.faq-box') || h;
+      out.push({ y: docTop(box), el: box, after: false });
+    });
+    out.sort(function (a, b) { return a.y - b.y; });
+    return out;
+  }
+  var placedY = [];   // где уже стоят блоки: между рекламными блоками не меньше 400 px
+  function placeMid(d, k) {   // возвращает false, если подходящего места нет и блок лучше не показывать (чтобы не ставить рекламу впритык)
+    var min = k * (window.innerHeight || 800);
+    var a = anchors().filter(function (x) { return x.y >= min && placedY.every(function (py) { return Math.abs(py - x.y) >= 400; }); })[0];
+    if (a && a.el.parentNode) { a.el.parentNode.insertBefore(d, a.after ? a.el.nextSibling : a.el); placedY.push(a.y); return true; }
+    var f = document.querySelector('footer'), fy = f ? docTop(f) : 1e9;
+    if (placedY.some(function (py) { return fy - py < 600; })) return false;
+    beforeFooter(d); placedY.push(fy); return true;
+  }
   function reveal(d, ms) {   // показать блок, когда реклама загрузилась; нет рекламы за ms — убрать блок
     var t0 = Date.now(), iv = setInterval(function () {
       if (d.querySelector('iframe') || (d.querySelector('div[id^=container-]') && d.querySelector('div[id^=container-]').children.length)) { d.style.display = ''; clearInterval(iv); }
@@ -199,20 +223,20 @@
       try {
         var b = banner(K300, 300, 250, H300, 'rtv-ban-page');
         var side = isHome ? document.querySelector('aside.right-sidebar') : null, box = document.querySelector('.seo-box');
-        if (side) side.appendChild(b.el); else if (box && box.parentNode) box.parentNode.insertBefore(b.el, box); else beforeFooter(b.el);
+        if (side) side.appendChild(b.el); else if (box && box.parentNode) { box.parentNode.insertBefore(b.el, box); placedY.push(docTop(box)); } else placeMid(b.el, 0.5);
         b.run();
       } catch (e) {}
     }, 3000);
     // 2) второй баннер 300x250 внизу страницы (слой A)
     if (tier === 'A' && (mouse || tablet)) setTimeout(function () {
-      try { var b = banner(K300, 300, 250, H300, 'rtv-ban-bottom'); beforeFooter(b.el); b.run(); } catch (e) {}
+      try { var b = banner(K300, 300, 250, H300, 'rtv-ban-bottom'); if (placeMid(b.el, 1.0)) b.run(); } catch (e) {}
     }, 8000);
     // 3) Native Banner (слои A и B)
     if (tier !== 'C' && (mouse || tablet)) setTimeout(function () {
       try {
         var key = '38aed55c67286ad1a2b32153e5337ddb';
         var d = wrap('rtv-native', '<div id="container-' + key + '"></div>'); d.style.width = '100%'; d.style.maxWidth = '728px';
-        beforeFooter(d);
+        if (!placeMid(d, 2.2)) return;
         var s = document.createElement('script'); s.async = true; s.setAttribute('data-cfasync', 'false'); s.src = 'https://bancadeltempoidea.org/21/' + key;
         document.body.appendChild(s); reveal(d, 12000);
       } catch (e) {}
@@ -221,7 +245,7 @@
     if (phone) setTimeout(function () {
       try {
         var b = banner('9b2a79adb0850bb0ed0eb4fa77cb79dd', 320, 50, 'https://bancadeltempoidea.org/22/9b2a79adb0850bb0ed0eb4fa77cb79dd', 'rtv-ban-mobile');
-        beforeFooter(b.el); b.run();
+        if (placeMid(b.el, 1.0)) b.run();
       } catch (e) {}
     }, 6000);
     // 5) Popunder (слой A, компьютеры и планшеты, раз в 24 часа)
