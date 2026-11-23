@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """18.11.2026: окно согласия (assets/consent.js) и новая реклама (assets/ads.js v2). Приводит версии скриптов на всех страницах
-(consent.js?v=4, ads.js?v=8) и дополняет раздел «Cookies» политики конфиденциальности (RU/EN): окно согласия, хранение в localStorage, отзыв. Идемпотентен."""
+(consent.js?v=4, ads.js?v=9) и дополняет раздел «Cookies» политики конфиденциальности (RU/EN): окно согласия, хранение в localStorage, отзыв. Идемпотентен."""
 import sys, os, re, glob
 ROOT = sys.argv[1]
 n = 0
@@ -9,12 +9,12 @@ for f in glob.glob(os.path.join(ROOT, '**/*.html'), recursive=True):
     if rel.startswith(('node_modules', 'tools')): continue
     s = open(f, encoding='utf-8').read(); o = s
     s = re.sub(r'/assets/consent\.js(\?v=\d+)?"', '/assets/consent.js?v=14"', s)
-    s = re.sub(r'/assets/ads\.js(\?v=\d+)?"', '/assets/ads.js?v=8"', s)
+    s = re.sub(r'/assets/ads\.js(\?v=\d+)?"', '/assets/ads.js?v=9"', s)
     s = re.sub(r'/assets/monitor\.js(\?v=\d+)?"', '/assets/monitor.js?v=11"', s)
     # ads.js нужен и на страницах без плеера (категории, страны, блог): баннер и Native Banner Adsterra
     legal = re.match(r'(en/)?(privacy|advertising|about|tv|diag)/index\.html$', rel) or rel in ('404.html',) or 'noindex' in s
     if 'assets/consent.js' in s and 'assets/ads.js' not in s and not legal and '</head>' in s:
-        s = s.replace('</head>', '  <script defer src="/assets/ads.js?v=8"></script>\n</head>', 1)
+        s = s.replace('</head>', '  <script defer src="/assets/ads.js?v=9"></script>\n</head>', 1)
     if s != o: open(f, 'w', encoding='utf-8').write(s); n += 1
 RU = ('  <p><strong>Уведомление о cookie.</strong> При первом посещении сайт показывает уведомление внизу страницы с кнопками «Согласен» и «Отказаться»; сайтом можно пользоваться, не отвечая на него. По умолчанию включены счётчики (Google Analytics, Яндекс.Метрика, Microsoft Clarity), показ рекламы и передача технических данных о воспроизведении (раздел 2а); «Согласен» закрывает уведомление. '
       '«Отказаться»: сайт работает как обычно; счётчики (Google Analytics, Яндекс.Метрика, Microsoft Clarity) и передача технических данных о воспроизведении отключаются, реклама на сайте остаётся. '

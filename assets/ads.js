@@ -284,3 +284,36 @@ window.rtvGeo = window.rtvGeo || function (cb) {
   }
   if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);   // не ждём window.load: его держит зависший скрипт аналитики (до 30 с), и реклама показывалась бы к 35–50-й секунде
 })();
+
+/* 23.11.2026: в странах без рекламы (RTV_NOADS_CC) под плеером вместо рекламного места — карточка Telegram-канала (все устройства, страницы каналов).
+   Обычная строка «Смотреть каналы в Telegram» (.tg-pulse-banner) для них скрывается, чтобы не было двух ссылок подряд.
+   Клик считается в GA4 общим трекером telegram_click (метка — класс ссылки tg-geo-card). Отключить: TG_GEO_ENABLED=false. */
+(function () {
+  var TG_GEO_ENABLED = true;
+  if (!TG_GEO_ENABLED || !/-live\/?$/.test(location.pathname.replace(/index\.html$/, ''))) return;
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(navigator.userAgent || '')) return;
+  function show() {
+    if (document.getElementById('rtv-tg-geo')) return;
+    var pl = document.getElementById('player-wrap'); if (!pl) return;
+    var en = /^en/i.test(document.documentElement.lang || '');
+    var st = document.createElement('style');
+    st.textContent = '.tg-geo-card{display:flex;align-items:center;gap:14px;margin:12px 0;padding:14px 18px;border-radius:14px;text-decoration:none;color:#fff;' +
+      'background:linear-gradient(135deg,#0b2a4a 0%,#0e3b63 55%,#1279b8 100%);border:1px solid rgba(127,224,255,.45);box-shadow:0 6px 24px rgba(34,158,217,.28)}' +
+      '.tg-geo-card:hover{box-shadow:0 8px 30px rgba(34,158,217,.45)}.tg-geo-ico{flex:0 0 46px;height:46px;border-radius:50%;background:#229ED9;display:flex;align-items:center;justify-content:center}' +
+      '.tg-geo-ico svg{width:24px;height:24px;fill:#fff}.tg-geo-txt{flex:1;min-width:0;line-height:1.35}.tg-geo-txt b{display:block;font-size:17px;margin-bottom:2px}' +
+      '.tg-geo-txt span{font-size:13.5px;color:rgba(255,255,255,.82)}.tg-geo-btn{flex:0 0 auto;padding:10px 18px;border-radius:999px;background:#fff;color:#0b5c91;font-weight:800;font-size:14px;white-space:nowrap}' +
+      '@media(max-width:520px){.tg-geo-card{padding:12px 14px;gap:10px}.tg-geo-ico{flex-basis:38px;height:38px}.tg-geo-txt b{font-size:15px}.tg-geo-txt span{font-size:12.5px}.tg-geo-btn{padding:8px 12px;font-size:13px}}';
+    document.head.appendChild(st);
+    var a = document.createElement('a');
+    a.id = 'rtv-tg-geo'; a.className = 'tg-geo-card'; a.href = 'https://t.me/RussiaTV_Hub_Live'; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = '<div class="tg-geo-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8-1.66 7.85c-.12.53-.44.66-.89.41l-2.46-1.81-1.19 1.14c-.13.13-.24.24-.5.24l.18-2.51 4.57-4.13c.2-.17-.04-.27-.31-.1l-5.65 3.56-2.43-.76c-.62-.19-.63-.62.13-.92l8.96-3.46c.52-.19 1 .13.84.93z"/></svg></div>' +
+      '<div class="tg-geo-txt"><b>' + (en ? 'Russian TV in Telegram — free, no ads' : 'Русское ТВ в Telegram — бесплатно и без рекламы') + '</b><span>' +
+      (en ? 'All channels in one place, TV schedule and reminders about live broadcasts' : 'Все каналы в одном месте, программа передач и напоминания о трансляциях') + '</span></div>' +
+      '<span class="tg-geo-btn">' + (en ? 'Open' : 'Открыть') + '</span>';
+    var pulse = document.querySelector('.tg-pulse-banner');
+    if (pulse && pulse.parentNode) { pulse.parentNode.insertBefore(a, pulse); pulse.style.display = 'none'; }
+    else pl.parentNode.insertBefore(a, pl.nextSibling);
+  }
+  function start() { if (window.rtvGeo) window.rtvGeo(function (cc) { if ((window.RTV_NOADS_CC || []).indexOf(cc) >= 0) show(); }); }
+  if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
+})();
