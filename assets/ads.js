@@ -1,3 +1,17 @@
+/* 23.11.2026: общая страна посетителя для всех блоков (воркер мониторинга /geo, кэш в sessionStorage) и «нулевые» страны.
+   Adsterra 19-23.11.2026: Литва 1870 показов $0, Украина 706 / $0, Казахстан 665 / $0, Эстония 558 / $0, Молдова 410 / $0, Россия 291 / $0 (CPM около $0,001):
+   там реклама денег не приносит, а смотреть мешает, поэтому в этих странах блоков Adsterra нет совсем (включая баннер под плеером). */
+window.RTV_NOADS_CC = 'LT LV EE KZ MD GE AM AZ BY UZ KG TJ RU UA IL TR CY RS'.split(' ');
+window.rtvGeo = window.rtvGeo || function (cb) {
+  var cc = null; try { cc = sessionStorage.getItem('rtv_cc'); } catch (e) {}
+  if (cc) return cb(cc);
+  var q = window.__rtvGeoQ; if (q) { q.push(cb); return; }
+  q = window.__rtvGeoQ = [cb];
+  var done = false;
+  function fin(v) { if (done) return; done = true; try { if (v !== 'XX') sessionStorage.setItem('rtv_cc', v); } catch (e) {} q.forEach(function (f) { try { f(v); } catch (e) {} }); window.__rtvGeoQ = null; }
+  setTimeout(function () { fin('XX'); }, 2500);
+  try { fetch('https://rtv-monitor.dyaltd.workers.dev/geo').then(function (r) { return r.json(); }).then(function (j) { fin((j && j.cc) || 'XX'); }).catch(function () { fin('XX'); }); } catch (e) { fin('XX'); }
+};
 /* 21.11.2026: Monetag In-Page Push отключён (MONETAG_ENABLED=false): CPM около $0,09, доход — центы, а скрипт раздражает посетителей главной и замедляет загрузку.
    Чтобы вернуть, поставить true и поднять версию ads.js в gen_consent_wall.py.
    20.11.2026: запуск рекламы по DOMContentLoaded, а не по window.load. На главной load наступал через ~31 с из-за зависшего googletagmanager.com/gtag/js (30 с),
@@ -97,7 +111,7 @@
       d.querySelector('.box').appendChild(s);
     } catch (e) {}
   }
-  function arm() { if (armed) return; armed = true; setTimeout(show, DELAY_MS); }
+  function arm() { if (armed) return; armed = true; window.rtvGeo(function (cc) { if (window.RTV_NOADS_CC.indexOf(cc) < 0) setTimeout(show, DELAY_MS); }); }   // 23.11.2026: нет рекламы в странах с CPM около нуля
   function start() {
     if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
     else window.addEventListener('rtv-consent-granted', arm);
@@ -170,18 +184,9 @@
   var phone = !mouse && !tablet;
   var label = en ? 'Advertisement' : 'Реклама';
   var TIER_A = 'US CA GB IE AU NZ DE AT CH FR NL SE NO DK PL ES IT BG'.split(' ');
-  var TIER_C = 'LT LV EE KZ MD GE AM AZ BY UZ KG TJ RU'.split(' ');
+  var TIER_C = window.RTV_NOADS_CC;   // 23.11.2026: в этих странах блоков нет совсем (см. начало файла)
   function tierOf(cc) { return TIER_A.indexOf(cc) >= 0 ? 'A' : TIER_C.indexOf(cc) >= 0 ? 'C' : 'B'; }
-  function getCC(cb) {
-    var cc = null; try { cc = sessionStorage.getItem('rtv_cc'); } catch (e) {}
-    if (cc) return cb(cc);
-    var done = false, t = setTimeout(function () { if (!done) { done = true; cb('XX'); } }, 2500);
-    try {
-      fetch('https://rtv-monitor.dyaltd.workers.dev/geo').then(function (r) { return r.json(); }).then(function (j) {
-        if (done) return; done = true; clearTimeout(t); cc = (j && j.cc) || 'XX'; try { sessionStorage.setItem('rtv_cc', cc); } catch (e) {} cb(cc);
-      }).catch(function () { if (!done) { done = true; clearTimeout(t); cb('XX'); } });
-    } catch (e) { if (!done) { done = true; clearTimeout(t); cb('XX'); } }
-  }
+  function getCC(cb) { window.rtvGeo(cb); }
   function wrap(id, inner) {
     var d = document.createElement('div'); d.id = id;
     d.style.cssText = 'display:none;margin:16px auto;text-align:center;max-width:100%;font:11px/1.2 sans-serif;color:#8b8ba0';
@@ -229,6 +234,7 @@
   var ready = false;
   function go(cc) {
     var tier = tierOf(cc);
+    if (tier === 'C') return;   // 23.11.2026: страны с CPM около нуля — без рекламы
     // 1) баннер 300x250 на страницах без плеера (все слои)
     if (!isChannel && (mouse || tablet)) setTimeout(function () {
       try {
@@ -242,12 +248,12 @@
     if (tier === 'A' && (mouse || tablet)) setTimeout(function () {
       try { var b = banner(K300, 300, 250, H300, 'rtv-ban-bottom'); if (placeMid(b.el, 1.0)) b.run(); } catch (e) {}
     }, 8000);
-    // 3) Native Banner (слои A и B)
-    if (tier !== 'C' && (mouse || tablet)) setTimeout(function () {
+    // 3) Native Banner (слои A и B; с 23.11.2026 и на телефонах: в Германии CPM $4,04, а телефон получал только 320x50)
+    if (tier !== 'C') setTimeout(function () {
       try {
         var key = '38aed55c67286ad1a2b32153e5337ddb';
         var d = wrap('rtv-native', '<div id="container-' + key + '"></div>'); d.style.width = '100%'; d.style.maxWidth = '728px';
-        if (!placeMid(d, 2.2)) return;
+        if (!placeMid(d, phone ? 1.8 : 2.2)) return;
         var s = document.createElement('script'); s.async = true; s.setAttribute('data-cfasync', 'false'); s.src = 'https://bancadeltempoidea.org/21/' + key;
         document.body.appendChild(s); reveal(d, 12000);
       } catch (e) {}
