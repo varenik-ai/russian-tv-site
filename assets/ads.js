@@ -317,3 +317,30 @@ window.rtvGeo = window.rtvGeo || function (cb) {
   function start() { if (window.rtvGeo) window.rtvGeo(function (cc) { if ((window.RTV_NOADS_CC || []).indexOf(cc) >= 0) show(); }); }
   if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
 })();
+
+/* 23.11.2026: Kadam (сайт 98605, на модерации) — ТОЛЬКО для стран из RTV_NOADS_CC, где Adsterra отключена полностью; в странах с Adsterra не загружается никогда.
+   Страна должна быть определена точно: при ошибке определения ('XX') Kadam не грузится (а Adsterra работает как обычно), поэтому сети не пересекаются.
+   Формат: один Popunder на компьютерах (с мышью), не чаще раза в 24 часа, после согласия на cookies. Пока KADAM_SRC пустой — блок выключен:
+   после модерации вставить сюда адрес скрипта блока из кабинета Kadam. */
+(function () {
+  var KADAM_SRC = '';   // адрес скрипта Popunder из кабинета Kadam (появится после модерации)
+  if (!KADAM_SRC || /[?&]noads=1/.test(location.search)) return;
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(navigator.userAgent || '')) return;
+  if (!(window.matchMedia && matchMedia('(hover:hover)').matches)) return;   // только компьютеры
+  var armed = false;
+  function load(cc) {
+    if ((window.RTV_NOADS_CC || []).indexOf(cc) < 0) return;   // страны с Adsterra и неопределённая страна — никогда
+    try {
+      var last = parseInt(localStorage.getItem('rtv_kadam_ts') || '0', 10);
+      if (last && Date.now() - last < 24 * 3600 * 1000) return;
+      localStorage.setItem('rtv_kadam_ts', String(Date.now()));
+    } catch (e) {}
+    setTimeout(function () { try { var s = document.createElement('script'); s.async = true; s.src = KADAM_SRC; (document.head || document.documentElement).appendChild(s); } catch (e) {} }, 15000);
+  }
+  function arm() { if (armed) return; armed = true; if (window.rtvGeo) window.rtvGeo(load); }
+  function start() {
+    if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
+    else window.addEventListener('rtv-consent-granted', arm);
+  }
+  if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
+})();
