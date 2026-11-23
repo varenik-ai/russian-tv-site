@@ -47,12 +47,15 @@ CH = [
  ('rentv','ren-tv-live','ent','РЕН ТВ','REN TV','Развлекательный и познавательный канал','Entertainment and factual channel','РЕН','#f9a03c','#1a1008','познавательные программы','factual programmes'),
  ('matchtv','match-tv-live','sport','Матч ТВ','Match TV','Спортивный телеканал','Sports channel','МАТЧ','#e64a2e','#1a0c08','спорт в прямом эфире','live sport'),
  ('pyatnica','pyatnica-live','ent','Пятница!','Pyatnitsa!','Развлекательный канал','Entertainment channel','ПЯТ','#e53935','#1a0808','шоу о путешествиях','travel shows'),
+ ('tnt','tnt-live','ent','ТНТ','TNT','Комедии, шоу и сериалы','Comedy, shows and series','ТНТ','#e91e63','#1a0812','комедийные шоу и сериалы ТНТ','TNT comedy shows and series'),   # 23.11.2026: возвращён в каталог (источник thestream live/38)
 ]
 KEYS = ['id','slug','cat','ru','en','ru_desc','en_desc','icon','color','bg','ru_kw','en_kw']
 CHANNELS = [dict(zip(KEYS, t)) for t in CH]
+KEEP_PAGES = {'tnt-live'}   # 23.11.2026: страницы, которые уже есть (свои тексты); gen_site добавляет их только в списки, главные, категории и sitemap
 
 
 MORE = {
+ 'tnt': ('Развлекательный канал ТНТ: комедийные шоу, ситкомы, сериалы и реалити.','TNT entertainment channel: comedy shows, sitcoms, series and reality TV.'),
  'sts': ('Семейный развлекательный канал: сериалы, фильмы, шоу и мультфильмы. Международная версия для зрителей за пределами России.','A family entertainment channel: series, films, shows and cartoons. An international version for viewers outside Russia.'),
  'rentv': ('Телеканал РЕН ТВ: развлекательные и познавательные программы, документальные проекты, фильмы и сериалы. Международная версия для зрителей за пределами России.','REN TV: entertainment and factual programmes, documentary projects, films and series. An international version for viewers outside Russia.'),
  'matchtv': ('Спортивный телеканал: футбол, хоккей, единоборства и другие виды спорта, трансляции и студийные программы. Международная версия; состав трансляций зависит от прав.','A sports channel: football, hockey, combat sports and more, with live broadcasts and studio programmes. An international version; the line-up of broadcasts depends on rights.'),
@@ -298,10 +301,11 @@ def main():
     T_EN = tpl('en/kino-detektiv-live/index.html')
     # 1. новые страницы
     for ch in CHANNELS:
+        if ch['slug'] in KEEP_PAGES: continue   # у страницы свои тексты: только сайдбар (шаг 2)
         wr(f'{ch["slug"]}/index.html', make_page_ru(ch, T_RU))
         wr(f'en/{ch["slug"]}/index.html', make_page_en(ch, T_EN))
     # 2. сайдбар на всех остальных страницах каналов
-    new_slugs = {c['slug'] for c in CHANNELS}
+    new_slugs = {c['slug'] for c in CHANNELS if c['slug'] not in KEEP_PAGES}
     changed = 0
     for base, lang in (('', 'ru'), ('en/', 'en')):
         d = os.path.join(ROOT, base) if base else ROOT

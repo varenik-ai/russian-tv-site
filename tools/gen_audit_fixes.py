@@ -347,7 +347,7 @@ for rel in PAGES:
 # ---------------------------------------------------------------- 8b. каналы вне каталога — noindex
 # Эти страницы работают и доступны посетителям, но их нет в каталоге главной (решение владельца 18.10.2026):
 # не индексируются, в sitemap не входят, в «Похожие» не попадают.
-NOINDEX_SLUGS = ['kinopokaz-live', 'kinopremiera-live', 'ntv-hit-live', 'retro-live', 'ru-tv-live', 't24-live', 'unikum-live', 'zagorodnaya-zhizn-live', 'tnt-live', 'bober-live', 'bolshaya-planeta-live', 'karusel-international-live', 'fon-music-live', 'sportivnyy-live']
+NOINDEX_SLUGS = ['kinopokaz-live', 'kinopremiera-live', 'ntv-hit-live', 'retro-live', 'ru-tv-live', 't24-live', 'unikum-live', 'zagorodnaya-zhizn-live', 'bober-live', 'bolshaya-planeta-live', 'karusel-international-live', 'fon-music-live', 'sportivnyy-live']
 for slug in NOINDEX_SLUGS:
     for rel in (slug + '/index.html', 'en/' + slug + '/index.html'):
         if not os.path.exists(os.path.join(ROOT, rel)):
@@ -358,6 +358,13 @@ for slug in NOINDEX_SLUGS:
         else:
             t = re.sub(r'(<link rel="canonical" href="[^"]*"\s*/>)', lambda m: m.group(1) + '\n<meta name="robots" content="noindex,follow"/>', t, count=1)
         save(rel, t, o, 'noindex')
+# 23.11.2026: каналы, возвращённые в каталог, снова индексируются (тот же robots, что у остальных страниц каналов)
+for slug in ['tnt-live']:
+    for rel in (slug + '/index.html', 'en/' + slug + '/index.html'):
+        if not os.path.exists(os.path.join(ROOT, rel)): continue
+        t = rd(rel); o = t
+        t = re.sub(r'<meta name="robots" content="noindex[^"]*"\s*/>', '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>', t, count=1)
+        save(rel, t, o, 'reindex')
 
 # ---------------------------------------------------------------- 9. похожие каналы
 CAT_KEYS = ['/novosti/', '/razvlecheniya/', '/kino/', '/detskie/', '/muzyka/', '/hobbi/', '/sport/']

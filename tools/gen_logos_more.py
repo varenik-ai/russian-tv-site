@@ -15,6 +15,7 @@ MAP = {
  'flosports-hockey-live': 'logo-flosports.png', 'flosports-racing-live': 'logo-flosports.png',
  'trace-sport-stars-live': 'logo-trace-sport-stars.png',
  'sts-live': 'logo-sts.svg', 'ren-tv-live': 'logo-ren-tv.svg', 'match-tv-live': 'logo-match-tv.svg', 'pyatnica-live': 'logo-pyatnica.svg',   # 19.11.2026
+ 'tnt-live': 'logo-tnt.svg',   # 23.11.2026: ТНТ возвращён в каталог
  'rossiya-rtr-evropa-live': 'logo-rtr-planeta.svg', 'rossiya-rtr-usa-live': 'logo-rtr-planeta.svg',   # 15.11.2026
 }
 src = os.path.join(ROOT, 'assets/logos'); out = os.path.join(src, 'trim'); os.makedirs(out, exist_ok=True)

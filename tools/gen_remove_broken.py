@@ -7,11 +7,12 @@
 Ссылки в сплошном тексте (перечисления «А, Б, В») убираются вместе с запятой, одиночные упоминания правятся вручную в страницах."""
 import sys, os, re, glob, json
 ROOT = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else '.')
-BROKEN = ['tnt-live', 'bober-live', 'bolshaya-planeta-live', 'karusel-international-live', 'fon-music-live', 'sportivnyy-live']
+BROKEN = [   # 23.11.2026: tnt-live возвращён в каталог (gen_site.py)
+    'bober-live', 'bolshaya-planeta-live', 'karusel-international-live', 'fon-music-live', 'sportivnyy-live']
 # семь каналов вне каталога (noindex): на них не должно быть ссылок из списков и карточек категорий
 OUTSIDE = ['t24-live', 'retro-live', 'kinopremiera-live', 'kinopokaz-live', 'unikum-live', 'ru-tv-live', 'zagorodnaya-zhizn-live']
 SLUGS = BROKEN + OUTSIDE
-IDS = ['tnt', 'bober', 'bigplanet', 'karuselIntl', 'fonmusic', 'sportivnyy', 't24', 'retro', 'kinopremiera', 'kinopokaz', 'unikum', 'rutv', 'zagorodnaya']
+IDS = ['bober', 'bigplanet', 'karuselIntl', 'fonmusic', 'sportivnyy', 't24', 'retro', 'kinopremiera', 'kinopokaz', 'unikum', 'rutv', 'zagorodnaya']
 OLD, NEW = 60, 54
 SL = '|'.join(re.escape(s) for s in SLUGS)
 HREF = r'href="(?:https://russian-tv\.com)?(?:/en)?/(?:%s)/"' % SL
@@ -28,8 +29,8 @@ INLINE_ALONE = re.compile(r'(?<=</a>)<a\b[^>]*%s[^>]*>[^<]*</a>(?=<a\b)' % HREF)
 # вопрос про ТНТ в FAQ главной (RU): целиком вместе с <details>
 FAQ_TNT = re.compile(r'[ \t]*<details\b(?:(?!</details>).)*?Где смотреть ТНТ онлайн бесплатно\?.*?</details>\n?', re.S)
 # названия убранных каналов в перечислениях через запятую (RU и EN): «…, ТНТ, МУЗ-ТВ…», «Развлекательные: ТНТ, …»
-NAMES = ['ТНТ4', 'ТНТ', 'Бобер', 'Большая планета', 'Карусель International', 'FON Music', 'Спортивный',
-         'TNT4', 'TNT', 'Bober', 'Bolshaya Planeta \\(Big Planet\\)', 'Karusel International', 'Sportivny']
+NAMES = ['ТНТ4', 'Бобер', 'Большая планета', 'Карусель International', 'FON Music', 'Спортивный',
+         'TNT4', 'Bober', 'Bolshaya Planeta \\(Big Planet\\)', 'Karusel International', 'Sportivny']
 NM = '|'.join(NAMES)
 LIST_FIRST = re.compile(r'(?<=[:>] )(?:%s), ' % NM)
 LIST_NEXT = re.compile(r', (?:%s)(?=[,.;)"<]| и | and |\s—)' % NM)
