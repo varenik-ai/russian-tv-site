@@ -318,24 +318,27 @@ window.rtvGeo = window.rtvGeo || function (cb) {
   if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 
-/* 23.11.2026: Kadam (сайт 98605, на модерации) — ТОЛЬКО для стран из RTV_NOADS_CC, где Adsterra отключена полностью; в странах с Adsterra не загружается никогда.
-   Страна должна быть определена точно: при ошибке определения ('XX') Kadam не грузится (а Adsterra работает как обычно), поэтому сети не пересекаются.
-   Формат: один Popunder на компьютерах (с мышью), не чаще раза в 24 часа, после согласия на cookies. Пока KADAM_SRC пустой — блок выключен:
-   после модерации вставить сюда адрес скрипта блока из кабинета Kadam. */
+/* 23.11.2026: Kadam Popunder (сайт 98605, блок 456226 «Popunder desktop NOADS») — ТОЛЬКО для стран из RTV_NOADS_CC, где Adsterra отключена полностью;
+   в странах с Adsterra не загружается никогда. Страна должна быть определена точно: при ошибке определения ('XX') Kadam не грузится (а Adsterra работает
+   как обычно), поэтому сети не пересекаются. Только компьютеры (с мышью), после согласия на cookies, через 15 с после загрузки.
+   Частота — в кабинете Kadam: 1 показ за 86400 с, задержка 15 с, открытие в новом окне (страница с трансляцией не перезагружается), только Desktop,
+   клики по плееру и списку каналов не открывают рекламу (исключены #player-wrap, .player-overlay, video, .fs-btn, #ch-list). Отключить: KADAM_ENABLED=false. */
 (function () {
-  var KADAM_SRC = '';   // адрес скрипта Popunder из кабинета Kadam (появится после модерации)
-  if (!KADAM_SRC || /[?&]noads=1/.test(location.search)) return;
-  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(navigator.userAgent || '')) return;
+  var KADAM_ENABLED = true, KADAM_ID = 'oflgnf456226';
+  if (!KADAM_ENABLED || /[?&]noads=1/.test(location.search)) return;
+  if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(navigator.userAgent || '') || /Android.*\bTV\b|AFT[A-Z]/.test(navigator.userAgent || '')) return;
   if (!(window.matchMedia && matchMedia('(hover:hover)').matches)) return;   // только компьютеры
+  if (/^\/(en\/)?(privacy|advertising|about)\/?$/.test(location.pathname) || /^\/(tv|diag)\/?$/.test(location.pathname)) return;
   var armed = false;
   function load(cc) {
     if ((window.RTV_NOADS_CC || []).indexOf(cc) < 0) return;   // страны с Adsterra и неопределённая страна — никогда
-    try {
-      var last = parseInt(localStorage.getItem('rtv_kadam_ts') || '0', 10);
-      if (last && Date.now() - last < 24 * 3600 * 1000) return;
-      localStorage.setItem('rtv_kadam_ts', String(Date.now()));
-    } catch (e) {}
-    setTimeout(function () { try { var s = document.createElement('script'); s.async = true; s.src = KADAM_SRC; (document.head || document.documentElement).appendChild(s); } catch (e) {} }, 15000);
+    setTimeout(function () {
+      try {
+        if (document.querySelector('.' + KADAM_ID)) return;
+        var d = document.createElement('div'); d.className = KADAM_ID; document.body.appendChild(d);
+        var s = document.createElement('script'); s.async = true; s.src = 'https://hdbtop.com/code/' + KADAM_ID; document.body.appendChild(s);
+      } catch (e) {}
+    }, 15000);
   }
   function arm() { if (armed) return; armed = true; if (window.rtvGeo) window.rtvGeo(load); }
   function start() {
