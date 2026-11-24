@@ -48,6 +48,7 @@ CH = [
  ('matchtv','match-tv-live','sport','Матч ТВ','Match TV','Спортивный телеканал','Sports channel','МАТЧ','#e64a2e','#1a0c08','спорт в прямом эфире','live sport'),
  ('pyatnica','pyatnica-live','ent','Пятница!','Pyatnitsa!','Развлекательный канал','Entertainment channel','ПЯТ','#e53935','#1a0808','шоу о путешествиях','travel shows'),
  ('tnt','tnt-live','ent','ТНТ','TNT','Комедии, шоу и сериалы','Comedy, shows and series','ТНТ','#e91e63','#1a0812','комедийные шоу и сериалы ТНТ','TNT comedy shows and series'),   # 23.11.2026: возвращён в каталог (источник thestream live/38)
+ ('tv3','tv-3-live','ent','ТВ-3','TV-3','Мистика, сериалы и шоу','Mystery, series and shows','ТВ3','#7b3fe4','#140a24','мистические сериалы и шоу ТВ-3','TV-3 mystery series and shows'),   # 24.11.2026: cinerama 1435, запасной ТВ-3 International 1446
 ]
 KEYS = ['id','slug','cat','ru','en','ru_desc','en_desc','icon','color','bg','ru_kw','en_kw']
 CHANNELS = [dict(zip(KEYS, t)) for t in CH]
@@ -55,6 +56,7 @@ KEEP_PAGES = {'tnt-live'}   # 23.11.2026: страницы, которые уж�
 
 
 MORE = {
+ 'tv3': ('Телеканал ТВ-3: мистические сериалы, документальные расследования, шоу «Гадалка», «Слепая», «Битва экстрасенсов» и фильмы.','TV-3: mystery series, documentary investigations, shows such as Gadalka and Slepaya, and films.'),
  'tnt': ('Развлекательный канал ТНТ: комедийные шоу, ситкомы, сериалы и реалити.','TNT entertainment channel: comedy shows, sitcoms, series and reality TV.'),
  'sts': ('Семейный развлекательный канал: сериалы, фильмы, шоу и мультфильмы. Международная версия для зрителей за пределами России.','A family entertainment channel: series, films, shows and cartoons. An international version for viewers outside Russia.'),
  'rentv': ('Телеканал РЕН ТВ: развлекательные и познавательные программы, документальные проекты, фильмы и сериалы. Международная версия для зрителей за пределами России.','REN TV: entertainment and factual programmes, documentary projects, films and series. An international version for viewers outside Russia.'),
