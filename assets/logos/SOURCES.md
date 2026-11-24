@@ -45,3 +45,10 @@
 | РЕН ТВ | logo-ren-tv.svg | File:REN TV logo 2017.svg | Public domain (PD textlogo) | |
 | Матч ТВ | logo-match-tv.svg | File:MatchTV Logo.svg | Public domain (PD textlogo) | |
 | Пятница! | logo-pyatnica.svg | File:Пятница (с 2013).svg | Public domain (PD textlogo) | |
+
+## Добавлено 24.11.2026
+
+| Канал | Файл в assets/logos/ | Файл в Commons | Метка в Commons | Примечание |
+|---|---|---|---|---|
+| ТВ-3 | logo-tv3.png | File:TV-3 logo (2015).png | Public domain | уменьшенная копия Commons 330×330 (оригинал 3385×3385); автор в Commons — ООО «ПрофМедиа ТВ» |
+| ТНТ | logo-tnt.svg | — | — | файл в assets/logos/ с 18.10.2026 (коммит 980a5b7d, «local logos», источник в этом файле не записан); 23.11.2026 канал возвращён в каталог |
