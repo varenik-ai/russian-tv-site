@@ -20,7 +20,11 @@
   // (без cookie и идентификаторов, только обезличенные сигналы для модели Google); рекламные разрешения Google всегда denied (рекламу Google на сайте мы не показываем).
   // «Согласен» (или США без отказа) -> analytics_storage = granted. Яндекс.Метрика и Clarity по-прежнему грузятся только после согласия.
   var BOT = /bot|crawl|spider|slurp|bingpreview|lighthouse|pagespeed|facebookexternalhit|twitterbot|telegrambot|whatsapp|applebot|duckduckbot|baiduspider|headlesschrome|gtmetrix/i.test(navigator.userAgent || '');
-  gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: granted ? 'granted' : 'denied' });
+  // 25.11.2026: в мягком режиме (SOFT_ALL) аналитика и так включается всем, кто не отказался (а отказавшимся GA не загружается вовсе, см. DECL),
+  // поэтому analytics_storage = granted ставится сразу, до первого события. Раньше granted приходил только после ответа /geo (до 1,5 с), и первый
+  // page_view / session_start новой сессии уходил без cookie: GA терял нового пользователя и источник перехода (поиск, рефералы).
+  var SOFT_ALL_EARLY = true;   // держать в синхроне с SOFT_ALL ниже
+  gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: (granted || SOFT_ALL_EARLY) ? 'granted' : 'denied' });
   var DECL = false; try { DECL = localStorage.getItem(OKEY) === '1'; } catch (e) {}
   if (!BOT && !DECL) {
     gtag('js', new Date()); gtag('config', 'G-XLSJE8NKJE', { allow_google_signals: false, allow_ad_personalization_signals: false });
@@ -127,7 +131,7 @@
     return /^Europe\//.test(tz) || /^Atlantic\/Reykjavik$/.test(tz) || /^America\/(Toronto|Montreal|Vancouver|Edmonton|Winnipeg|Halifax|St_Johns|Regina|Moncton|Glace_Bay|Iqaluit|Yellowknife|Whitehorse|Dawson|Thunder_Bay|Nipigon|Rainy_River|Swift_Current|Goose_Bay|Cambridge_Bay|Inuvik|Rankin_Inlet|Resolute|Pangnirtung|Atikokan|Blanc-Sablon|Creston|Dawson_Creek|Fort_Nelson)$/.test(tz);
   }
   // ВРЕМЕННО (с 19.11.2026): мягкий режим во всех странах, как в «остальном мире» (решение владельца); вернуть региональную карточку — SOFT_ALL = false
-  var SOFT_ALL = true;
+  var SOFT_ALL = true;   // при возврате региональной карточки (false) поставить и SOFT_ALL_EARLY = false в начале файла
   function decide() { getCC(function (cc) { if (SOFT_ALL && cc !== 'US') softUS(false); else if (cc === 'US') softUS(true); else if (STRICT.indexOf(' ' + cc + ' ') >= 0 || (cc === 'XX' && tzStrict())) show(); else softUS(false); }); }
   if (document.body) decide(); else document.addEventListener('DOMContentLoaded', decide);
 })();
