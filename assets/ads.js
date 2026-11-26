@@ -169,7 +169,7 @@ window.rtvGeo = window.rtvGeo || function (cb) {
    20.11.2026: нижние блоки (второй баннер, Native, баннер 320x50 для телефонов) перенесены с «перед подвалом» в середину страницы (placeMid).
    Отключить: ADS2_ENABLED=false (всё), POPUNDER_ENABLED=false (только Popunder) или ?noads=1. */
 (function () {
-  var ADS2_ENABLED = true, POPUNDER_ENABLED = true;
+  var ADS2_ENABLED = true, POPUNDER_ENABLED = false; // 26.11.2026: выключен — сайт исключён из Bing 22.11 («не соответствует стандартам»), всплывающие вкладки — главный подозреваемый
   var UA = navigator.userAgent || '';
   if (!ADS2_ENABLED || /[?&]noads=1/.test(location.search)) return;
   if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(UA) || /Android.*\bTV\b|AFT[A-Z]/.test(UA)) return;
@@ -324,7 +324,8 @@ window.rtvGeo = window.rtvGeo || function (cb) {
    Частота — в кабинете Kadam: 1 показ за 86400 с, задержка 15 с, открытие в новом окне (страница с трансляцией не перезагружается), только Desktop,
    клики по плееру и списку каналов не открывают рекламу (исключены #player-wrap, .player-overlay, video, .fs-btn, #ch-list). Отключить: KADAM_ENABLED=false. */
 (function () {
-  var KADAM_ENABLED = true, KADAM_ID = 'oflgnf456226';
+  var KADAM_ENABLED = false, // 26.11.2026: выключен вместе с Adsterra Popunder (Bing)
+  KADAM_ID = 'oflgnf456226';
   if (!KADAM_ENABLED || /[?&]noads=1/.test(location.search)) return;
   if (/SmartTV|SMART-TV|Tizen|Web0S|WebOS|HbbTV|NetCast|AppleTV|BRAVIA|CrKey/i.test(navigator.userAgent || '') || /Android.*\bTV\b|AFT[A-Z]/.test(navigator.userAgent || '')) return;
   if (!(window.matchMedia && matchMedia('(hover:hover)').matches)) return;   // только компьютеры
