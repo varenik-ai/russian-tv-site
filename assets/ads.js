@@ -164,8 +164,8 @@ window.rtvGeo = window.rtvGeo || function (cb) {
        полный набор — баннер 300x250, второй баннер 300x250 внизу, Native Banner, Popunder (раз в 24 ч);
      B (остальные, с 26.11.2026 и дешёвые страны): баннер 300x250 и Native Banner.
    Места: 1) баннер 300x250 (блок 32178193) на страницах БЕЗ плеера (главная — правая колонка, категории, страны, блог): компьютеры и планшеты;
-   2) второй баннер 300x250 (тот же блок) внизу страницы: слой A, компьютеры и планшеты; 3) Native Banner (блок 32348558) внизу: слои A и B;
-   4) баннер 320x50 (блок 32348559) внизу: только телефоны, все слои; 5) Popunder (блок 32349106): слой A, компьютеры и планшеты, раз в 24 часа,
+   2) второй баннер 300x250 (тот же блок) внизу страницы: слой A, компьютеры и планшеты; 3) Native Banner (блок 32348558) после программы передач (все страны);
+   4) баннер 320x50 (блок 32348559): только телефоны, на страницах каналов под плеером; 5) Popunder (блок 32349106): слой A, компьютеры и планшеты, раз в 24 часа,
    на страницах каналов после 3 минут на странице, на остальных через 15 секунд (скрипт открывает рекламу при следующем клике посетителя).
    20.11.2026: нижние блоки (второй баннер, Native, баннер 320x50 для телефонов) перенесены с «перед подвалом» в середину страницы (placeMid).
    Отключить: ADS2_ENABLED=false (всё), POPUNDER_ENABLED=false (только Popunder) или ?noads=1. */
@@ -247,23 +247,42 @@ window.rtvGeo = window.rtvGeo || function (cb) {
     if (tier === 'A' && (mouse || tablet)) setTimeout(function () {
       try { var b = banner(K300, 300, 250, H300, 'rtv-ban-bottom'); if (placeMid(b.el, 1.0)) b.run(); } catch (e) {}
     }, 8000);
-    // 3) Native Banner (слои A и B; с 23.11.2026 и на телефонах: в Германии CPM $4,04, а телефон получал только 320x50)
+    // 3) Native Banner (все страны). 26.11.2026: сразу после программы передач (раньше ниже второго экрана); где программы нет — как раньше, в середине страницы.
+    // Таймер 7 с — раньше второго баннера (8 с), чтобы тот не занял это место.
     setTimeout(function () {
       try {
         var key = '38aed55c67286ad1a2b32153e5337ddb';
         var d = wrap('rtv-native', '<div id="container-' + key + '"></div>'); d.style.width = '100%'; d.style.maxWidth = '728px';
-        if (!placeMid(d, phone ? 1.8 : 2.2)) return;
+        var epg = document.querySelector('.epg-box');
+        if (epg && epg.getBoundingClientRect().height > 0) {
+          placedY.push(docTop(epg) + epg.getBoundingClientRect().height);
+          epg.parentNode.insertBefore(d, epg.nextSibling);
+        } else if (!placeMid(d, phone ? 1.8 : 2.2)) return;
         var s = document.createElement('script'); s.async = true; s.setAttribute('data-cfasync', 'false'); s.src = 'https://bancadeltempoidea.org/21/' + key;
         document.body.appendChild(s); reveal(d, 12000);
       } catch (e) {}
-    }, 10000);
-    // 4) телефоны: баннер 320x50 в конце страницы (все слои)
-    if (phone) setTimeout(function () {
-      try {
-        var b = banner('9b2a79adb0850bb0ed0eb4fa77cb79dd', 320, 50, 'https://bancadeltempoidea.org/22/9b2a79adb0850bb0ed0eb4fa77cb79dd', 'rtv-ban-mobile');
-        if (placeMid(b.el, 1.0)) b.run();
-      } catch (e) {}
-    }, 6000);
+    }, 7000);
+    // 4) телефоны: баннер 320x50. 26.11.2026: на страницах каналов — под плеером (после строки состояния, с отступами от кнопок),
+    // на остальных страницах — как раньше, в середине страницы.
+    // Место под плеером резервируется сразу (невидимое), чтобы появление баннера не сдвигало кнопки каналов под пальцем.
+    if (phone) try {
+      var mb = banner('9b2a79adb0850bb0ed0eb4fa77cb79dd', 320, 50, 'https://bancadeltempoidea.org/22/9b2a79adb0850bb0ed0eb4fa77cb79dd', 'rtv-ban-mobile');
+      var stl = isChannel ? document.getElementById('status') : null;
+      if (stl && stl.parentNode) {
+        mb.el.style.display = ''; mb.el.style.visibility = 'hidden';
+        stl.parentNode.insertBefore(mb.el, stl.nextSibling);
+      }
+      setTimeout(function () {
+        try {
+          if (!mb.el.parentNode && !placeMid(mb.el, 1.0)) return;
+          mb.run();
+          var iv = setInterval(function () {
+            if (mb.el.querySelector('iframe')) { mb.el.style.visibility = ''; clearInterval(iv); }
+            else if (!mb.el.parentNode) clearInterval(iv);
+          }, 500);
+        } catch (e) {}
+      }, isChannel ? 3000 : 6000);
+    } catch (e) {}
     // 5) Popunder (слой A, компьютеры и планшеты, раз в 24 часа)
     if (POPUNDER_ENABLED && tier === 'A' && (mouse || tablet)) setTimeout(function () {
       try {
