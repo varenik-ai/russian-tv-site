@@ -1,7 +1,9 @@
 /* 23.11.2026: общая страна посетителя для всех блоков (воркер мониторинга /geo, кэш в sessionStorage) и «нулевые» страны.
    Adsterra 19-23.11.2026: Литва 1870 показов $0, Украина 706 / $0, Казахстан 665 / $0, Эстония 558 / $0, Молдова 410 / $0, Россия 291 / $0 (CPM около $0,001):
    там реклама денег не приносит, а смотреть мешает, поэтому в этих странах блоков Adsterra нет совсем (включая баннер под плеером). */
-window.RTV_NOADS_CC = 'LT LV EE KZ MD GE AM AZ BY UZ KG TJ RU UA IL TR CY RS'.split(' ');
+/* 26.11.2026: баннеры Adsterra снова показываются во всех странах (решение владельца), всплывающая реклама выключена везде.
+   Список ниже теперь означает только «дешёвые страны»: там под плеером дополнительно карточка Telegram-канала. */
+window.RTV_LOWCPM_CC = 'LT LV EE KZ MD GE AM AZ BY UZ KG TJ RU UA IL TR CY RS'.split(' ');
 window.rtvGeo = window.rtvGeo || function (cb) {
   var cc = null; try { cc = sessionStorage.getItem('rtv_cc'); } catch (e) {}
   if (cc) return cb(cc);
@@ -111,7 +113,7 @@ window.rtvGeo = window.rtvGeo || function (cb) {
       d.querySelector('.box').appendChild(s);
     } catch (e) {}
   }
-  function arm() { if (armed) return; armed = true; window.rtvGeo(function (cc) { if (window.RTV_NOADS_CC.indexOf(cc) < 0) setTimeout(show, DELAY_MS); }); }   // 23.11.2026: нет рекламы в странах с CPM около нуля
+  function arm() { if (armed) return; armed = true; setTimeout(show, DELAY_MS); }   // 26.11.2026: баннер снова во всех странах
   function start() {
     if (window.rtvConsentGranted && window.rtvConsentGranted()) arm();
     else window.addEventListener('rtv-consent-granted', arm);
@@ -160,8 +162,7 @@ window.rtvGeo = window.rtvGeo || function (cb) {
    Страна посетителя берётся у воркера мониторинга (GET /geo, кэш в sessionStorage). Слои по CPM Adsterra за 14-18.11.2026:
      A (дорогие: США $2.52, Великобритания $1.57, Канада $0.97, Швеция $0.53, Польша $0.27, Германия $0.22, Франция $0.24, Болгария $0.15 ...):
        полный набор — баннер 300x250, второй баннер 300x250 внизу, Native Banner, Popunder (раз в 24 ч);
-     B (остальные): баннер 300x250 и Native Banner;
-     C (дешёвые: Литва $0.034, Казахстан $0.02, Эстония $0.018, Молдова $0.01 ...): только баннер 300x250 (остальное денег не приносит).
+     B (остальные, с 26.11.2026 и дешёвые страны): баннер 300x250 и Native Banner.
    Места: 1) баннер 300x250 (блок 32178193) на страницах БЕЗ плеера (главная — правая колонка, категории, страны, блог): компьютеры и планшеты;
    2) второй баннер 300x250 (тот же блок) внизу страницы: слой A, компьютеры и планшеты; 3) Native Banner (блок 32348558) внизу: слои A и B;
    4) баннер 320x50 (блок 32348559) внизу: только телефоны, все слои; 5) Popunder (блок 32349106): слой A, компьютеры и планшеты, раз в 24 часа,
@@ -184,8 +185,7 @@ window.rtvGeo = window.rtvGeo || function (cb) {
   var phone = !mouse && !tablet;
   var label = en ? 'Advertisement' : 'Реклама';
   var TIER_A = 'US CA GB IE AU NZ DE AT CH FR NL SE NO DK PL ES IT BG'.split(' ');
-  var TIER_C = window.RTV_NOADS_CC;   // 23.11.2026: в этих странах блоков нет совсем (см. начало файла)
-  function tierOf(cc) { return TIER_A.indexOf(cc) >= 0 ? 'A' : TIER_C.indexOf(cc) >= 0 ? 'C' : 'B'; }
+  function tierOf(cc) { return TIER_A.indexOf(cc) >= 0 ? 'A' : 'B'; }
   function getCC(cb) { window.rtvGeo(cb); }
   function wrap(id, inner) {
     var d = document.createElement('div'); d.id = id;
@@ -234,7 +234,6 @@ window.rtvGeo = window.rtvGeo || function (cb) {
   var ready = false;
   function go(cc) {
     var tier = tierOf(cc);
-    if (tier === 'C') return;   // 23.11.2026: страны с CPM около нуля — без рекламы
     // 1) баннер 300x250 на страницах без плеера (все слои)
     if (!isChannel && (mouse || tablet)) setTimeout(function () {
       try {
@@ -249,7 +248,7 @@ window.rtvGeo = window.rtvGeo || function (cb) {
       try { var b = banner(K300, 300, 250, H300, 'rtv-ban-bottom'); if (placeMid(b.el, 1.0)) b.run(); } catch (e) {}
     }, 8000);
     // 3) Native Banner (слои A и B; с 23.11.2026 и на телефонах: в Германии CPM $4,04, а телефон получал только 320x50)
-    if (tier !== 'C') setTimeout(function () {
+    setTimeout(function () {
       try {
         var key = '38aed55c67286ad1a2b32153e5337ddb';
         var d = wrap('rtv-native', '<div id="container-' + key + '"></div>'); d.style.width = '100%'; d.style.maxWidth = '728px';
@@ -285,7 +284,7 @@ window.rtvGeo = window.rtvGeo || function (cb) {
   if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);   // не ждём window.load: его держит зависший скрипт аналитики (до 30 с), и реклама показывалась бы к 35–50-й секунде
 })();
 
-/* 23.11.2026: в странах без рекламы (RTV_NOADS_CC) под плеером вместо рекламного места — карточка Telegram-канала (все устройства, страницы каналов).
+/* 23.11.2026: в странах без рекламы (RTV_LOWCPM_CC) под плеером вместо рекламного места — карточка Telegram-канала (все устройства, страницы каналов).
    Обычная строка «Смотреть каналы в Telegram» (.tg-pulse-banner) для них скрывается, чтобы не было двух ссылок подряд.
    Клик считается в GA4 общим трекером telegram_click (метка — класс ссылки tg-geo-card). Отключить: TG_GEO_ENABLED=false. */
 (function () {
@@ -314,11 +313,11 @@ window.rtvGeo = window.rtvGeo || function (cb) {
     if (pulse && pulse.parentNode) { pulse.parentNode.insertBefore(a, pulse); pulse.style.display = 'none'; }
     else pl.parentNode.insertBefore(a, pl.nextSibling);
   }
-  function start() { if (window.rtvGeo) window.rtvGeo(function (cc) { if ((window.RTV_NOADS_CC || []).indexOf(cc) >= 0) show(); }); }
+  function start() { if (window.rtvGeo) window.rtvGeo(function (cc) { if ((window.RTV_LOWCPM_CC || []).indexOf(cc) >= 0) show(); }); }
   if (document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 
-/* 23.11.2026: Kadam Popunder (сайт 98605, блок 456226 «Popunder desktop NOADS») — ТОЛЬКО для стран из RTV_NOADS_CC, где Adsterra отключена полностью;
+/* 23.11.2026: Kadam Popunder (сайт 98605, блок 456226 «Popunder desktop NOADS») — ТОЛЬКО для стран из RTV_LOWCPM_CC, где Adsterra отключена полностью;
    в странах с Adsterra не загружается никогда. Страна должна быть определена точно: при ошибке определения ('XX') Kadam не грузится (а Adsterra работает
    как обычно), поэтому сети не пересекаются. Только компьютеры (с мышью), после согласия на cookies, через 15 с после загрузки.
    Частота — в кабинете Kadam: 1 показ за 86400 с, задержка 15 с, открытие в новом окне (страница с трансляцией не перезагружается), только Desktop,
@@ -332,7 +331,7 @@ window.rtvGeo = window.rtvGeo || function (cb) {
   if (/^\/(en\/)?(privacy|advertising|about)\/?$/.test(location.pathname) || /^\/(tv|diag)\/?$/.test(location.pathname)) return;
   var armed = false;
   function load(cc) {
-    if ((window.RTV_NOADS_CC || []).indexOf(cc) < 0) return;   // страны с Adsterra и неопределённая страна — никогда
+    if ((window.RTV_LOWCPM_CC || []).indexOf(cc) < 0) return;   // страны с Adsterra и неопределённая страна — никогда
     setTimeout(function () {
       try {
         if (document.querySelector('.' + KADAM_ID)) return;
