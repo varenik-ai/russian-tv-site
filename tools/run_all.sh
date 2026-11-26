@@ -77,4 +77,5 @@ for f in glob.glob(os.path.join(root, '**/*.html'), recursive=True):
     s = s.replace('<script src="/assets/consent.js"></script>', '<script src="/assets/consent.js?v=3"></script>')
     if s != o: open(f, 'w', encoding='utf-8').write(s)
 PY
+run gen_noindex_dead.py      # 26.11.2026: РЕН ТВ, Матч ТВ, Пятница! (нет источника) — noindex и вне sitemap; последним
 echo "готово"

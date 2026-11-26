@@ -19,13 +19,14 @@ EN_G = [('/en/blog/how-to-watch-russian-tv-in-usa/', 'How to Watch Russian TV in
         ('/en/blog/channel-one-vs-rossiya-1-vs-ntv/', 'Channel One vs Rossiya 1 vs NTV'), ('/en/blog/russian-tv-on-iphone-and-android/', 'Russian TV on iPhone and Android'),
         ('/en/blog/how-to-watch-russian-tv-in-canada/', 'How to Watch Russian TV in Canada'), ('/en/blog/how-to-watch-russian-tv-in-germany/', 'How to Watch Russian TV in Germany'), ('/en/blog/how-to-watch-russian-tv-in-uk/', 'How to Watch Russian TV in the UK'),
         ('/en/blog/russian-tv-new-years-eve-usa-uk-canada/', "Russian TV on New Year's Eve"), ('/en/blog/russian-tv-channels-list-live/', 'List of Russian TV channels'), ('/en/blog/russian-tv-in-telegram-mini-app/', 'Russian TV in Telegram'), ('/en/blog/victory-day-parade-live-russian-tv-abroad/', 'Victory Day parade live')]
+DEAD = {'ren-tv-live', 'match-tv-live', 'pyatnica-live'}  # 26.11.2026: как в gen_noindex_dead.py
 changed = 0
 # --- A) похожие каналы
 chan = {}
 for d in sorted(os.listdir(ROOT)):
     if not (d.endswith('-live') and os.path.isdir(os.path.join(ROOT, d))): continue
     s = rd(d + '/index.html')
-    if 'noindex' in s.lower()[:6000]: continue
+    if 'noindex' in s.lower()[:6000] or d in DEAD: continue  # DEAD: см. gen_noindex_dead.py (закрываются позже в пайплайне)
     cat = re.search(r'<a href="([^"]*)" class="cat-tag">', s)
     h1 = re.search(r'<h1[^>]*>([^<]*)</h1>', s)
     if not cat or not h1: continue
@@ -91,7 +92,7 @@ for path in _pages:
         G = EN_G if en else RU_G
         _l = 'en' if en else 'ru'; _o = _cnt[_l]; _cnt[_l] += 1
         _su = '/' + path.replace('index.html', '')
-        FG = [x for x in (G[(_o * 4 + k) % len(G)] for k in range(len(G))) if x[0] != _su][:4]
+        FG = []  # 26.11.2026: без меняющихся ссылок на 4 гайда в подвале каждой страницы (сайт исключён из Bing 22.11); осталась ссылка «Все гайды»
         allg = ('/en/blog/', 'All guides') if en else ('/blog/', 'Все гайды')
         row = ('<div class="rtv-fg" style="text-align:center;margin-top:6px;font-size:12px;line-height:1.8">' + ('Guides: ' if en else 'Гайды: ') +
                ' · '.join(f'<a href="{u}" style="color:#8b8ba0;text-decoration:underline">{t}</a>' for u, t in [allg] + FG) + '</div>\n')
